@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "cinema-ticket-reservation"
+version = "0.1.0"
+description = ""
+authors = ["Klaudiusz Grobelski Łukasz Filo"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12.8"
+fastapi = "^0.115.11"
+pytest = "^8.3.5"
+sqlalchemy = "^2.0.38"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
