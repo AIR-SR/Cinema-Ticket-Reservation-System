@@ -1,0 +1,35 @@
+name: Run Python Tests with Poetry
+
+on:
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.8"  # Wybierz wersję Pythona, której używasz
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Dodanie Poetry do PATH
+
+      - name: Configure Poetry to use in-project virtual environment
+        run: poetry config virtualenvs.in-project true
+
+      - name: Install dependencies
+        working-directory: cinema-ticket-reservation
+        run: poetry install --no-interaction --no-root
+
+      - name: Run tests
+        working-directory: cinema-ticket-reservation
+        run: poetry run pytest
