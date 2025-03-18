@@ -1,0 +1,34 @@
+name: cinema-ticket-reservation-development
+
+services:
+  cinema-backend:
+    build:
+      context: ./API
+      dockerfile: Dockerfile.dev
+    container_name: cinema-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./API:/app
+    networks:
+      - cinema-ticket-reservation-network
+
+  cinema-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      cinema-backend:
+        condition: service_started
+    container_name: react-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - cinema-ticket-reservation-network
+
+networks:
+  cinema-ticket-reservation-network:
+    driver: bridge
