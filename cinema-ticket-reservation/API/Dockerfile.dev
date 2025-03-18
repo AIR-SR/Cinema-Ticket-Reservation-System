@@ -1,0 +1,15 @@
+FROM python:3.12.8-slim
+
+WORKDIR /app
+
+RUN pip install poetry
+
+COPY . .
+
+RUN poetry install
+
+WORKDIR /app/cinema_ticket_reservation
+
+EXPOSE 8000
+
+ENTRYPOINT ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
