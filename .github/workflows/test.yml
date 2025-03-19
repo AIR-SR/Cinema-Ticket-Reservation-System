@@ -27,9 +27,9 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        working-directory: cinema-ticket-reservation/frontend
+        working-directory: cinema-ticket-reservation/backend
         run: poetry install --no-interaction --no-root
 
       - name: Run tests
-        working-directory: cinema-ticket-reservation/frontend/app
+        working-directory: cinema-ticket-reservation/backend/app
         run: poetry run pytest
