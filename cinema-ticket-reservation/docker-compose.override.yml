@@ -3,13 +3,13 @@ name: cinema-ticket-reservation-development
 services:
   cinema-backend:
     build:
-      context: ./API
+      context: ./backend
       dockerfile: Dockerfile.dev
     container_name: cinema-backend
     ports:
       - "8000:8000"
     volumes:
-      - ./API:/app
+      - ./backend:/app
     networks:
       - cinema-ticket-reservation-network
 

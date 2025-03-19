@@ -8,7 +8,7 @@ COPY . .
 
 RUN poetry install
 
-WORKDIR /app/cinema_ticket_reservation
+WORKDIR /app/app
 
 EXPOSE 8000
 
