@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "cinema-ticket-reservation"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = ["Klaudiusz Grobelski Łukasz Filo"]
@@ -10,6 +10,10 @@ python = "3.12.8"
 fastapi = "^0.115.11"
 pytest = "^8.3.5"
 sqlalchemy = "^2.0.38"
+uvicorn = "^0.34.0"
+psycopg2-binary = "^2.9.10"
+dotenv = "^0.9.9"
+pydantic-settings = "^2.8.1"
 
 
 [build-system]
