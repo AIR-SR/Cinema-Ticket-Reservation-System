@@ -13,7 +13,7 @@ class UserGlobalModel(UserGlobalBase):
     """
     Pydantic model representing a global user with an ID.
     """
-    id: int = Field(..., title="User ID", description="Unique identifier for the user in the database.")
+    id: int = Field(..., ge=1, title="User ID", description="Unique identifier for the user in the database.")
 
     class Config:
         from_attributes = True
