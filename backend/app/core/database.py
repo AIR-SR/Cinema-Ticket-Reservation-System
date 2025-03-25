@@ -3,18 +3,30 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .config import settings
 
+# Separate Base objects for global and local models
+GlobalBase = declarative_base()
+LocalBase = declarative_base()
+
+# Database URLs
 DATABASE_URLS = {
     "global": settings.DATABASE_URL_GLOBAL,
     "krakow": settings.DATABASE_URL_KRAKOW,
     "warsaw": settings.DATABASE_URL_WARSAW
 }
 
+# Engines for global and local databases
+engines = {
+    "global": create_async_engine(DATABASE_URLS["global"], echo=True),
+    "krakow": create_async_engine(DATABASE_URLS["krakow"], echo=True),
+    "warsaw": create_async_engine(DATABASE_URLS["warsaw"], echo=True)
+}
 
-engines = {name: create_async_engine(url, echo=True) for name, url in DATABASE_URLS.items()}
-sessions = {name: sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession, expire_on_commit=False) for name, engine in engines.items()}
-
-Base = declarative_base()
-
+# Session makers for global and local databases
+sessions = {
+    "global": sessionmaker(autocommit=False, autoflush=False, bind=engines["global"], class_=AsyncSession, expire_on_commit=False),
+    "krakow": sessionmaker(autocommit=False, autoflush=False, bind=engines["krakow"], class_=AsyncSession, expire_on_commit=False),
+    "warsaw": sessionmaker(autocommit=False, autoflush=False, bind=engines["warsaw"], class_=AsyncSession, expire_on_commit=False)
+}
 
 async def get_db(region: str):
     """Returns an async database session for the specified region."""

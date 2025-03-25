@@ -1,9 +1,9 @@
-from core import Base
+from core import LocalBase
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
 
-class Reservation_Seat(Base):
+class Reservation_Seat(LocalBase):
     __tablename__ = 'reservation_seats'
 
     id = Column(Integer, primary_key=True, index=True)

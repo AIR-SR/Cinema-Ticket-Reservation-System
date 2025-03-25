@@ -1,8 +1,8 @@
-from app.core.database import Base
+from core import GlobalBase
 from sqlalchemy import Column, Integer, String, ForeignKey
 
 
-class AdminGlobal(Base):
+class AdminGlobal(GlobalBase):
     __tablename__ = 'admin_global'
 
     id = Column(Integer, primary_key=True, index=True)

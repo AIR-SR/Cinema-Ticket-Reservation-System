@@ -1,23 +1,29 @@
 import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
-from models import Base  # Import your SQLAlchemy models
+from .database import GlobalBase, LocalBase, engines
 from .config import settings
 
-# Database connection URLs
-DATABASE_URLS = {
-    "global": settings.DATABASE_URL_GLOBAL,
-    "krakow": settings.DATABASE_URL_KRAKOW,
-    "warsaw": settings.DATABASE_URL_WARSAW
-}
-
 async def init_db():
-    """Creates tables for all databases asynchronously."""
-    for region, db_url in DATABASE_URLS.items():
-        engine = create_async_engine(db_url, echo=True)
-        async with engine.begin() as conn:
-            print(f"Creating tables for {region} database...")
-            await conn.run_sync(Base.metadata.create_all)
-        await engine.dispose()  # Close the engine after execution
+    """Creates tables for global and local databases asynchronously."""
+    # Initialize global database
+    global_engine = engines["global"]
+    async with global_engine.begin() as conn:
+        print("Creating tables for global database...")
+        print("GlobalBase metadata tables:", GlobalBase.metadata.tables.keys())  # Debugging metadata
+        await conn.run_sync(GlobalBase.metadata.create_all)
+        print("Tables global created successfully.")
+    await global_engine.dispose()
 
-if __name__ == "__main__":
-    asyncio.run(init_db())  # Run this manually
+    # Initialize local databases
+    for region in ["krakow", "warsaw"]:
+        local_engine = engines[region]
+        async with local_engine.begin() as conn:
+            print(f"Creating tables for {region} database...")
+            print("LocalBase metadata tables:", LocalBase.metadata.tables.keys())  # Debugging metadata
+            await conn.run_sync(LocalBase.metadata.create_all)
+            print(f"Tables {region} created successfully.")
+        await local_engine.dispose()
+
+async def init_db_on_startup():
+    """Initialize the database during app startup."""
+    await init_db()

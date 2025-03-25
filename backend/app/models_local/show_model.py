@@ -1,9 +1,9 @@
-from core import Base
+from core import LocalBase
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, Float
 from sqlalchemy.orm import relationship
 
 
-class Show(Base):
+class Show(LocalBase):
     __tablename__ = 'shows'
 
     id = Column(Integer, primary_key=True, index=True)

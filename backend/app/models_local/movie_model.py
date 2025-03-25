@@ -1,8 +1,8 @@
-from core import Base
+from core import LocalBase
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
-class Movie(Base):
+class Movie(LocalBase):
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True, index=True)

@@ -1,7 +1,7 @@
-from app.core.database import Base
+from core import GlobalBase
 from sqlalchemy import Column, Integer, String, ForeignKey
 
-class UserGlobal(Base):
+class UserGlobal(GlobalBase):
     __tablename__ = 'user_global'
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String)
