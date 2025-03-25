@@ -3,9 +3,6 @@ from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
 class Hall_Rows(Base):
-    """
-    Represents a category for items.
-    """
     __tablename__ = 'hall_rows'
 
     id = Column(Integer, primary_key=True, index=True)

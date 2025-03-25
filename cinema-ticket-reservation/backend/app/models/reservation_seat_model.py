@@ -4,9 +4,6 @@ from sqlalchemy.orm import relationship
 
 
 class Reservation_Seat(Base):
-    """
-    Represents a category for items.
-    """
     __tablename__ = 'reservation_seats'
 
     id = Column(Integer, primary_key=True, index=True)

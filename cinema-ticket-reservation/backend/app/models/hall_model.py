@@ -4,9 +4,6 @@ from sqlalchemy.orm import relationship
 
 
 class Hall(Base):
-    """
-    Represents a category for items.
-    """
     __tablename__ = 'halls'
 
     id = Column(Integer, primary_key=True, index=True)

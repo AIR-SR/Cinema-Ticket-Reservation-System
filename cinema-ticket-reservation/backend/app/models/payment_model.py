@@ -3,9 +3,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float
 from sqlalchemy.orm import relationship
 
 class Payment(Base):
-    """
-    Represents a category for items.
-    """
     __tablename__ = 'payments'
 
     id = Column(Integer, primary_key=True, index=True)

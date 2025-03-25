@@ -4,9 +4,6 @@ from sqlalchemy.orm import relationship
 
 
 class Show(Base):
-    """
-    Represents a category for items.
-    """
     __tablename__ = 'shows'
 
     id = Column(Integer, primary_key=True, index=True)
