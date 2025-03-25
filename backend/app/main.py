@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-import models as models
+import models_local as models
 from core import settings
 
 logger = logging.getLogger("uvicorn")
