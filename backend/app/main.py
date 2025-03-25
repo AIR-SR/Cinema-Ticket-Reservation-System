@@ -4,6 +4,7 @@ import logging
 import models_local
 import models_global
 from core import settings, init_db_on_startup
+from api import api_router
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -21,7 +22,5 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],  # Restrict to necessary headers
 )
 
-@app.get("/") 
-async def main_route():     
-  return {"message": "API is running!"}
+app.include_router(api_router)
 
