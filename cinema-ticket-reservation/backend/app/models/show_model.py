@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, ForeignKey, DateTime, Float
 from sqlalchemy.orm import relationship
 
 
-class Shows(Base):
+class Show(Base):
     """
     Represents a category for items.
     """
