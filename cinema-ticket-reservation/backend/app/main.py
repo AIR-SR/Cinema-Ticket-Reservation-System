@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import models as models
-from core import settings, engine
+from core import settings
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)

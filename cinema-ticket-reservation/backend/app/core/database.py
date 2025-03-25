@@ -1,30 +1,25 @@
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .config import settings
 
-DATABASE_URL = settings.DATABASE_URL
+DATABASE_URLS = {
+    "global": settings.DATABASE_URL_GLOBAL,
+    "krakow": settings.DATABASE_URL_KRAKOW,
+    "warsaw": settings.DATABASE_URL_WARSAW
+}
 
-engine = create_engine(DATABASE_URL)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engines = {name: create_async_engine(url, echo=True) for name, url in DATABASE_URLS.items()}
+sessions = {name: sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession, expire_on_commit=False) for name, engine in engines.items()}
 
 Base = declarative_base()
 
 
-def get_db():
-    """
-    Dependency to get the DB session.
+async def get_db(region: str):
+    """Returns an async database session for the specified region."""
+    if region not in sessions:
+        raise ValueError(f"Invalid region: {region}")
+    async with sessions[region]() as session:
+        yield session
 
-    This function provides a SQLAlchemy session to interact with the database.
-    It should be used as a dependency in FastAPI routes to ensure that the session
-    is properly managed and closed after the request is completed.
-
-    Yields:
-        db (Session): A SQLAlchemy session object.
-    """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
