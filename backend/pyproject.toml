@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "app"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Klaudiusz Grobelski Łukasz Filo"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "3.12.8"
@@ -14,6 +15,7 @@ uvicorn = "^0.34.0"
 psycopg2-binary = "^2.9.10"
 dotenv = "^0.9.9"
 pydantic-settings = "^2.8.1"
+asyncpg = "^0.30.0"
 
 
 [build-system]

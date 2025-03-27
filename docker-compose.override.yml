@@ -1,0 +1,115 @@
+name: cinema-ticket-reservation-development
+
+services:
+  cinema-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      postgres-global:
+        condition: service_started
+      postgres-krakow:
+        condition: service_started
+      postgres-warsaw:
+        condition: service_started
+    container_name: cinema-backend-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+    networks:
+      - cinema-ticket-reservation-network
+    environment:
+      - FRONTEND_URL=${FRONTEND_URL}
+      - DATABASE_URL_GLOBAL=${DATABASE_URL_GLOBAL}
+      - DATABASE_URL_KRAKOW=${DATABASE_URL_KRAKOW}
+      - DATABASE_URL_WARSAW=${DATABASE_URL_WARSAW}
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      # - SECRET_KEY=${SECRET_KEY}
+      # - ALGORITHM=${ALGORITHM}
+      # - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      # - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+
+  cinema-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      cinema-backend:
+        condition: service_started
+    container_name: cinema-frontend-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - frontend_data:/app/node_modules
+    networks:
+      - cinema-ticket-reservation-network
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+
+  postgres-global:
+    image: postgres:16
+    container_name: postgres_cinema_global-development
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: cinema_db_user
+      POSTGRES_PASSWORD: cinema_db_password
+      POSTGRES_DB: cinema_db_global
+    volumes:
+      - postgres_global_data:/var/lib/postgresql/data
+    networks:
+      - cinema-ticket-reservation-network
+
+  postgres-krakow:
+    image: postgres:16
+    container_name: postgres_cinema_krakow-development
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: cinema_db_user
+      POSTGRES_PASSWORD: cinema_db_password
+      POSTGRES_DB: cinema_db_krakow
+    volumes:
+      - postgres_krakow_data:/var/lib/postgresql/data
+    networks:
+      - cinema-ticket-reservation-network
+
+  postgres-warsaw:
+    image: postgres:16
+    container_name: postgres_cinema_warsaw-development
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: cinema_db_user
+      POSTGRES_PASSWORD: cinema_db_password
+      POSTGRES_DB: cinema_db_warsaw
+    volumes:
+      - postgres_warsaw_data:/var/lib/postgresql/data
+    networks:
+      - cinema-ticket-reservation-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_cinema-development
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - cinema-ticket-reservation-network
+
+networks:
+  cinema-ticket-reservation-network:
+    driver: bridge
+
+volumes:
+  frontend_data:
+  postgres_global_data:
+  postgres_krakow_data:
+  postgres_warsaw_data:
+  pgadmin_data:
