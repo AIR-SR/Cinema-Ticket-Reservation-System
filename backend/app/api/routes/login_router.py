@@ -1,4 +1,4 @@
-from core import create_access_token, get_db, verify_password
+from core import create_access_token, get_db_global, verify_password
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from models_global import UsersGlobal
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/login", tags=["Login"])
              response_description="Login response with access token",
              summary="User login",
              description="Authenticates a user and returns an access token.")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db_global)):
     """
     Authenticate a user and return an access token.
     - Validates the username and password.

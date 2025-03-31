@@ -28,10 +28,15 @@ sessions = {
     "warsaw": sessionmaker(autocommit=False, autoflush=False, bind=engines["warsaw"], class_=AsyncSession, expire_on_commit=False)
 }
 
-async def get_db(region: str):
+async def get_db_local(region: str):
     """Returns an async database session for the specified region."""
-    if region not in sessions:
+    if region not in sessions:  # Fix region validation logic
         raise ValueError(f"Invalid region: {region}")
     async with sessions[region]() as session:
+        yield session
+
+async def get_db_global():
+    """Returns an async database session for the global database."""
+    async with sessions["global"]() as session:
         yield session
 

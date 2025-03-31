@@ -11,11 +11,14 @@ from sqlalchemy.future import select  # Import select for async queries
 from sqlalchemy.ext.asyncio import AsyncSession  # Import AsyncSession
 
 from .config import settings
-from .database import get_db
+from .database import get_db_global
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+
+ROLE_ADMIN = "admin"
+ROLE_USER = "user"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/")
@@ -39,7 +42,7 @@ def decode_access_token(token: str):
     except JWTError as e:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> UserGlobalModel:
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db_global)) -> UserGlobalModel:
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -51,12 +54,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     # Convert SQLAlchemy User object to Pydantic UserModel
     return UserGlobalModel.model_validate(user)
 
-def role_required(allowed_roles: list):
-    def role_checker(user: UserGlobalModel = Depends(get_current_user)):
-        if user.role not in allowed_roles:
-            raise HTTPException(status_code=403, detail="Access forbidden: insufficient permissions")
-        return user
-    return role_checker
+async def admin_required(current_user: UsersGlobal = Depends(get_current_user)):
+    if current_user.role != ROLE_ADMIN:
+        raise HTTPException(status_code=403, detail="Not authorized to perform this action")
+    return current_user
 
 async def create_default_user(db: AsyncSession):
     """

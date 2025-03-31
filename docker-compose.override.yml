@@ -1,4 +1,4 @@
-name: cinema-ticket-reservation-development
+name: cinema-ticket-reservation-dev
 
 services:
   cinema-backend:

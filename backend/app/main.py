@@ -5,7 +5,7 @@ import models_local
 import models_global
 from core import settings, init_db_on_startup
 from api import api_router
-from core import get_db, create_default_user
+from core import get_db_global, create_default_user
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
@@ -32,7 +32,7 @@ async def on_startup():
 
     # Create the default user
     try:
-        async for db in get_db("global"):  # Pass a string instead of a list
+        async for db in get_db_global():  # Call the function to get the async iterable
             await create_default_user(db)
             logger.info("Default user created successfully.")
             break  # Exit after using the first database session

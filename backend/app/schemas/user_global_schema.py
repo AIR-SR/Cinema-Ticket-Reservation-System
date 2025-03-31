@@ -55,7 +55,22 @@ class UserGlobalCreate(BaseModel):
                             description="User's email address.")
     password: str = Field(..., title="Password",
                           description="User's password.")
-    role: Literal["admin", "employee", "user"] = Field(
+
+class UserAdminGlobalCreate(BaseModel):
+    """
+    Pydantic model for creating a new admin global user.
+    """
+    username: str = Field(..., title="Username",
+                          description="Unique username for the user.")
+    first_name: str = Field(..., title="First Name",
+                            description="User's first name.")
+    last_name: str = Field(..., title="Last Name",
+                           description="User's last name.")
+    email: EmailStr = Field(..., title="Email",
+                            description="User's email address.")
+    password: str = Field(..., title="Password",
+                          description="User's password.")
+    role: Literal["admin", "employee"] = Field(
         ..., title="Role", description="User's role in the system.")
 
 
