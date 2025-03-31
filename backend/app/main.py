@@ -1,16 +1,12 @@
-import logging
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
 from core import (create_default_user, get_db_global, init_db_on_startup,
-                  settings)
+                  settings, logger)
 import models_global
 import models_local
 
-logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.INFO)
 app = FastAPI()
 
 @app.on_event("startup")
@@ -24,7 +20,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Restrict to necessary methods
+    allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE"],  # Restrict to necessary methods
     allow_headers=["Authorization", "Content-Type"],  # Restrict to necessary headers
 )
 

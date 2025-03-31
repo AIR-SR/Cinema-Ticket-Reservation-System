@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -56,6 +56,21 @@ class UserGlobalCreate(BaseModel):
                             description="User's email address.")
     password: str = Field(..., title="Password",
                           description="User's password.")
+
+
+class UserGlobalUpdate(BaseModel):
+    """
+    Pydantic model for updating a global user.
+    """
+    username: Optional[str] = Field(None, title="Username",
+                                    description="Unique username for the user.")
+    first_name: Optional[str] = Field(None, title="First Name",
+                                      description="User's first name.")
+    last_name: Optional[str] = Field(None, title="Last Name",
+                                     description="User's last name.")
+    email: Optional[EmailStr] = Field(None, title="Email",
+                                      description="User's email address.")
+
 
 class UserAdminGlobalCreate(BaseModel):
     """

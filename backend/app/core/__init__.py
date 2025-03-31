@@ -1,4 +1,4 @@
-from .config import settings
+from .config import settings, logger
 from .database import GlobalBase, LocalBase, engines, get_db_local, get_db_global
 from .init_db import init_db_on_startup
 from .auth import (create_access_token, create_default_user,

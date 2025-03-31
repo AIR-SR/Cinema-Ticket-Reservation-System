@@ -1,12 +1,12 @@
 from typing import List
 
 from core import (admin_required, get_current_user,
-                  get_db_global, hash_password, verify_password, settings)
+                  get_db_global, hash_password, verify_password, settings, logger)
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from pydantic import ValidationError
 from schemas import (PasswordChangeRequest, UserAdminGlobalCreate,
-                     UserGlobalCreate, UserGlobalModel)
+                     UserGlobalCreate, UserGlobalModel, UserGlobalUpdate)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -138,29 +138,33 @@ async def get_me(current_user: UserGlobalModel = Depends(get_current_user)):
     """
     return current_user
 
-# @router.patch("/update/me", response_model=UserGlobalModel, summary="Update current user details")
-# async def update_user(
-#     user_data: UserUpdate,
-#     db: Session = Depends(get_db_global),
-#     current_user: UsersGlobal = Depends(get_current_user)
-# ):
-#     """
-#     Update details of the currently authenticated user.
-#     - Accepts partial updates in the form of `UserUpdate`.
-#     - Returns the updated `UserModel`.
-#     """
-#     user_to_update = db.query(UsersGlobal).filter(UsersGlobal.id == current_user.id).first()
-#     if not user_to_update:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     try:
-#         validated_data = user_data.dict(exclude_unset=True)  # Pydantic handles validation
-#         for key, value in validated_data.items():
-#             setattr(user_to_update, key, value)
-#         db.commit()
-#         db.refresh(user_to_update)
-#         return UserGlobalModel.model_validate(user_to_update).model_dump()
-#     except ValidationError as e:
-#         raise HTTPException(status_code=422, detail=e.errors())
+@router.patch("/update/me", response_model=UserGlobalModel, summary="Update current user details")
+async def update_user(
+    user_data: UserGlobalUpdate,
+    db: AsyncSession = Depends(get_db_global),
+    current_user: UsersGlobal = Depends(get_current_user)
+):
+    """
+    Update details of the currently authenticated user.
+    - Accepts partial updates in the form of `UserUpdate`.
+    - Returns the updated `UserModel`.
+    """
+    logger.info(f"Current user: {current_user}")
+    user_to_update = await db.execute(select(UsersGlobal).filter(UsersGlobal.id == current_user.id))
+    user_to_update = user_to_update.scalar_one_or_none()
+    if not user_to_update:
+        raise HTTPException(status_code=404, detail="User not found")
+    try:
+        validated_data = user_data.model_dump(exclude_unset=True)  # Pydantic handles validation
+        for key, value in validated_data.items():
+            setattr(user_to_update, key, value)
+        await db.commit()
+        await db.refresh(user_to_update)
+        return UserGlobalModel.model_validate(user_to_update).model_dump()
+    except ValidationError as e:
+        # Log validation errors for debugging
+        print(f"Validation Error: {e.errors()}")
+        raise HTTPException(status_code=422, detail=e.errors())
 
 @router.patch("/change-password", summary="Change current user's password")
 async def change_password(
@@ -177,7 +181,7 @@ async def change_password(
     user_to_update = user_to_update.scalar_one_or_none()
     if not user_to_update:
         raise HTTPException(status_code=404, detail="User not found")
-    if verify_password(password_data.current_password, user_to_update.hashed_password):
+    if verify_password(password_data.old_password, user_to_update.hashed_password):
         new_hashed_password = hash_password(password_data.new_password)
         user_to_update.hashed_password = new_hashed_password
         await db.commit()

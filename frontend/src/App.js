@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
+// Styles
+import "./styles/modal.css";
+
 // Contexts
 import { UserProvider } from "./context/UserContext";
 
@@ -10,6 +13,8 @@ import Navbar from "./components/Navbar";
 
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
+import Logout from "./pages/Logout";
+import MyProfile from "./pages/MyProfile";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -40,6 +45,11 @@ const App = () => {
 
           {/* Login */}
           <Route path="/login" element={<Login setToken={setToken} />} />
+          <Route path="/logout" element={<Logout setToken={setToken} />} />
+
+
+          {/* Users */}
+          <Route path="/users/myprofile" element={<PrivateRoute element={<MyProfile />} requiredRole={["admin", "employee", "user"]} />} />
 
         </Routes>
       </Router>

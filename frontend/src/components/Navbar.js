@@ -32,9 +32,6 @@ const Navbar = () => {
                     My Profile
                   </Link>
                 </li>
-                {/* <li className="nav-item">
-                  <span className="nav-link">Welcome, {user.first_name}</span>
-                </li> */}
                 <li className="nav-item">
                   <Link className="nav-link" to="/logout">
                     Logout
