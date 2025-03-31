@@ -1,12 +1,14 @@
 from typing import List
 
-from core import (get_current_user, get_db_global, hash_password, verify_password, admin_required, ROLE_ADMIN, ROLE_USER)
+from core import (ROLE_ADMIN, ROLE_USER, admin_required, get_current_user,
+                  get_db_global, hash_password, verify_password)
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from pydantic import ValidationError
-from schemas import UserGlobalModel, UserGlobalCreate, PasswordChangeRequest, UserAdminGlobalCreate
-from sqlalchemy.future import select
+from schemas import (PasswordChangeRequest, UserAdminGlobalCreate,
+                     UserGlobalCreate, UserGlobalModel)
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

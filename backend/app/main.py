@@ -1,11 +1,13 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import logging
-import models_local
-import models_global
-from core import settings, init_db_on_startup
+
 from api import api_router
-from core import get_db_global, create_default_user
+from core import (create_default_user, get_db_global, init_db_on_startup,
+                  settings)
+import models_global
+import models_local
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)

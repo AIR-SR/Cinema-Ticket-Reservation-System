@@ -6,9 +6,9 @@ from jose import JWTError, jwt
 from models_global import UsersGlobal
 from passlib.context import CryptContext
 from schemas import UserGlobalModel
-from sqlalchemy.orm import Session
-from sqlalchemy.future import select  # Import select for async queries
 from sqlalchemy.ext.asyncio import AsyncSession  # Import AsyncSession
+from sqlalchemy.future import select  # Import select for async queries
+from sqlalchemy.orm import Session
 
 from .config import settings
 from .database import get_db_global

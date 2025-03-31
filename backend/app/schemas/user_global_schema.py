@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, EmailStr
 from typing import Literal
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserGlobalBase(BaseModel):
