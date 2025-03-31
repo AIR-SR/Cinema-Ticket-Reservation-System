@@ -14,5 +14,10 @@ class Settings(BaseSettings):
     ALGORITHM: str
     # SENDGRID_API_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
+    ROLE_ADMIN: str
+    ROLE_USER: str
+    ROLE_EMPLOYEE: str
 
-settings = Settings()
+settings = Settings(ROLE_ADMIN="admin",
+                   ROLE_USER="user",
+                   ROLE_EMPLOYEE="employee")

@@ -17,7 +17,10 @@ app = FastAPI()
 async def startup_event():
     await init_db_on_startup()
 
-origins = [settings.FRONTEND_URL]
+origins = [
+    settings.FRONTEND_URL,  # Existing frontend URL
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -31,7 +34,7 @@ app.include_router(api_router)
 async def on_startup():
     """Startup event to initialize the database and create default user."""
     logger.info("Starting up the application...")
-
+    logger.info(settings.FRONTEND_URL)
     # Create the default user
     try:
         async for db in get_db_global():  # Call the function to get the async iterable

@@ -1,7 +1,7 @@
 from typing import List
 
-from core import (ROLE_ADMIN, ROLE_USER, admin_required, get_current_user,
-                  get_db_global, hash_password, verify_password)
+from core import (admin_required, get_current_user,
+                  get_db_global, hash_password, verify_password, settings)
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from pydantic import ValidationError
@@ -12,6 +12,8 @@ from sqlalchemy.future import select
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
+ROLE_ADMIN = settings.ROLE_ADMIN
+ROLE_USER = settings.ROLE_USER
 
 @router.post("/register", response_model=UserGlobalModel, summary="Register a new user")
 async def create_user(user_data: UserGlobalCreate, db: AsyncSession = Depends(get_db_global)):
