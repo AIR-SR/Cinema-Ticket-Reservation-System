@@ -15,22 +15,34 @@ import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import Register from "./pages/Register";
+import RegisterAdmin from "./pages/RegisterAdmin";
 import MyProfile from "./pages/MyProfile";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
   if (!token) return <Navigate to="/login" />;
 
-  const decodedToken = jwtDecode(token);
-  const userRole = decodedToken.role;
+  try {
+    const decodedToken = jwtDecode(token);
+    const { role, exp } = decodedToken;
 
-  // Check if the user's role is included in the requiredRole list
-  if (Array.isArray(requiredRole)) {
-    return requiredRole.includes(userRole) ? element : <Navigate to="/" />;
+    // Check if the token is expired
+    if (Date.now() >= exp * 1000) {
+      localStorage.removeItem("token");
+      return <Navigate to="/login" />;
+    }
+
+    // Check if the user's role is authorized
+    if (Array.isArray(requiredRole) ? requiredRole.includes(role) : role === requiredRole) {
+      return element;
+    }
+
+    return <Navigate to="/" />;
+  } catch (error) {
+    console.error("Invalid token:", error);
+    localStorage.removeItem("token");
+    return <Navigate to="/login" />;
   }
-
-  // Fallback for single role (if requiredRole is not an array)
-  return userRole === requiredRole ? element : <Navigate to="/" />;
 };
 
 const App = () => {
@@ -50,6 +62,7 @@ const App = () => {
 
           {/* Register */}
           <Route path="/register" element={<Register />} />
+          <Route path="/register/admin" element={<PrivateRoute element={<RegisterAdmin />} requiredRole={["admin"]} />} />
 
           {/* Users */}
           <Route path="/users/myprofile" element={<PrivateRoute element={<MyProfile />} requiredRole={["admin", "employee", "user"]} />} />
