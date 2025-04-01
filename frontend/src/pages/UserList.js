@@ -57,7 +57,6 @@ const UserList = () => {
               <th>ID</th>
               <th>Username</th>
               <th>Role</th>
-              <th>Active</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -67,7 +66,6 @@ const UserList = () => {
                 <td>{user.id}</td>
                 <td>{user.username}</td>
                 <td>{user.role}</td>
-                <td>{user.is_active ? "Yes" : "No"}</td>
                 <td>
                   <button
                     className="btn btn-sm btn-info"

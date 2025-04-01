@@ -69,7 +69,7 @@ async def create_admin_user(
     """
     try:
         # Validate input data using Pydantic
-        validated_data = UserGlobalCreate(**user_data.dict())
+        validated_data = UserAdminGlobalCreate(**user_data.dict())
         # validated_data.role = ROLE_ADMIN  # Explicitly set role to admin
 
         # Check if user already exists

@@ -86,7 +86,7 @@ class UserAdminGlobalCreate(BaseModel):
                             description="User's email address.")
     password: str = Field(..., title="Password",
                           description="User's password.")
-    role: Literal["admin", "employee"] = Field(
+    role: Literal["admin", "employee", "user"] = Field(
         ..., title="Role", description="User's role in the system.")
 
 

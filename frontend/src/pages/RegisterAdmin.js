@@ -16,14 +16,18 @@ const RegisterAdmin = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value || "" }); // Ensure fallback to empty string
   };
 
   const handleRegister = async () => {
     try {
-      await api.post("/users/register", formData);
-      alert("Registration successful! Please log in.");
-      navigate("/login");
+      const token = localStorage.getItem("token");
+      await api.post("/users/register-admin", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert(`Registration of ${formData.username} successful!`);
     } catch (error) {
       console.error("Registration error:", error.response || error.message);
       alert(error.response?.data?.detail || "Failed to register.");
