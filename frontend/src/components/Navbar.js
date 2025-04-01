@@ -53,7 +53,7 @@ const Navbar = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/manage/users">
+                        <Link className="dropdown-item" to="/users-list">
                           Manage Users
                         </Link>
                       </li>

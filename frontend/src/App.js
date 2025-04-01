@@ -18,6 +18,8 @@ import Register from "./pages/Register";
 import RegisterAdmin from "./pages/RegisterAdmin";
 import MyProfile from "./pages/MyProfile";
 import HealthCheck from './pages/HealthCheck';
+import UserList from "./pages/UserList";
+import UserDetails from "./pages/UserDetails";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -70,6 +72,10 @@ const App = () => {
 
           {/* Users */}
           <Route path="/users/myprofile" element={<PrivateRoute element={<MyProfile />} requiredRole={["admin", "employee", "user"]} />} />
+
+          {/* Admin */}
+          <Route path="/users-list" element={<PrivateRoute element={<UserList />} requiredRole={["admin"]} />} />
+          <Route path="/users/details/:userId" element={<PrivateRoute element={<UserDetails />} requiredRole={["admin"]} />} />
 
         </Routes>
       </Router>
