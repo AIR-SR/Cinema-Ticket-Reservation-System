@@ -23,45 +23,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          if (isTokenExpired(token)) {
-            console.warn("Token is expired");
-            localStorage.removeItem("token");
-            setUser(null);
-            window.location.href = "/login"; // Redirect to login
-            return;
-          }
-          const response = await api.get("/users/details", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUser(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-        if (error.response && error.response.status === 401) {
-          // Handle invalid or expired token
-          localStorage.removeItem("token");
-          setUser(null);
-          window.location.href = "/login"; // Redirect to login
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserDetails();
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-  };
-
-  const refreshUser = async () => {
+  const handleTokenAndFetchUser = async () => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
@@ -78,8 +40,30 @@ export const UserProvider = ({ children }) => {
         setUser(response.data);
       }
     } catch (error) {
-      console.error("Error refreshing user details:", error);
+      console.error("Error handling token or fetching user details:", error);
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem("token");
+        setUser(null);
+        window.location.href = "/login"; // Redirect to login
+      }
     }
+  };
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      await handleTokenAndFetchUser();
+      setLoading(false);
+    };
+    fetchUserDetails();
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
+  const refreshUser = async () => {
+    await handleTokenAndFetchUser();
   };
 
   return (
