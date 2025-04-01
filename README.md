@@ -4,18 +4,12 @@
 erDiagram
     USERS-Global {
         int id
+        strin username
         string first_name
         string last_name
         string email
         string hashed_password
-    }
-
-    ADMINS-Global {
-        int id
-        int employee_id
-        string username
-        string email
-        string hashed_password
+        string role
     }
 
     Cinema {
@@ -79,7 +73,7 @@ erDiagram
     }
 
     %% Relationships
-    USERS-Global ||--o{ RESERVATIONS : "makes"
+    USERS-Global ||--o{ RESERVATIONS : "User makes"
     RESERVATIONS ||--o{ RESERVATION_SEATS : "contains"
     RESERVATION_SEATS }o--|| SEATS : "books"
     RESERVATIONS ||--o{ PAYMENTS : "has"
@@ -88,7 +82,7 @@ erDiagram
     MOVIES ||--o{ SHOWS : "is played in"
     SHOWS ||--o{ RESERVATIONS : "is booked for"
     SHOWS ||--o{ HALLS : "takes place in"
-    ADMINS-Global ||--o{ SHOWS : "creates"
+    USERS-Global ||--o{ SHOWS : "Admin creates"
 
     %% ENUM Descriptions (Mermaid does not support enums natively)
     %% Role: admin, staff, customer
