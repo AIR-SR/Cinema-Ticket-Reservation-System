@@ -47,6 +47,8 @@ services:
       - cinema-ticket-reservation-network
     environment:
       - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
 
   postgres-global:
     image: postgres:16
