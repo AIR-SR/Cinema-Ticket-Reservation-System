@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import UserForm from "../components/UserForm";
 
 const RegisterAdmin = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ const RegisterAdmin = () => {
     last_name: "",
     email: "",
     password: "",
-    role: "employee", // Default role
+    role: "", // Default role
   });
   const navigate = useNavigate();
 
@@ -36,92 +37,11 @@ const RegisterAdmin = () => {
         <div className="col-md-6">
           <div className="card p-4 shadow-sm">
             <div className="card-body">
-              <div className="mb-3">
-                <label htmlFor="username" className="form-label">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  className="form-control"
-                  placeholder="Enter your username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="first_name" className="form-label">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="first_name"
-                  name="first_name"
-                  className="form-control"
-                  placeholder="Enter your first name"
-                  value={formData.first_name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="last_name" className="form-label">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="last_name"
-                  name="last_name"
-                  className="form-control"
-                  placeholder="Enter your last name"
-                  value={formData.last_name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="form-control"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="form-control"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="role" className="form-label">
-                  Role
-                </label>
-                <select
-                  id="role"
-                  name="role"
-                  className="form-control"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                >
-                  <option value="user">User</option>
-                  <option value="employee">Employee</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
+              <UserForm
+                formData={formData}
+                handleInputChange={handleInputChange}
+                includeRole={true}
+              />
               <button
                 className="btn btn-primary w-100"
                 onClick={handleRegister}

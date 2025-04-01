@@ -17,6 +17,7 @@ import Logout from "./pages/Logout";
 import Register from "./pages/Register";
 import RegisterAdmin from "./pages/RegisterAdmin";
 import MyProfile from "./pages/MyProfile";
+import HealthCheck from './pages/HealthCheck';
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -53,6 +54,9 @@ const App = () => {
       <Router>
         <Navbar />
         <Routes>
+          {/* Health Check */}
+          <Route path="/health-check" element={<HealthCheck />} />
+
           {/* Homepage */}
           <Route path="/" element={<Homepage />} />
 
