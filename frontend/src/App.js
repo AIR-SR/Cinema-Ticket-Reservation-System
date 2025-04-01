@@ -14,6 +14,7 @@ import Navbar from "./components/Navbar";
 import Homepage from "./pages/Homepage";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
+import Register from "./pages/Register";
 import MyProfile from "./pages/MyProfile";
 
 const PrivateRoute = ({ element, requiredRole }) => {
@@ -47,6 +48,8 @@ const App = () => {
           <Route path="/login" element={<Login setToken={setToken} />} />
           <Route path="/logout" element={<Logout setToken={setToken} />} />
 
+          {/* Register */}
+          <Route path="/register" element={<Register />} />
 
           {/* Users */}
           <Route path="/users/myprofile" element={<PrivateRoute element={<MyProfile />} requiredRole={["admin", "employee", "user"]} />} />
