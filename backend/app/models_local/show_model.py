@@ -12,6 +12,6 @@ class Show(LocalBase):
     start_time = Column(DateTime)
     price = Column(Float)
 
-    movie = relationship("Movie", back_populates="show")
-    hall = relationship("Hall", back_populates="show")
-    reservation = relationship("Reservation", back_populates="show")
+    movie = relationship("Movie", back_populates="shows")
+    hall = relationship("Hall", back_populates="shows")
+    # reservation = relationship("Reservation", back_populates="show")

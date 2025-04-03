@@ -1,5 +1,5 @@
 from .hall_model import Hall
-from .hall_row_model import Hall_Rows
+from .hall_row_model import Hall_Row
 from .movie_model import Movie
 from .payment_model import Payment
 from .reservation_model import Reservation

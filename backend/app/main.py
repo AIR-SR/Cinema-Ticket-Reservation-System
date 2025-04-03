@@ -2,9 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
-from backend.app.core import get_db_local
 from core import (create_default_user, get_db_global, init_db_on_startup,
-                  settings, logger, save_movies_to_db, get_now_playing_movies)
+                  settings, logger, save_movies_to_db, get_now_playing_movies, get_db_local)
 import models_global
 import models_local
 

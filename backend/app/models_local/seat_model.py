@@ -11,5 +11,5 @@ class Seat(LocalBase):
     seat_number = Column(Integer, index=True)
     seat_type = Column(String)
 
-    hall_row = relationship("Hall_Rows", back_populates="seat")
+    hall_row = relationship("Hall_Row", back_populates="seat")
     reservation_seat = relationship("Reservation_Seat", back_populates="seat")

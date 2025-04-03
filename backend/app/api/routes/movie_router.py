@@ -2,8 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from core import get_db_global
-from models import Movie
-from .db import get_db_local
+from models_local import Movie
+from core import get_db_local
+
+
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
 # Endpoint do pobierania filmów
@@ -26,7 +28,7 @@ async def get_movies(db: AsyncSession = Depends(get_db_global)):
 
 router = APIRouter()
 
-@router.get("/movies/{region}", response_description="List of movies by city")
+@router.get("/movies", response_description="List of movies by city")
 async def get_movies_by_city(region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Get movies based on region.

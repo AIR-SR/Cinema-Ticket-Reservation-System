@@ -88,7 +88,7 @@ erDiagram
     
     HALLS {
         int id
-        int cinema_id
+        <!-- int cinema_id -->
         string name
     }
     
@@ -108,8 +108,9 @@ erDiagram
     
     MOVIES {
         int id
-        string imdbID
+        string tmdbID
         string title
+        string description
     }
     
     SHOWS {

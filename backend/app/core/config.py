@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     # SENDGRID_API_KEY: str
+    TMDB_API_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     ROLE_ADMIN: str
     ROLE_USER: str

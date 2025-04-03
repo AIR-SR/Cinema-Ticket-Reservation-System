@@ -6,7 +6,9 @@ class MovieBase(BaseModel):
     """
     Base model for a movie, containing common fields.
     """
-    imbdID: Optional[str] = Field(None, title="IMDB ID", description="Unique identifier for the movie on IMDb.")
+    tmdbID: Optional[str] = Field(None, title="TMDB ID", description="Unique identifier for the movie on IMDb.")
+    title: str = Field(..., title="Movie Title", description="The title of the movie.")
+    description: str = Field(..., title="Movie Description", description="A brief description of the movie.")
 
     class Config:
         # Allow population of fields from attributes as well
@@ -17,8 +19,6 @@ class MovieModel(MovieBase):
     Pydantic model representing a movie with an ID.
     """
     id: int = Field(..., ge=1, title="Movie ID", description="Unique identifier for the movie in the database.")
-    title: str = Field(..., title="Movie Title", description="The title of the movie.")
-    describtion: str = Field(..., title="Release Date", description="Release date of the movie.")
 
 
     class Config:

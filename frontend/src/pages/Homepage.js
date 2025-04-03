@@ -6,76 +6,113 @@ const Homepage = () => {
     const navigate = useNavigate();
     const [apiStatus, setApiStatus] = useState(null);
     const [apiMessage, setApiMessage] = useState("");
-    const [movies, setMovies] = useState([]); // Stan do przechowywania filmów
-    const [loading, setLoading] = useState(true); // Stan ładowania
-    const [error, setError] = useState(null); // Stan na błędy
-    const [selectedCity, setSelectedCity] = useState("global"); // Stan wybranego miasta
+    const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [selectedCity, setSelectedCity] = useState("krakow");
 
-    // Sprawdzanie zdrowia API
+    // Check API health
     useEffect(() => {
         const checkApiHealth = async () => {
-          try {
-            const response = await api.get("/health"); // Zakładając, że masz endpoint /health
-            console.log("API Health Response:", response.data);
+            try {
+                const { data } = await api.get("/health");
+                console.log("API Health Response:", data);
 
-            if (response.data.status === "ok" && response.data.message) {
-              setApiStatus("connected");
-              setApiMessage(response.data.message);
-            } else {
-              setApiStatus("misconfigured");
-              setApiMessage("Unexpected API response format.");
+                if (data.status === "ok" && data.message) {
+                    setApiStatus("connected");
+                    setApiMessage(data.message);
+                } else {
+                    setApiStatus("misconfigured");
+                    setApiMessage("Unexpected API response format.");
+                }
+            } catch (err) {
+                console.error("API health check failed:", err);
+                setApiStatus("disconnected");
+                setApiMessage("API is not reachable.");
             }
-          } catch (error) {
-            console.error("API health check failed:", error);
-            setApiStatus("disconnected");
-            setApiMessage("API is not reachable.");
-          }
         };
 
         checkApiHealth();
     }, []);
 
-    // Pobieranie filmów dla wybranego miasta
+    // Fetch movies for the selected city
     useEffect(() => {
         const fetchMovies = async () => {
+            setLoading(true);
+            setError(null); // Reset error state before fetching
             try {
-                setLoading(true);
-                const response = await api.get(`/movies/${selectedCity}`); // Wysłanie zapytania z miastem
-                setMovies(response.data); // Przechowuj pobrane filmy
-                setLoading(false); // Zakończ ładowanie
-            } catch (error) {
-                console.error("Failed to fetch movies:", error);
+                const { data } = await api.get(`/movies?region=${selectedCity}`);
+                setMovies(data);
+                console.log("Movies fetched:", data);
+            } catch (err) {
+                console.error("Failed to fetch movies:", err);
                 setError("Failed to load movies.");
-                setLoading(false); // Zakończ ładowanie, nawet w przypadku błędu
+            } finally {
+                setLoading(false); // Ensure loading state is updated
             }
         };
 
         fetchMovies();
-    }, [selectedCity]); // Zmiana w selectedCity powoduje ponowne pobranie filmów
+    }, [selectedCity]);
+
+    const renderApiStatus = () => {
+        if (apiStatus === "disconnected") {
+            return (
+                <div className="alert alert-danger text-center">
+                    ⚠️ Unable to connect to the API. Please check your network or backend service.
+                </div>
+            );
+        }
+        if (apiStatus === "misconfigured") {
+            return (
+                <div className="alert alert-warning text-center">
+                    ⚠️ API is reachable but returned an unexpected response format.
+                </div>
+            );
+        }
+        if (apiStatus === "connected") {
+            return (
+                <div className="alert alert-success text-center">
+                    ✅ {apiMessage}
+                </div>
+            );
+        }
+        return null;
+    };
+
+    const renderMovies = () => {
+        if (loading) {
+            return (
+                <div className="text-center">
+                    <p>Loading movies...</p>
+                </div>
+            );
+        }
+        if (error) {
+            return (
+                <div className="alert alert-danger text-center">
+                    {error}
+                </div>
+            );
+        }
+        return (
+            <div>
+                <h2>Now Playing in {selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1)}</h2>
+                <ul>
+                    {movies.map((movie) => (
+                        <li key={movie.tmdbID}>
+                            <strong>{movie.title}</strong> (ID: {movie.tmdbID})
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    };
 
     return (
         <div className="container mt-5">
             <h1>Homepage</h1>
-
-            {apiStatus === "disconnected" && (
-                <div className="alert alert-danger text-center">
-                    ⚠️ Unable to connect to the API. Please check your network or backend service.
-                </div>
-            )}
-
-            {apiStatus === "misconfigured" && (
-                <div className="alert alert-warning text-center">
-                    ⚠️ API is reachable but returned an unexpected response format.
-                </div>
-            )}
-
-            {apiStatus === "connected" && (
-                <div className="alert alert-success text-center">
-                    ✅ {apiMessage}
-                </div>
-            )}
-
-            {/* Wybór miasta */}
+            {renderApiStatus()}
             <div className="form-group">
                 <label htmlFor="city">Select City</label>
                 <select
@@ -88,28 +125,7 @@ const Homepage = () => {
                     <option value="warsaw">Warszawa</option>
                 </select>
             </div>
-
-            {/* Wyświetlanie listy filmów */}
-            {loading ? (
-                <div className="text-center">
-                    <p>Loading movies...</p>
-                </div>
-            ) : error ? (
-                <div className="alert alert-danger text-center">
-                    {error}
-                </div>
-            ) : (
-                <div>
-                    <h2>Now Playing in {selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1)}</h2>
-                    <ul>
-                        {movies.map((movie) => (
-                            <li key={movie.imbdID}>
-                                <strong>{movie.title}</strong> (ID: {movie.imbdID})
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+            {renderMovies()}
         </div>
     );
 };

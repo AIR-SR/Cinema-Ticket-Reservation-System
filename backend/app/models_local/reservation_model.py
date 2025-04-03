@@ -14,6 +14,6 @@ class Reservation(LocalBase):
     created_at = Column(DateTime)
 
     # user_global = relationship("UserGlobal", primaryjoin="Reservation.user_id == foreign(UserGlobal.id)", viewonly=True)
-    show = relationship("Show", back_populates="reservation")
+    # show = relationship("Show", back_populates="reservation")
     payment = relationship("Payment", back_populates="reservation")
     reservation_seat = relationship("Reservation_Seat", back_populates="reservation")
