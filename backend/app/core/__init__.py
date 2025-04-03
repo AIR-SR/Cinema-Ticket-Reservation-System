@@ -5,3 +5,4 @@ from .auth import (create_access_token, create_default_user,
                    decode_access_token, get_admin_emails, get_current_user,
                    hash_password, oauth2_scheme,
                    verify_password, admin_required, user_required, employee_required)
+from .complete_db import save_movies_to_db, get_now_playing_movies

@@ -9,5 +9,6 @@ class Movie(LocalBase):
     id = Column(Integer, primary_key=True, index=True)
     imbdID = Column(String)
     title = Column(String)
+    description = Column(String)
 
     show = relationship("Show", back_populates="movies")
