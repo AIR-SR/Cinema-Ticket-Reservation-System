@@ -1,4 +1,4 @@
-name: cinema-ticket-reservation-development
+name: cinema-ticket-reservation-dev
 
 services:
   cinema-backend:
@@ -25,9 +25,9 @@ services:
       - DATABASE_URL_KRAKOW=${DATABASE_URL_KRAKOW}
       - DATABASE_URL_WARSAW=${DATABASE_URL_WARSAW}
       - REACT_APP_API_URL=${REACT_APP_API_URL}
-      # - SECRET_KEY=${SECRET_KEY}
-      # - ALGORITHM=${ALGORITHM}
-      # - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
       # - SENDGRID_API_KEY=${SENDGRID_API_KEY}
 
   cinema-frontend:
@@ -47,6 +47,8 @@ services:
       - cinema-ticket-reservation-network
     environment:
       - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
 
   postgres-global:
     image: postgres:16

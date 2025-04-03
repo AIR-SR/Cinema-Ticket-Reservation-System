@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class HallRowsBase(BaseModel):
     """
     Base model for hall rows, containing common fields.

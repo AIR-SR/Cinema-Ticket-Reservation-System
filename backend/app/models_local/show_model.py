@@ -1,5 +1,5 @@
 from core import LocalBase
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, Float
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 

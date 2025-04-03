@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class ReservationSeatBase(BaseModel):
     """
     Base model for a reservation seat, containing common fields.

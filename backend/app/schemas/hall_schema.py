@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class HallBase(BaseModel):
     """
     Base model for a hall, containing common fields.

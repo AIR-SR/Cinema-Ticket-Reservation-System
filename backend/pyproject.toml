@@ -16,6 +16,11 @@ psycopg2-binary = "^2.9.10"
 dotenv = "^0.9.9"
 pydantic-settings = "^2.8.1"
 asyncpg = "^0.30.0"
+python-jose = "^3.4.0"
+passlib = "^1.7.4"
+pydantic = {extras = ["email"], version = "^2.11.1"}
+python-multipart = "^0.0.20"
+isort = "^6.0.1"
 
 
 [build-system]

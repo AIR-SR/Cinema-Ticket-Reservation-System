@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class SeatBase(BaseModel):
     """
     Base model for a seat, containing common fields.

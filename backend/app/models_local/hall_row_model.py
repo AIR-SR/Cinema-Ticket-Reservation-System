@@ -1,6 +1,7 @@
 from core import LocalBase
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
+
 
 class Hall_Rows(LocalBase):
     __tablename__ = 'hall_rows'

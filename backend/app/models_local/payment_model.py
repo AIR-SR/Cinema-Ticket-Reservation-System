@@ -1,6 +1,7 @@
 from core import LocalBase
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Float
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
 
 class Payment(LocalBase):
     __tablename__ = 'payments'

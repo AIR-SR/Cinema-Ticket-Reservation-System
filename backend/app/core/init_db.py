@@ -1,7 +1,10 @@
 import asyncio
+
 from sqlalchemy.ext.asyncio import create_async_engine
-from .database import GlobalBase, LocalBase, engines
+
 from .config import settings
+from .database import GlobalBase, LocalBase, engines
+
 
 async def init_db():
     """Creates tables for global and local databases asynchronously."""
