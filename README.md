@@ -88,7 +88,7 @@ erDiagram
     
     HALLS {
         int id
-        <!-- int cinema_id -->
+        %% int cinema_id
         string name
     }
     
