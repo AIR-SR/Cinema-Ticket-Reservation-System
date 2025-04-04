@@ -4,6 +4,18 @@ from sqlalchemy.orm import relationship
 
 
 class Show(LocalBase):
+    """
+    Represents a show in the cinema.
+
+    Attributes:
+        id (int): The unique identifier for the show.
+        movie_id (int): The ID of the movie being shown.
+        hall_id (int): The ID of the hall where the show is taking place.
+        start_time (datetime): The start time of the show.
+        price (float): The ticket price for the show.
+        movie (Movie): The movie associated with this show.
+        hall (Hall): The hall where the show is being held.
+    """
     __tablename__ = 'shows'
 
     id = Column(Integer, primary_key=True, index=True)

@@ -4,6 +4,17 @@ from sqlalchemy.orm import relationship
 
 
 class Hall_Row(LocalBase):
+    """
+    Represents a row in a cinema hall.
+
+    Attributes:
+        id (int): The unique identifier for the row.
+        hall_id (int): The ID of the hall this row belongs to.
+        row_number (int): The number of the row in the hall.
+        seat_count (int): The number of seats in the row.
+        hall (Hall): The hall this row is associated with.
+        seat (list): A list of seats in this row.
+    """
     __tablename__ = 'hall_rows'
 
     id = Column(Integer, primary_key=True, index=True)

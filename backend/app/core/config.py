@@ -2,7 +2,7 @@ import logging
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.INFO)
+# logger.setLevel(logging.INFO)
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(

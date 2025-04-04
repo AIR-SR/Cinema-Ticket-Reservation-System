@@ -34,9 +34,13 @@ async def save_movies_to_db(movies: list, db: AsyncSession):
 
             if not existing_movie:  # Jeśli film nie istnieje w bazie, dodaj go
                 new_movie = Movie(
-                    title=movie["title"],
-                    description=movie["overview"],
-                    tmdbID=movie["id"],
+                    tmdbID=movie.get("id"),
+                    title=movie.get("title"),
+                    release_date=movie.get("release_date"),
+                    poster_path=movie.get("poster_path"),
+                    runtime=movie.get("runtime"),
+                    genres=movie.get("genres"),
+                    description=movie.get("overview")
                     )
                 db.add(new_movie)
                 await db.commit()

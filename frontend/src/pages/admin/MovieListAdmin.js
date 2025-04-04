@@ -24,8 +24,13 @@ const MovieListAdmin = () => {
         };
 
         setMoviesByRegion(groupedByRegion);
+        setError(null); // Clear any previous errors
       } catch (err) {
-        setError("Failed to fetch movies.");
+        if (err.response && err.response.status === 404) {
+          setError(`No movies found for the region '${selectedRegion}'.`);
+        } else {
+          setError("Failed to fetch movies.");
+        }
         console.error(err);
       } finally {
         setLoading(false);
@@ -72,7 +77,7 @@ const MovieListAdmin = () => {
           Add New Movie
         </button>
       </div>
-      {moviesByRegion[selectedRegion] && (
+      {moviesByRegion[selectedRegion] && moviesByRegion[selectedRegion].length > 0 ? (
         <div className="mb-5">
           <h2 className="mb-3">
             {selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}
@@ -102,6 +107,10 @@ const MovieListAdmin = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      ) : !loading && (
+        <div className="alert alert-warning text-center" role="alert">
+          <p className="mb-0">No movies available for the selected region.</p>
         </div>
       )}
     </div>

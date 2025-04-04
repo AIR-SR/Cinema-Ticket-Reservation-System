@@ -38,25 +38,25 @@ async def on_startup():
             logger.info("Default user created successfully.")
             break  # Exit after using the first database session
 
-        async for db in get_db_local("krakow"):
-            movies = await get_now_playing_movies()
+        # async for db in get_db_local("krakow"):
+        #     movies = await get_now_playing_movies()
 
-            if movies:
-                await save_movies_to_db(movies, db)
-                logger.info("10 filmów zostało zapisanych do bazy danych.")
-            else:
-                logger.warning("Brak filmów do zapisania.")
-            break
+        #     if movies:
+        #         await save_movies_to_db(movies, db)
+        #         logger.info("10 filmów zostało zapisanych do bazy danych.")
+        #     else:
+        #         logger.warning("Brak filmów do zapisania.")
+        #     break
 
-        async for db in get_db_local("warsaw"):
-            movies = await get_now_playing_movies()
+        # async for db in get_db_local("warsaw"):
+        #     movies = await get_now_playing_movies()
 
-            if movies:
-                await save_movies_to_db(movies, db)
-                logger.info("10 filmów zostało zapisanych do bazy danych.")
-            else:
-                logger.warning("Brak filmów do zapisania.")
-            break
+        #     if movies:
+        #         await save_movies_to_db(movies, db)
+        #         logger.info("10 filmów zostało zapisanych do bazy danych.")
+        #     else:
+        #         logger.warning("Brak filmów do zapisania.")
+        #     break
 
     except Exception as e:
         logger.error(f"Error creating default user: {e}")

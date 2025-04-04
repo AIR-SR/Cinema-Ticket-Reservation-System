@@ -9,14 +9,18 @@ router = APIRouter(prefix="/login", tags=["Login"])
 
 
 @router.post("/",
-             response_description="Login response with access token",
-             summary="User login",
-             description="Authenticates a user and returns an access token.")
+             response_description="Access token for authenticated user",
+             summary="Authenticate User",
+             description="Authenticate a user using their credentials and return a JWT access token.")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db_global)):
     """
     Authenticate a user and return an access token.
-    - Validates the username and password.
-    - Returns a JWT access token if authentication is successful.
+
+    This endpoint validates the provided username and password.
+    - **Input**: Username and password via `OAuth2PasswordRequestForm`.
+    - **Validation**: Checks if the user exists and if the password is correct.
+    - **Returns**: A JSON object containing a JWT access token and its type if authentication is successful.
+    - **Raises**: HTTP 400 error if the credentials are invalid.
     """
     query = select(UsersGlobal).where(UsersGlobal.username == form_data.username)
     result = await db.execute(query)  # AsyncSession requires `await` for execute
