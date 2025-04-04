@@ -1,28 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api";
-import UserForm from "../components/UserForm";
+import api from "../../utils/api";
+import UserForm from "../../components/UserForm";
 
-const Register = () => {
+const RegisterAdmin = () => {
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
     last_name: "",
     email: "",
     password: "",
+    role: "", // Default role
   });
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value || "" }); // Ensure fallback to empty string
   };
 
   const handleRegister = async () => {
     try {
-      await api.post("/users/register", formData);
-      alert("Registration successful! Please log in.");
-      navigate("/login");
+      const token = localStorage.getItem("token");
+      await api.post("/users/register-admin", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert(`Registration of ${formData.username} successful!`);
     } catch (error) {
       console.error("Registration error:", error.response || error.message);
       alert(error.response?.data?.detail || "Failed to register.");
@@ -31,7 +36,7 @@ const Register = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4">Register</h1>
+      <h1 className="text-center mb-4">Register Admin</h1>
       <div className="row justify-content-center">
         <div className="col-md-6">
           <div className="card p-4 shadow-sm">
@@ -39,6 +44,7 @@ const Register = () => {
               <UserForm
                 formData={formData}
                 handleInputChange={handleInputChange}
+                includeRole={true}
               />
               <button
                 className="btn btn-primary w-100"
@@ -54,4 +60,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterAdmin;

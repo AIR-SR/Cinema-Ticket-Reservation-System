@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../utils/api";
-import UserDetailsTable from "../components/UserDetailsTable";
+import api from "../../utils/api";
+import UserDetailsTable from "../../components/UserDetailsTable";
 
 const UserDetails = () => {
   const { userId } = useParams();

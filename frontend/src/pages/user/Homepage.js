@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api"; // Adjust the import path as necessary
+import api from "../../utils/api"; // Adjust the import path as necessary
 
 const Homepage = () => {
     const navigate = useNavigate();
