@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     # SENDGRID_API_KEY: str
+    TMDB_API_URL: str
     TMDB_API_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     ROLE_ADMIN: str
@@ -24,4 +25,5 @@ class Settings(BaseSettings):
 
 settings = Settings(ROLE_ADMIN="admin",
                    ROLE_USER="user",
-                   ROLE_EMPLOYEE="employee")
+                   ROLE_EMPLOYEE="employee",
+                   TMDB_API_URL="https://api.themoviedb.org/3",)

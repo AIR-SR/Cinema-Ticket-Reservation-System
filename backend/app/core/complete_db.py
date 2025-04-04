@@ -8,12 +8,12 @@ import os
 
 # Konfiguracja API TMDB
 TMDB_API_KEY = settings.TMDB_API_KEY
-BASE_URL = "https://api.themoviedb.org/3"
+TMDB_API_BASE_URL = settings.TMDB_API_URL
 
 
 # Funkcja do pobierania filmów, które są teraz w kinach
 async def get_now_playing_movies():
-    url = f"{BASE_URL}/movie/now_playing"
+    url = f"{TMDB_API_BASE_URL}/movie/now_playing"
     params = {"api_key": TMDB_API_KEY, "language": "pl-PL", "page": 1}
     response = requests.get(url, params=params)
 

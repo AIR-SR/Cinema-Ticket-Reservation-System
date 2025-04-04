@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from core import get_db_global
+from core import get_db_global, admin_required
 from models_local import Movie
-from core import get_db_local
+from models_global import UsersGlobal
+from schemas import MovieModel, MovieBase
+from core import get_db_local, settings
+import requests
 
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
@@ -26,18 +29,26 @@ async def get_movies(db: AsyncSession = Depends(get_db_global)):
     return [{"tmdbID": movie.tmdbID, "title": movie.title} for movie in movies]
 
 
-# @router.post("/add", response_description="Add a new movie", status_code=201)
-# async def add_movie(movie: Movie, db: AsyncSession = Depends(get_db_global)):
-#     """
-#     Add a new movie to the database.
-#     :param movie: Movie object to be added
-#     :param db: Database session
-#     :return: Added movie object
-#     """
-#     db.add(movie)
-#     await db.commit()
-#     await db.refresh(movie)
-#     return movie
+@router.post("/add", response_model = MovieModel, response_description="Add a new movie", summary="Add Movie", description="Adds a new movie to the database.")
+async def add_movie(movie: MovieBase, region: str, db: AsyncSession = Depends(get_db_local), current_user: UsersGlobal = Depends(admin_required)):
+    """
+    Add a new movie to the database.
+    :param movie: Movie object to be added
+    :param db: Database session
+    :return: Added movie object
+    """
+    resposne = requests.get(f"{settings.TMDB_API_URL}/movie/{movie.tmdbID}?api_key={settings.TMDB_API_KEY}&language=pl-PL")
+    if resposne.status_code != 200:
+        raise HTTPException(status_code=resposne.status_code, detail="Error fetching data from TMDB API")
+    new_movie = Movie(
+        title=resposne.json().get("title"),
+        description=resposne.json().get("overview"),
+        tmdbID=movie.tmdbID,
+    )
+    db.add(new_movie)
+    await db.commit()
+    await db.refresh(new_movie)
+    return new_movie
 
 @router.get("/get/all", response_description="List of movies by city")
 async def get_movies_by_city(region: str, db: AsyncSession = Depends(get_db_local)):
