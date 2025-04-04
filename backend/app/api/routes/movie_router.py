@@ -50,7 +50,24 @@ async def add_movie(movie: MovieBase, region: str, db: AsyncSession = Depends(ge
     await db.refresh(new_movie)
     return new_movie
 
-@router.get("/get/all", response_description="List of movies by city")
+@router.get("/get/{movie_id}", response_model=MovieModel, response_description="Get movie by ID", summary="Get Movie by ID", description="Returns a movie by its ID.")
+async def get_movie_by_id(movie_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
+    """
+    Get movie by ID.
+    :param id: Movie ID
+    :param db: Database session
+    :return: Movie object
+    """
+    query = select(Movie).where(Movie.id == movie_id)
+    result = await db.execute(query)
+    movie = result.scalars().first()
+
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    return movie
+
+@router.get("/get", response_description="List of movies by city")
 async def get_movies_by_city(region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Get movies based on region.

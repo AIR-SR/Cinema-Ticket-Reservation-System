@@ -21,6 +21,8 @@ import HealthCheck from './pages/HealthCheck';
 import UserList from "./pages/admin/UserList";
 import UserDetails from "./pages/admin/UserDetails";
 import MovieListAdmin from "./pages/admin/MovieListAdmin";
+import MovieDetails from "./pages/user/MovieDetails";
+import MovieAddAdmin from "./pages/admin/MovieAddAdmin";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -71,6 +73,9 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/register/admin" element={<PrivateRoute element={<RegisterAdmin />} requiredRole={["admin"]} />} />
 
+          {/* Movie Details */}
+          <Route path="/movies/details/:movieId" element={<MovieDetails />} />
+
           {/* Users */}
           <Route path="/users/myprofile" element={<PrivateRoute element={<MyProfile />} requiredRole={["admin", "employee", "user"]} />} />
 
@@ -78,6 +83,7 @@ const App = () => {
           <Route path="/users-list" element={<PrivateRoute element={<UserList />} requiredRole={["admin"]} />} />
           <Route path="/users/details/:userId" element={<PrivateRoute element={<UserDetails />} requiredRole={["admin"]} />} />
           <Route path="/admin/movies/list" element={<PrivateRoute element={<MovieListAdmin />} requiredRole={["admin"]} />} />
+          <Route path="/admin/movies/add" element={<PrivateRoute element={<MovieAddAdmin />} requiredRole={["admin"]} />} />
 
         </Routes>
       </Router>
