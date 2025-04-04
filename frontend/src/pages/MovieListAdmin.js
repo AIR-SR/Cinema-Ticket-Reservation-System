@@ -15,7 +15,7 @@ const MovieListAdmin = () => {
         if (selectedRegion === "all") {
           // Fetch movies for all regions separately
           const promises = regions.map((region) =>
-            api.get(`/movies?region=${region}`).then((response) => ({
+            api.get(`/movies/get/all?region=${region}`).then((response) => ({
               region,
               movies: response.data,
             }))
@@ -26,7 +26,7 @@ const MovieListAdmin = () => {
           });
         } else {
           // Fetch movies for the selected region
-          const response = await api.get(`/movies?region=${selectedRegion}`);
+          const response = await api.get(`/movies/get/all?region=${selectedRegion}`);
           movies = response.data.map((movie) => ({ ...movie, region: selectedRegion }));
         }
 

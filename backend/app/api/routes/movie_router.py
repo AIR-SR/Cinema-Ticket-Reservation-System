@@ -23,12 +23,23 @@ async def get_movies(db: AsyncSession = Depends(get_db_global)):
         raise HTTPException(status_code=404, detail="No movies found")
 
     # Return list of movies in JSON format
-    return [{"imbdID": movie.imbdID, "title": movie.title} for movie in movies]
+    return [{"tmdbID": movie.tmdbID, "title": movie.title} for movie in movies]
 
 
-router = APIRouter()
+# @router.post("/add", response_description="Add a new movie", status_code=201)
+# async def add_movie(movie: Movie, db: AsyncSession = Depends(get_db_global)):
+#     """
+#     Add a new movie to the database.
+#     :param movie: Movie object to be added
+#     :param db: Database session
+#     :return: Added movie object
+#     """
+#     db.add(movie)
+#     await db.commit()
+#     await db.refresh(movie)
+#     return movie
 
-@router.get("/movies", response_description="List of movies by city")
+@router.get("/get/all", response_description="List of movies by city")
 async def get_movies_by_city(region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Get movies based on region.
@@ -37,9 +48,7 @@ async def get_movies_by_city(region: str, db: AsyncSession = Depends(get_db_loca
     :return: List of movies for selected region
     """
     # Wybór tabeli w zależności od regionu
-    if region == "krakow":
-        query = select(Movie)
-    elif region == "warsaw":
+    if region in ["krakow", "warsaw"]:
         query = select(Movie)
     else:
         raise HTTPException(status_code=400, detail="Invalid region")

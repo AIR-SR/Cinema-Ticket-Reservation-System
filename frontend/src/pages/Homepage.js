@@ -41,7 +41,7 @@ const Homepage = () => {
             setLoading(true);
             setError(null); // Reset error state before fetching
             try {
-                const { data } = await api.get(`/movies?region=${selectedCity}`);
+                const { data } = await api.get(`/movies/get/all?region=${selectedCity}`);
                 setMovies(data);
                 console.log("Movies fetched:", data);
             } catch (err) {
