@@ -9,7 +9,7 @@ class MovieAdd(BaseModel):
     tmdbID: int = Field(
         None, 
         title="TMDB ID", 
-        description="The unique identifier for the movie on TMdb. This field is optional."
+        description="The unique identifier for the movie on TMdb. This field must be unique."
     )
 
     class Config:

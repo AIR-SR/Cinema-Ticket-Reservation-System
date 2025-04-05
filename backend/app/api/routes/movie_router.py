@@ -57,6 +57,17 @@ async def add_movie(
     response = requests.get(
         f"{settings.TMDB_API_URL}/movie/{movie.tmdbID}?api_key={settings.TMDB_API_KEY}&language=en-US"
     )
+    
+    # Check if tmdbID already exists in the database
+    existing_movie_query = select(Movie).where(Movie.tmdbID == movie.tmdbID)
+    existing_movie_result = await db.execute(existing_movie_query)
+    existing_movie = existing_movie_result.scalars().first()
+    if existing_movie:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Movie with tmdbID {movie.tmdbID} already exists in the database."
+        )
+    
     if response.status_code != 200:
         raise HTTPException(
             status_code=response.status_code,

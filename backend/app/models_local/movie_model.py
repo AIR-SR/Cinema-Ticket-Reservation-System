@@ -21,7 +21,7 @@ class Movie(LocalBase):
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True, index=True)
-    tmdbID = Column(Integer, index=True)
+    tmdbID = Column(Integer, index=True, unique=True)
     title = Column(String)
     release_date = Column(Date)
     poster_path = Column(String)

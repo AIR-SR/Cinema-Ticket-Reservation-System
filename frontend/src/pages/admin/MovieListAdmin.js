@@ -85,6 +85,7 @@ const MovieListAdmin = () => {
           <table className="table table-striped">
             <thead>
               <tr>
+                <th scope="col">ID</th>
                 <th scope="col">Title</th>
                 <th scope="col">TMDB ID</th>
                 <th scope="col">Actions</th>
@@ -93,6 +94,7 @@ const MovieListAdmin = () => {
             <tbody>
               {moviesByRegion[selectedRegion].map((movie) => (
                 <tr key={movie.id}>
+                  <td>{movie.id}</td>
                   <td>{movie.title}</td>
                   <td>{movie.tmdbID}</td>
                   <td>

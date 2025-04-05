@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 
 const CinemaPage = () => {
@@ -9,6 +9,7 @@ const CinemaPage = () => {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -41,13 +42,24 @@ const CinemaPage = () => {
     return (
         <div className="container mt-5">
             <h1>Movies and Shows in {city.charAt(0).toUpperCase() + city.slice(1)}</h1>
-            <ul>
+            <div className="row">
                 {movies.map((movie) => (
-                    <li key={movie.tmdbID}>
-                        <strong>{movie.title}</strong> (ID: {movie.tmdbID})
-                    </li>
+                    <div key={movie.tmdbID} className="col-md-4 mb-4 text-center">
+                        <img 
+                            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
+                            alt={movie.title} 
+                            className="img-fluid rounded"
+                        />
+                        <h5 className="mt-2">{movie.title}</h5>
+                        <button 
+                            className="btn btn-primary mt-2"
+                            onClick={() => navigate(`/movies/details/${movie.id}?region=${region}`)} // Pass region in query
+                        >
+                            View Details
+                        </button>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };
