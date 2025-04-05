@@ -3,9 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
 from core import (create_default_user, get_db_global, init_db_on_startup,
-                  settings, logger, save_movies_to_db, get_now_playing_movies, get_db_local)
-import models_global
-import models_local
+                  settings, logger)
 
 app = FastAPI()
 
@@ -37,26 +35,6 @@ async def on_startup():
             await create_default_user(db)
             logger.info("Default user created successfully.")
             break  # Exit after using the first database session
-
-        # async for db in get_db_local("krakow"):
-        #     movies = await get_now_playing_movies()
-
-        #     if movies:
-        #         await save_movies_to_db(movies, db)
-        #         logger.info("10 filmów zostało zapisanych do bazy danych.")
-        #     else:
-        #         logger.warning("Brak filmów do zapisania.")
-        #     break
-
-        # async for db in get_db_local("warsaw"):
-        #     movies = await get_now_playing_movies()
-
-        #     if movies:
-        #         await save_movies_to_db(movies, db)
-        #         logger.info("10 filmów zostało zapisanych do bazy danych.")
-        #     else:
-        #         logger.warning("Brak filmów do zapisania.")
-        #     break
 
     except Exception as e:
         logger.error(f"Error creating default user: {e}")

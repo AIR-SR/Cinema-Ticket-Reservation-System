@@ -29,7 +29,6 @@ services:
       - ALGORITHM=${ALGORITHM}
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
       - TMDB_API_KEY=${TMDB_API_KEY}
-      # - SENDGRID_API_KEY=${SENDGRID_API_KEY}
 
   cinema-frontend:
     build:
