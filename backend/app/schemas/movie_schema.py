@@ -25,7 +25,7 @@ class MovieBase(MovieAdd):
         title="Movie Title", 
         description="The title of the movie. This is a required field."
     )
-    release_date: str = Field(
+    release_date: date = Field(
         ..., 
         title="Release Date", 
         description="The release date of the movie. This is a required field."
@@ -39,6 +39,11 @@ class MovieBase(MovieAdd):
         None, 
         title="Runtime", 
         description="The runtime of the movie in minutes."
+    )
+    genres: List[str] = Field(
+        None, 
+        title="Genres", 
+        description="A list of genres associated with the movie."
     )
     description: str = Field(
         ..., 

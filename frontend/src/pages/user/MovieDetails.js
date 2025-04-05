@@ -43,7 +43,7 @@ const MovieDetails = () => {
       {movie && (
         <div className="card shadow-lg">
           <img
-            src={movie.posterUrl}
+            src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
             className="card-img-top"
             alt={`${movie.title} Poster`}
             style={{ maxHeight: '500px', objectFit: 'cover' }}
@@ -52,7 +52,7 @@ const MovieDetails = () => {
             <h1 className="card-title text-center">{movie.title}</h1>
             <p className="card-text mt-3">
               <strong>Release Date:</strong>{' '}
-              {new Date(movie.releaseDate).toLocaleDateString()}
+              {new Date(movie.release_date).toLocaleDateString('en-GB')}
             </p>
             <p className="card-text">
               <strong>Description:</strong> {movie.description}

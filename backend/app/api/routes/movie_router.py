@@ -7,6 +7,7 @@ from models_global import UsersGlobal
 from schemas import MovieModel, MovieBase, MovieAdd
 import requests
 from pydantic import ValidationError
+from datetime import datetime  # Add this import
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
@@ -63,14 +64,16 @@ async def add_movie(
         )
 
     movie_data = response.json()
+    genres_list = [genre["name"] for genre in movie_data.get("genres", [])]
     try:
         validated_movie = MovieBase(
             tmdbID=movie.tmdbID,
             title=movie_data.get("title"),
-            release_date=movie_data.get("release_date"),
+            release_date=datetime.strptime(movie_data.get("release_date"), "%Y-%m-%d").date(),  # Convert to date object
             poster_path=movie_data.get("poster_path"),
             runtime=movie_data.get("runtime"),
-            description=movie_data.get("overview")
+            description=movie_data.get("overview"),
+            genres=genres_list
         )
     except ValidationError as e:
         raise HTTPException(
@@ -84,7 +87,8 @@ async def add_movie(
         release_date=validated_movie.release_date,
         poster_path=validated_movie.poster_path,
         runtime=validated_movie.runtime,
-        description=validated_movie.description
+        description=validated_movie.description,
+        genres=validated_movie.genres
     )
     db.add(new_movie)
     await db.commit()
