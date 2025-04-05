@@ -23,6 +23,7 @@ import UserDetails from "./pages/admin/UserDetails";
 import MovieListAdmin from "./pages/admin/MovieListAdmin";
 import MovieDetails from "./pages/user/MovieDetails";
 import MovieAddAdmin from "./pages/admin/MovieAddAdmin";
+import CinemaPage from "./pages/user/CinemaPage";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -64,6 +65,7 @@ const App = () => {
 
           {/* Homepage */}
           <Route path="/" element={<Homepage />} />
+          <Route path="/cinema/:city" element={<CinemaPage />} />
 
           {/* Login */}
           <Route path="/login" element={<Login setToken={setToken} />} />

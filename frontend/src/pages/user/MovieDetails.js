@@ -46,13 +46,19 @@ const MovieDetails = () => {
             src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
             className="card-img-top"
             alt={`${movie.title} Poster`}
-            style={{ maxHeight: '500px', objectFit: 'cover' }}
+            style={{ aspectRatio: '2 / 3', objectFit: 'cover', maxWidth: '400px', margin: '0 auto' }}
           />
           <div className="card-body">
             <h1 className="card-title text-center">{movie.title}</h1>
             <p className="card-text mt-3">
               <strong>Release Date:</strong>{' '}
               {new Date(movie.release_date).toLocaleDateString('en-GB')}
+            </p>
+            <p className="card-text">
+              <strong>Runtime:</strong> {movie.runtime} minutes
+            </p>
+            <p className="card-text">
+              <strong>Genres:</strong> {movie.genres.join(', ')}
             </p>
             <p className="card-text">
               <strong>Description:</strong> {movie.description}

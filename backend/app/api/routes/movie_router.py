@@ -137,7 +137,7 @@ async def get_movies_by_city(
     Retrieve movies based on the specified region.
 
     - **Input**: Region name ('krakow', 'warsaw').
-    - **Returns**: A list of movies for the selected region or an empty list if no movies are found.
+    - **Returns**: A list of movies for the selected region.
     - **Raises**: HTTP 400 error if the region is invalid.
     """
     if region not in ["krakow", "warsaw"]:
@@ -147,5 +147,4 @@ async def get_movies_by_city(
     result = await db.execute(query)
     movies = result.scalars().all()
 
-    # Return an empty list if no movies are found
     return movies if movies else []
