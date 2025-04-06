@@ -12,7 +12,7 @@ async def init_db():
     global_engine = engines["global"]
     async with global_engine.begin() as conn:
         print("Creating tables for global database...")
-        print("GlobalBase metadata tables:", GlobalBase.metadata.tables.keys())  # Debugging metadata
+        # print("GlobalBase metadata tables:", GlobalBase.metadata.tables.keys())  # Debugging metadata
         await conn.run_sync(GlobalBase.metadata.create_all)
         print("Tables global created successfully.")
     await global_engine.dispose()
@@ -22,7 +22,7 @@ async def init_db():
         local_engine = engines[region]
         async with local_engine.begin() as conn:
             print(f"Creating tables for {region} database...")
-            print("LocalBase metadata tables:", LocalBase.metadata.tables.keys())  # Debugging metadata
+            # print("LocalBase metadata tables:", LocalBase.metadata.tables.keys())  # Debugging metadata
             await conn.run_sync(LocalBase.metadata.create_all)
             print(f"Tables {region} created successfully.")
         await local_engine.dispose()

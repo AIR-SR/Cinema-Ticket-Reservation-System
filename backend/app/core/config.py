@@ -2,7 +2,8 @@ import logging
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger("uvicorn")
-# logger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str
     # SENDGRID_API_KEY: str
+    REACT_APP_API_URL: str
     TMDB_API_URL: str
     TMDB_API_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
