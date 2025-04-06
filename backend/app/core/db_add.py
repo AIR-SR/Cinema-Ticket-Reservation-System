@@ -1,6 +1,28 @@
 import requests
+from config import settings
 
 BASE_URL = "http://localhost:8000"
+TMDB_API_KEY = settings.TMDB_API_KEY
+TMDB_API_BASE_URL = settings.TMDB_API_URL
+
+def get_now_playing_movies():
+    url = f"{TMDB_API_BASE_URL}/movie/now_playing"
+    params = {"api_key": TMDB_API_KEY, "language": "pl-PL", "page": 1}
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        return response.json().get("results", [])[:20]  # Pobierz 10 filmów
+    else:
+        raise ValueError(f"Błąd pobierania danych z API: {response.status_code}")
+    
+def get_movie_details(movie_id: int):
+    url = f"{TMDB_API_BASE_URL}/movie/{movie_id}"
+    params = {"api_key": TMDB_API_KEY, "language": "pl-PL"}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {}
 
 def login():
     """Authenticate and retrieve a token."""
@@ -13,18 +35,19 @@ def populate_db():
     token = login()
     headers = {"Authorization": f"Bearer {token}"}
 
-    movies_krakow = [
-        {"tmdbID": 950387},
-        {"tmdbID": 1229730},
-        {"tmdbID": 1197306},
-        {"tmdbID": 822119},
-    ]
-    movies_warszawa = [
-        {"tmdbID": 1165067},
-        {"tmdbID": 1020414},
-        {"tmdbID": 1388366},
-        {"tmdbID": 1020414},
-    ]
+    movies = get_now_playing_movies()
+    movie_data = []
+    for movie in movies:
+        movie_details = get_movie_details(movie["id"])
+        movie_data.append({
+            "tmdbID": movie_details.get("id"),
+        })
+
+    movies_krakow = movie_data[0:10]
+    movies_warsaw = movie_data[10:20]
+
+    print(movies_krakow)
+    print(movies_warsaw)
 
     # Add movies for Krakow
     for movie in movies_krakow:
@@ -34,16 +57,17 @@ def populate_db():
         else:
             print(f"Failed to add movie {movie['tmdbID']} to Krakow: {response.text}")
     # Add movies for Warszawa
-    for movie in movies_warszawa:
+    for movie in movies_warsaw:
         response = requests.post(f"{BASE_URL}/movies/add?region=warsaw", json=movie, headers=headers)
         if response.status_code == 200:
             print(f"Added movie {movie['tmdbID']} to Warszawa")
         else:
             print(f"Failed to add movie {movie['tmdbID']} to Warszawa: {response.text}")
+    
+    print("Database populated successfully.")
 
 def main():
     populate_db()
-    print("Database populated successfully.")
 
 if __name__ == "__main__":
     main()

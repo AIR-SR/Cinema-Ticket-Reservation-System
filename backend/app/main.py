@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
 from core import (create_default_user, get_db_global, init_db_on_startup,
-                  settings, logger, save_movies_to_db, get_now_playing_movies, get_db_local)
+                  settings, logger, get_db_local)
 import models_global
 import models_local
 
