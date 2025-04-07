@@ -62,6 +62,11 @@ const Navbar = () => {
                           Manage Movies
                         </Link>
                       </li>
+                      <li>
+                        <Link className="dropdown-item" to="/admin/halls/list">
+                          Manage Halls
+                        </Link>
+                      </li>
                     </>
                   )}
                   {user.role === "employee" && (
