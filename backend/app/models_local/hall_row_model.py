@@ -3,7 +3,18 @@ from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 
-class Hall_Rows(LocalBase):
+class Hall_Row(LocalBase):
+    """
+    Represents a row in a cinema hall.
+
+    Attributes:
+        id (int): The unique identifier for the row.
+        hall_id (int): The ID of the hall this row belongs to.
+        row_number (int): The number of the row in the hall.
+        seat_count (int): The number of seats in the row.
+        hall (Hall): The hall this row is associated with.
+        seat (list): A list of seats in this row.
+    """
     __tablename__ = 'hall_rows'
 
     id = Column(Integer, primary_key=True, index=True)
@@ -11,7 +22,7 @@ class Hall_Rows(LocalBase):
     row_number = Column(Integer, index=True)
     seat_count = Column(Integer, index=True)
 
-    hall = relationship("Hall", back_populates="hall_row")
+    hall = relationship("Hall", back_populates="hall_rows")
     seat = relationship("Seat", back_populates="hall_row")
 
 

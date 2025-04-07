@@ -4,8 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from api import api_router
 from core import (create_default_user, get_db_global, init_db_on_startup,
                   settings, logger)
-import models_global
-import models_local
 
 app = FastAPI()
 
@@ -37,6 +35,7 @@ async def on_startup():
             await create_default_user(db)
             logger.info("Default user created successfully.")
             break  # Exit after using the first database session
+
     except Exception as e:
         logger.error(f"Error creating default user: {e}")
         raise

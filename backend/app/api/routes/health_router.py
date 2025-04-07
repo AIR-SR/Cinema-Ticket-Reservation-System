@@ -6,45 +6,56 @@ router = APIRouter(prefix="/health", tags=["Health"])
 
 
 @router.get("/",
-            response_description="Health check status",
-            summary="Health Check Endpoint",
-            description="Endpoint to check if the API is running properly. Returns a status and message.")
+            response_description="API health check status",
+            summary="Check API Health",
+            description="Verify if the API is operational. Returns a status and a message indicating the API's health.")
 async def health_check():
     """
-    This endpoint checks the health of the API.
-    - Returns a status of 'ok' and a message confirming that the API is running.
+    Perform a health check for the API.
+
+    This endpoint verifies if the API is operational.
+    - **Returns**: A JSON object with a status of 'ok' and a message confirming that the API is running.
     """
     return {'status': 'ok', 'message': 'API is running'}
 
 @router.get("/admin",
-            response_description="Admin health check status",
-            summary="Admin Health Check Endpoint",
-            description="Endpoint to check if the API is running properly for admin users.")
+            response_description="Admin API health check status",
+            summary="Check Admin API Health",
+            description="Verify if the API is operational for admin users. Requires admin authentication.")
 async def admin_health_check(current_user: UsersGlobal = Depends(admin_required)):
     """
-    This endpoint checks the health of the API for admin users.
-    - Returns a status of 'ok' and a message confirming that the API is running for admin users.
+    Perform a health check for admin users.
+
+    This endpoint verifies if the API is operational for admin users.
+    - **Requires**: Admin authentication.
+    - **Returns**: A JSON object with a status of 'ok' and a message confirming that the API is running for admin users.
     """
     return {'status': 'ok', 'message': 'API is running for admin users'}
 
 @router.get("/user",
-            response_description="User health check status",
-            summary="User Health Check Endpoint",
-            description="Endpoint to check if the API is running properly for regular users.")
+            response_description="User API health check status",
+            summary="Check User API Health",
+            description="Verify if the API is operational for regular users. Requires user authentication.")
 async def user_health_check(current_user: UsersGlobal = Depends(user_required)):
     """
-    This endpoint checks the health of the API for regular users.
-    - Returns a status of 'ok' and a message confirming that the API is running for regular users.
+    Perform a health check for regular users.
+
+    This endpoint verifies if the API is operational for regular users.
+    - **Requires**: User authentication.
+    - **Returns**: A JSON object with a status of 'ok' and a message confirming that the API is running for regular users.
     """
     return {'status': 'ok', 'message': 'API is running for regular users'}
 
 @router.get("/employee",
-            response_description="Employee health check status",
-            summary="Employee Health Check Endpoint",
-            description="Endpoint to check if the API is running properly for employees.")
+            response_description="Employee API health check status",
+            summary="Check Employee API Health",
+            description="Verify if the API is operational for employees. Requires employee authentication.")
 async def employee_health_check(current_user: UsersGlobal = Depends(employee_required)):
     """
-    This endpoint checks the health of the API for employees.
-    - Returns a status of 'ok' and a message confirming that the API is running for employees.
+    Perform a health check for employees.
+
+    This endpoint verifies if the API is operational for employees.
+    - **Requires**: Employee authentication.
+    - **Returns**: A JSON object with a status of 'ok' and a message confirming that the API is running for employees.
     """
     return {'status': 'ok', 'message': 'API is running for employees'}

@@ -16,9 +16,9 @@ DATABASE_URLS = {
 
 # Engines for global and local databases
 engines = {
-    "global": create_async_engine(DATABASE_URLS["global"], echo=True),
-    "krakow": create_async_engine(DATABASE_URLS["krakow"], echo=True),
-    "warsaw": create_async_engine(DATABASE_URLS["warsaw"], echo=True)
+    "global": create_async_engine(DATABASE_URLS["global"], echo=False),  # Changed echo to False
+    "krakow": create_async_engine(DATABASE_URLS["krakow"], echo=False),  # Changed echo to False
+    "warsaw": create_async_engine(DATABASE_URLS["warsaw"], echo=False)  # Changed echo to False
 }
 
 # Session makers for global and local databases

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
-import { UserContext } from "../context/UserContext";
-import api from "../utils/api";
-import UserDetailsTable from "../components/UserDetailsTable";
-import Modal from "../components/Modal";
+import { UserContext } from "../../context/UserContext";
+import api from "../../utils/api";
+import UserDetailsTable from "../../components/UserDetailsTable";
+import Modal from "../../components/Modal";
 
 const MyProfile = () => {
   const { user, loading, refreshUser } = useContext(UserContext);
