@@ -2,8 +2,8 @@ from core import create_access_token, get_db_global, verify_password
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from models_global import UsersGlobal
-from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 router = APIRouter(prefix="/login", tags=["Login"])
 
@@ -22,8 +22,9 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     - **Returns**: A JSON object containing a JWT access token and its type if authentication is successful.
     - **Raises**: HTTP 400 error if the credentials are invalid.
     """
-    query = select(UsersGlobal).where(UsersGlobal.username == form_data.username)
-    result = await db.execute(query)  # AsyncSession requires `await` for execute
+    query = select(UsersGlobal).where(
+        UsersGlobal.username == form_data.username)
+    result = await db.execute(query)
     user = result.scalars().first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")

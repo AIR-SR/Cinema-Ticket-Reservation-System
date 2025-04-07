@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
 from core import (create_default_user, get_db_global, init_db_on_startup,
-                  settings, logger)
+                  logger, settings)
 
 app = FastAPI()
 

@@ -1,5 +1,5 @@
+from core import admin_required, employee_required, user_required
 from fastapi import APIRouter, Depends
-from core import admin_required, user_required, employee_required
 from models_global import UsersGlobal
 
 router = APIRouter(prefix="/health", tags=["Health"])
@@ -18,6 +18,7 @@ async def health_check():
     """
     return {'status': 'ok', 'message': 'API is running'}
 
+
 @router.get("/admin",
             response_description="Admin API health check status",
             summary="Check Admin API Health",
@@ -32,6 +33,7 @@ async def admin_health_check(current_user: UsersGlobal = Depends(admin_required)
     """
     return {'status': 'ok', 'message': 'API is running for admin users'}
 
+
 @router.get("/user",
             response_description="User API health check status",
             summary="Check User API Health",
@@ -45,6 +47,7 @@ async def user_health_check(current_user: UsersGlobal = Depends(user_required)):
     - **Returns**: A JSON object with a status of 'ok' and a message confirming that the API is running for regular users.
     """
     return {'status': 'ok', 'message': 'API is running for regular users'}
+
 
 @router.get("/employee",
             response_description="Employee API health check status",

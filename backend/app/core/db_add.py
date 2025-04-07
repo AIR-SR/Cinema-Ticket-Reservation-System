@@ -1,4 +1,5 @@
 import requests
+
 from config import settings
 
 BASE_URL = "http://localhost:8000"

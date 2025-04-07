@@ -1,6 +1,7 @@
 import asyncio
-from sqlalchemy.ext.asyncio import create_async_engine
+
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.sql import text
 
 DATABASE_URLS = {
