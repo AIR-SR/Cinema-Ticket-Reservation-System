@@ -10,6 +10,7 @@ DATABASE_URLS = {
     "warsaw": 'postgresql+asyncpg://cinema_db_user:cinema_db_password@localhost:5434/cinema_db_warsaw'
 }
 
+
 async def validate_database_url(engine_url: str, db_name: str):
     """Validate the database URL by attempting to connect."""
     print(f"Validating database URL for {db_name}: {engine_url}")
@@ -19,11 +20,13 @@ async def validate_database_url(engine_url: str, db_name: str):
             await conn.execute(text("SELECT 1"))
         print(f"Connection to {db_name} database validated successfully.")
     except OperationalError as e:
-        print(f"Failed to connect to {db_name} database. Check the URL: {engine_url}")
+        print(
+            f"Failed to connect to {db_name} database. Check the URL: {engine_url}")
         print(f"Error details: {e}")
         raise
     finally:
         await engine.dispose()
+
 
 async def delete_database(engine_url: str, db_name: str):
     """Delete all tables in the database with cascade."""
@@ -34,6 +37,7 @@ async def delete_database(engine_url: str, db_name: str):
         await conn.run_sync(lambda conn: conn.execute(text("CREATE SCHEMA public")))
         print(f"All tables in {db_name} database deleted successfully.")
     await engine.dispose()
+
 
 async def main():
     for db_name, db_url in DATABASE_URLS.items():

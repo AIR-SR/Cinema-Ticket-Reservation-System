@@ -20,5 +20,6 @@ class Reservation_Seat(LocalBase):
     seat_id = Column(Integer, ForeignKey('seats.id'), index=True)
     reservation_id = Column(Integer, ForeignKey('reservations.id'), index=True)
 
-    reservation = relationship("Reservation", back_populates="reservation_seat")
+    reservation = relationship(
+        "Reservation", back_populates="reservation_seat")
     seat = relationship("Seat", back_populates="reservation_seat")

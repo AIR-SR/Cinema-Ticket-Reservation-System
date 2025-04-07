@@ -24,6 +24,7 @@ ROLE_EMPLOYEE = settings.ROLE_EMPLOYEE
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/")
 
+
 def hash_password(password: str):
     """
     Hashes a plain text password using bcrypt.
@@ -35,6 +36,7 @@ def hash_password(password: str):
         str: The hashed password.
     """
     return pwd_context.hash(password)
+
 
 def verify_password(plain_password, hashed_password):
     """
@@ -48,6 +50,7 @@ def verify_password(plain_password, hashed_password):
         bool: True if the password matches, False otherwise.
     """
     return pwd_context.verify(plain_password, hashed_password)
+
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     """
@@ -64,6 +67,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     expire = datetime.now() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
 
 def decode_access_token(token: str):
     """
@@ -84,6 +88,7 @@ def decode_access_token(token: str):
     except JWTError as e:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
+
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db_global)) -> UserGlobalModel:
     """
     Retrieves the current user based on the provided JWT token.
@@ -101,14 +106,16 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     payload = decode_access_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
-    
-    user = await db.execute(select(UsersGlobal).where(UsersGlobal.username == payload.get("sub")))  # Use select with AsyncSession
+
+    # Use select with AsyncSession
+    user = await db.execute(select(UsersGlobal).where(UsersGlobal.username == payload.get("sub")))
     user = user.scalars().first()  # Extract the first result
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
-    
+
     # Convert SQLAlchemy User object to Pydantic UserModel
     return UserGlobalModel.model_validate(user)
+
 
 async def admin_required(current_user: UsersGlobal = Depends(get_current_user)):
     """
@@ -124,8 +131,10 @@ async def admin_required(current_user: UsersGlobal = Depends(get_current_user)):
         HTTPException: If the user is not an admin.
     """
     if current_user.role != ROLE_ADMIN:
-        raise HTTPException(status_code=403, detail="Not authorized to perform this action")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to perform this action")
     return current_user
+
 
 async def user_required(current_user: UsersGlobal = Depends(get_current_user)):
     """
@@ -141,8 +150,10 @@ async def user_required(current_user: UsersGlobal = Depends(get_current_user)):
         HTTPException: If the user is not a regular user.
     """
     if current_user.role not in [ROLE_USER, ROLE_ADMIN, ROLE_EMPLOYEE]:
-        raise HTTPException(status_code=403, detail="Not authorized to perform this action")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to perform this action")
     return current_user
+
 
 async def employee_required(current_user: UsersGlobal = Depends(get_current_user)):
     """
@@ -158,8 +169,10 @@ async def employee_required(current_user: UsersGlobal = Depends(get_current_user
         HTTPException: If the user is not an employee.
     """
     if current_user.role not in [ROLE_ADMIN, ROLE_EMPLOYEE]:
-        raise HTTPException(status_code=403, detail="Not authorized to perform this action")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to perform this action")
     return current_user
+
 
 async def create_default_user(db: AsyncSession):
     """
@@ -190,6 +203,7 @@ async def create_default_user(db: AsyncSession):
     else:
         print("Default admin user already exists.")
         return None
+
 
 async def get_admin_emails(db: AsyncSession):
     """

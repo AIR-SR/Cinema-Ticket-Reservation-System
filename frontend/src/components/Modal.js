@@ -8,15 +8,27 @@ const Modal = ({ title, children, onClose, onSave }) => {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">{title}</h5>
-              <button type="button" className="btn-close" onClick={onClose}></button>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={onClose}
+              ></button>
             </div>
             <div className="modal-body">{children}</div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+              >
                 Cancel
               </button>
               {onSave && (
-                <button type="button" className="btn btn-primary" onClick={onSave}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={onSave}
+                >
                   Save Changes
                 </button>
               )}

@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 // Styles
@@ -17,7 +22,7 @@ import Logout from "./pages/user/Logout";
 import Register from "./pages/user/Register";
 import RegisterAdmin from "./pages/admin/RegisterAdmin";
 import MyProfile from "./pages/user/MyProfile";
-import HealthCheck from './pages/HealthCheck';
+import HealthCheck from "./pages/HealthCheck";
 import UserList from "./pages/admin/UserList";
 import UserDetails from "./pages/admin/UserDetails";
 import MovieListAdmin from "./pages/admin/MovieListAdmin";
@@ -42,7 +47,11 @@ const PrivateRoute = ({ element, requiredRole }) => {
     }
 
     // Check if the user's role is authorized
-    if (Array.isArray(requiredRole) ? requiredRole.includes(role) : role === requiredRole) {
+    if (
+      Array.isArray(requiredRole)
+        ? requiredRole.includes(role)
+        : role === requiredRole
+    ) {
       return element;
     }
 
@@ -75,22 +84,82 @@ const App = () => {
 
           {/* Register */}
           <Route path="/register" element={<Register />} />
-          <Route path="/register/admin" element={<PrivateRoute element={<RegisterAdmin />} requiredRole={["admin"]} />} />
+          <Route
+            path="/register/admin"
+            element={
+              <PrivateRoute
+                element={<RegisterAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
 
           {/* Movie Details */}
           <Route path="/movies/details/:movieId" element={<MovieDetails />} />
 
           {/* Users */}
-          <Route path="/users/myprofile" element={<PrivateRoute element={<MyProfile />} requiredRole={["admin", "employee", "user"]} />} />
+          <Route
+            path="/users/myprofile"
+            element={
+              <PrivateRoute
+                element={<MyProfile />}
+                requiredRole={["admin", "employee", "user"]}
+              />
+            }
+          />
 
           {/* Admin */}
-          <Route path="/users-list" element={<PrivateRoute element={<UserList />} requiredRole={["admin"]} />} />
-          <Route path="/users/details/:userId" element={<PrivateRoute element={<UserDetails />} requiredRole={["admin"]} />} />
-          <Route path="/admin/movies/list" element={<PrivateRoute element={<MovieListAdmin />} requiredRole={["admin"]} />} />
-          <Route path="/admin/halls/list" element={<PrivateRoute element={<HallListAdmin />} requiredRole={["admin"]} />} />
-          <Route path="/admin/movies/add" element={<PrivateRoute element={<MovieAddAdmin />} requiredRole={["admin"]} />} />
-          <Route path="/admin/halls/add" element={<PrivateRoute element={<HallAddAdmin />} requiredRole={["admin"]} />} />
-
+          <Route
+            path="/users-list"
+            element={
+              <PrivateRoute element={<UserList />} requiredRole={["admin"]} />
+            }
+          />
+          <Route
+            path="/users/details/:userId"
+            element={
+              <PrivateRoute
+                element={<UserDetails />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
+          <Route
+            path="/admin/movies/list"
+            element={
+              <PrivateRoute
+                element={<MovieListAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
+          <Route
+            path="/admin/halls/list"
+            element={
+              <PrivateRoute
+                element={<HallListAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
+          <Route
+            path="/admin/movies/add"
+            element={
+              <PrivateRoute
+                element={<MovieAddAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
+          <Route
+            path="/admin/halls/add"
+            element={
+              <PrivateRoute
+                element={<HallAddAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
         </Routes>
       </Router>
     </UserProvider>

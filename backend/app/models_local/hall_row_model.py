@@ -24,5 +24,3 @@ class Hall_Row(LocalBase):
 
     hall = relationship("Hall", back_populates="hall_rows")
     seat = relationship("Seat", back_populates="hall_row")
-
-

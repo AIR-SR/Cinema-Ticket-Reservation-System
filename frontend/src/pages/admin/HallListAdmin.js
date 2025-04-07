@@ -84,9 +84,14 @@ const HallListAdmin = () => {
       ) : (
         <div className="d-flex flex-column align-items-center justify-content-center text-center py-5">
           <div className="mb-3">
-            <i className="bi bi-building" style={{ fontSize: "3rem", color: "#6c757d" }}></i>
+            <i
+              className="bi bi-building"
+              style={{ fontSize: "3rem", color: "#6c757d" }}
+            ></i>
           </div>
-          <p className="mb-3 fs-5 text-muted">No halls available for the selected region.</p>
+          <p className="mb-3 fs-5 text-muted">
+            No halls available for the selected region.
+          </p>
           <button
             className="btn btn-success"
             onClick={() => (window.location.href = "/admin/halls/add")}

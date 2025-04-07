@@ -25,4 +25,5 @@ class Reservation(LocalBase):
     created_at = Column(DateTime)
 
     payment = relationship("Payment", back_populates="reservation")
-    reservation_seat = relationship("Reservation_Seat", back_populates="reservation")
+    reservation_seat = relationship(
+        "Reservation_Seat", back_populates="reservation")

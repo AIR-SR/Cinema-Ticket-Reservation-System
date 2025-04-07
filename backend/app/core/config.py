@@ -6,6 +6,7 @@ logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env"
@@ -26,7 +27,8 @@ class Settings(BaseSettings):
     ROLE_USER: str
     ROLE_EMPLOYEE: str
 
+
 settings = Settings(ROLE_ADMIN="admin",
-                   ROLE_USER="user",
-                   ROLE_EMPLOYEE="employee",
-                   TMDB_API_URL="https://api.themoviedb.org/3",)
+                    ROLE_USER="user",
+                    ROLE_EMPLOYEE="employee",
+                    TMDB_API_URL="https://api.themoviedb.org/3",)

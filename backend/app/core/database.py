@@ -16,9 +16,9 @@ DATABASE_URLS = {
 
 # Engines for global and local databases
 engines = {
-    "global": create_async_engine(DATABASE_URLS["global"], echo=False),  # Changed echo to False
-    "krakow": create_async_engine(DATABASE_URLS["krakow"], echo=False),  # Changed echo to False
-    "warsaw": create_async_engine(DATABASE_URLS["warsaw"], echo=False)  # Changed echo to False
+    "global": create_async_engine(DATABASE_URLS["global"], echo=False),
+    "krakow": create_async_engine(DATABASE_URLS["krakow"], echo=False),
+    "warsaw": create_async_engine(DATABASE_URLS["warsaw"], echo=False)
 }
 
 # Session makers for global and local databases
@@ -28,6 +28,7 @@ sessions = {
     "warsaw": sessionmaker(autocommit=False, autoflush=False, bind=engines["warsaw"], class_=AsyncSession, expire_on_commit=False)
 }
 
+
 async def get_db_local(region: str):
     """Returns an async database session for the specified region."""
     if region not in sessions:  # Fix region validation logic
@@ -35,8 +36,8 @@ async def get_db_local(region: str):
     async with sessions[region]() as session:
         yield session
 
+
 async def get_db_global():
     """Returns an async database session for the global database."""
     async with sessions["global"]() as session:
         yield session
-
