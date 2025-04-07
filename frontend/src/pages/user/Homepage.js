@@ -19,9 +19,9 @@ const Homepage = () => {
                     onClick={() => handleCinemaSelection("krakow")}
                 >
                     <img
-                        src="/images/krakow.png"
+                        src="/assets/herb_krakow.jpg"
                         alt="Kraków"
-                        style={{ width: "100px", height: "100px" }}
+                        style={{ width: "200px", height: "200px" }}
                     />
                     <p>Kraków</p>
                 </button>
@@ -30,9 +30,9 @@ const Homepage = () => {
                     onClick={() => handleCinemaSelection("warsaw")}
                 >
                     <img
-                        src="/images/warsaw.png"
+                        src="/assets/warsaw_herb.jpg"
                         alt="Warszawa"
-                        style={{ width: "100px", height: "100px" }}
+                        style={{ width: "200px", height: "200px" }}
                     />
                     <p>Warszawa</p>
                 </button>
