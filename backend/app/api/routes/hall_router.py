@@ -3,11 +3,12 @@ from datetime import datetime
 from core import admin_required, get_db_local
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import Hall
+from models_local import Hall, Hall_Row
 from pydantic import ValidationError
 from schemas import HallBase, HallModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete, text, select, func
 
 router = APIRouter(prefix="/halls", tags=["Halls"])
 
@@ -88,3 +89,30 @@ async def get_hall(hall_id: int, region: str, db: AsyncSession = Depends(get_db_
         raise HTTPException(status_code=404, detail="Hall not found")
 
     return hall
+
+
+@router.delete("/{hall_id}", status_code=204)
+async def delete_hall(
+    hall_id: int,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+    current_user: UsersGlobal = Depends(admin_required)
+):
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Invalid region.")
+
+    hall = await db.get(Hall, hall_id)
+    if not hall:
+        raise HTTPException(status_code=404, detail="Hall not found.")
+
+    await db.execute(delete(Hall_Row).where(Hall_Row.hall_id == hall_id))
+
+    await db.delete(hall)
+    await db.commit()
+
+    result = await db.execute(select(func.count()).select_from(Hall))
+    hall_count = result.scalar()
+
+    if hall_count == 0:
+        await db.execute(text("ALTER SEQUENCE halls_id_seq RESTART WITH 1"))
+        await db.commit()
