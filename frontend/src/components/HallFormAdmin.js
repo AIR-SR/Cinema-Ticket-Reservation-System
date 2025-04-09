@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import api from "../../utils/api";
+import api from "../utils/api";
 
-const HallForm = ({ setNewHallId, setSuccessMessage, setErrorMessage, region, setRegion, regions }) => {
+const HallForm = ({
+  setNewHallId,
+  setSuccessMessage,
+  setErrorMessage,
+  region,
+  setRegion,
+  regions,
+}) => {
   const [name, setName] = useState("");
 
   const handleSubmit = async (e) => {
@@ -11,7 +18,8 @@ const HallForm = ({ setNewHallId, setSuccessMessage, setErrorMessage, region, se
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("Authentication token is missing. Please log in.");
+      if (!token)
+        throw new Error("Authentication token is missing. Please log in.");
 
       const response = await api.post(
         `/halls/add`,
@@ -26,7 +34,10 @@ const HallForm = ({ setNewHallId, setSuccessMessage, setErrorMessage, region, se
       setNewHallId(response.data.id);
       setName("");
     } catch (err) {
-      setErrorMessage(err.response?.data?.detail || "Failed to add the hall. Please try again.");
+      setErrorMessage(
+        err.response?.data?.detail ||
+          "Failed to add the hall. Please try again."
+      );
       console.error(err);
     }
   };
@@ -34,7 +45,9 @@ const HallForm = ({ setNewHallId, setSuccessMessage, setErrorMessage, region, se
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-3">
-        <label htmlFor="name" className="form-label">Hall Name</label>
+        <label htmlFor="name" className="form-label">
+          Hall Name
+        </label>
         <input
           type="text"
           id="name"
@@ -45,7 +58,9 @@ const HallForm = ({ setNewHallId, setSuccessMessage, setErrorMessage, region, se
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="region" className="form-label">Region</label>
+        <label htmlFor="region" className="form-label">
+          Region
+        </label>
         <select
           id="region"
           className="form-select"
@@ -60,7 +75,9 @@ const HallForm = ({ setNewHallId, setSuccessMessage, setErrorMessage, region, se
           ))}
         </select>
       </div>
-      <button type="submit" className="btn btn-primary">Add Hall</button>
+      <button type="submit" className="btn btn-primary">
+        Add Hall
+      </button>
     </form>
   );
 };

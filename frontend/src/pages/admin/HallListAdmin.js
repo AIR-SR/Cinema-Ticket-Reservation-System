@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 
 const HallListAdmin = () => {
@@ -7,6 +8,8 @@ const HallListAdmin = () => {
   const [error, setError] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState("krakow");
   const [regions] = useState(["krakow", "warsaw"]);
+
+  const navigate = useNavigate();
 
   const fetchHalls = async () => {
     setLoading(true);
@@ -66,10 +69,11 @@ const HallListAdmin = () => {
       setHalls((prev) => prev.filter((hall) => hall.id !== id));
     } catch (err) {
       console.error("Failed to delete hall:", err);
-      alert("Failed to delete hall: " + (err.response?.data?.detail || err.message));
+      alert(
+        "Failed to delete hall: " + (err.response?.data?.detail || err.message)
+      );
     }
   };
-
 
   useEffect(() => {
     fetchHalls();
@@ -124,6 +128,16 @@ const HallListAdmin = () => {
                 <td>{hall.name}</td>
                 <td>{hall.totalSeats}</td>
                 <td>
+                  <button
+                    className="btn btn-primary btn-sm me-2"
+                    onClick={() =>
+                      navigate(
+                        `/admin/halls/details/${hall.id}?region=${selectedRegion}`
+                      )
+                    }
+                  >
+                    View/Edit
+                  </button>
                   <button
                     className="btn btn-danger btn-sm"
                     onClick={() => handleDelete(hall.id)}

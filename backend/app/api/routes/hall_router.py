@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from models_local import Hall, Hall_Row
 from pydantic import ValidationError
-from schemas import HallBase, HallModel
+from schemas import HallBase, HallModel, HallRowsModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete, text, select, func
@@ -14,6 +14,7 @@ router = APIRouter(prefix="/halls", tags=["Halls"])
 
 
 @router.get("/get",
+            response_model=list[HallModel],
             response_description="Retrieve list of halls",
             summary="Fetch Halls",
             description="Fetch a list of halls stored in the database."
@@ -89,6 +90,30 @@ async def get_hall(hall_id: int, region: str, db: AsyncSession = Depends(get_db_
         raise HTTPException(status_code=404, detail="Hall not found")
 
     return hall
+
+
+@router.get("/get/{hall_id}/rows",
+            response_model=list[HallRowsModel],
+            response_description="Retrieve hall rows",
+            summary="Fetch Hall Rows",
+            description="Fetch rows of a specific hall by ID."
+            )
+async def get_hall_rows(hall_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
+    """
+    Retrieve rows of a specific hall by ID.
+
+    - **Input**: Hall ID.
+    - **Returns**: List of rows in the hall.
+    - **Raises**: HTTP 404 error if the hall is not found.
+    """
+    query = select(Hall_Row).where(Hall_Row.hall_id == hall_id)
+    result = await db.execute(query)
+    rows = result.scalars().all()
+
+    if not rows:
+        raise HTTPException(status_code=404, detail="Rows not found")
+
+    return rows
 
 
 @router.delete("/{hall_id}", status_code=204)

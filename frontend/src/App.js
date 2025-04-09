@@ -31,6 +31,7 @@ import MovieAddAdmin from "./pages/admin/MovieAddAdmin";
 import CinemaPage from "./pages/user/CinemaPage";
 import HallListAdmin from "./pages/admin/HallListAdmin";
 import HallAddAdmin from "./pages/admin/HallAddAdmin";
+import HallDetailsAdmin from "./pages/admin/HallDetailsAdmin";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -156,6 +157,15 @@ const App = () => {
             element={
               <PrivateRoute
                 element={<HallAddAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
+          <Route
+            path="/admin/halls/details/:hallId"
+            element={
+              <PrivateRoute
+                element={<HallDetailsAdmin />}
                 requiredRole={["admin"]}
               />
             }

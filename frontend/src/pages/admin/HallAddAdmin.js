@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import HallForm from "./HallFormAdmin";
-import HallRowsForm from "./HallRowsFormAdmin";
+import HallForm from "../../components/HallFormAdmin";
+import HallRowsForm from "../../components/HallRowsFormAdmin";
 
 const HallAddAdmin = () => {
   const [region, setRegion] = useState("krakow");
@@ -14,27 +14,28 @@ const HallAddAdmin = () => {
       <h1 className="mb-4">Add New Hall</h1>
 
       {successMessage && (
-        <div className="alert alert-success" role="alert">{successMessage}</div>
+        <div className="alert alert-success" role="alert">
+          {successMessage}
+        </div>
       )}
       {errorMessage && (
-        <div className="alert alert-danger" role="alert">{errorMessage}</div>
+        <div className="alert alert-danger" role="alert">
+          {errorMessage}
+        </div>
       )}
 
-      <HallForm
-        setNewHallId={setNewHallId}
-        setSuccessMessage={setSuccessMessage}
-        setErrorMessage={setErrorMessage}
-        region={region}
-        setRegion={setRegion}
-        regions={regions}
-      />
-
-      {newHallId && (
-        <HallRowsForm
-          newHallId={newHallId}
+      {!newHallId && (
+        <HallForm
+          setNewHallId={setNewHallId}
+          setSuccessMessage={setSuccessMessage}
+          setErrorMessage={setErrorMessage}
           region={region}
+          setRegion={setRegion}
+          regions={regions}
         />
       )}
+
+      {newHallId && <HallRowsForm newHallId={newHallId} region={region} />}
     </div>
   );
 };

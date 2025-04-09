@@ -59,11 +59,6 @@ const Navbar = () => {
                   {user.role === "admin" && (
                     <>
                       <li>
-                        <Link className="dropdown-item" to="/register/admin">
-                          Register Admin
-                        </Link>
-                      </li>
-                      <li>
                         <Link className="dropdown-item" to="/users-list">
                           Manage Users
                         </Link>

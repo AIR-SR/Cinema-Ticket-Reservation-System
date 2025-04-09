@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/api";
+import api from "../utils/api";
 
 const HallRowsForm = ({ newHallId, region }) => {
   const [rowData, setRowData] = useState([]);
@@ -42,10 +42,11 @@ const HallRowsForm = ({ newHallId, region }) => {
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("Authentication token is missing. Please log in.");
+      if (!token)
+        throw new Error("Authentication token is missing. Please log in.");
 
       const response = await api.post(
-        `/hall_rows/add-rows`,  // Endpoint do dodawania rzędów
+        `/hall_rows/add-rows`, // Endpoint do dodawania rzędów
         validRows, // Dane do wysłania - lista rzędów
         {
           params: { region }, // Przekazujemy region jako parametr
@@ -67,44 +68,54 @@ const HallRowsForm = ({ newHallId, region }) => {
       <h3>Add Rows for Hall</h3>
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {rowData.map((row, index) => (
-        <div key={index} className="row g-2 mb-3">
-          <div className="col-md-4">
-            <label className="form-label">Row Number</label>
-            <input
-              type="number"
-              className="form-control"
-              value={index + 1}
-              readOnly
-            />
-          </div>
-          <div className="col-md-4">
-            <label className="form-label">Seat Count</label>
-            <input
-              type="number"
-              className="form-control"
-              value={row.seat_count}
-              onChange={(e) =>
-                updateRow(index, "seat_count", parseInt(e.target.value) || "")
-              }
-              min={1}
-              required
-            />
-          </div>
-          <div className="col-md-2 d-flex align-items-end">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => removeRow(index)}
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      ))}
+      <table className="table table-bordered mt-3">
+        <thead>
+          <tr>
+            <th scope="col">Row Number</th>
+            <th scope="col">Seat Count</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rowData.map((row, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={row.seat_count}
+                  onChange={(e) =>
+                    updateRow(
+                      index,
+                      "seat_count",
+                      parseInt(e.target.value) || ""
+                    )
+                  }
+                  min={1}
+                  required
+                />
+              </td>
+              <td>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => removeRow(index)}
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       <div className="d-flex gap-2">
-        <button type="button" className="btn btn-outline-primary" onClick={addNewRow}>
+        <button
+          type="button"
+          className="btn btn-outline-primary"
+          onClick={addNewRow}
+        >
           Add New Row
         </button>
         <button type="button" className="btn btn-success" onClick={submitRows}>

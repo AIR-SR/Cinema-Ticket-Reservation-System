@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from .hall_schema import HallModel
 
 
 class HallRowsBase(BaseModel):
