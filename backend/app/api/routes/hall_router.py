@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from core import admin_required, get_db_local
+from core import admin_required, get_db_local, logger
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import Hall, Hall_Row
+from models_local import Hall, Hall_Row, Seat
 from pydantic import ValidationError
 from schemas import HallBase, HallModel, HallRowsModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -130,14 +130,30 @@ async def delete_hall(
     if not hall:
         raise HTTPException(status_code=404, detail="Hall not found.")
 
+    # Fetch rows associated with the hall
+    rows_query = select(Hall_Row.id).where(Hall_Row.hall_id == hall_id)
+    rows_result = await db.execute(rows_query)
+    # No need to access `.id` since these are already integers
+    row_ids = rows_result.scalars().all()
+
+    # Delete seats associated with the rows
+    await db.execute(delete(Seat).where(Seat.row_id.in_(row_ids)))
+
+    # Delete rows associated with the hall
     await db.execute(delete(Hall_Row).where(Hall_Row.hall_id == hall_id))
 
+    # Delete the hall itself
     await db.delete(hall)
     await db.commit()
 
+    # Reset sequence if no halls remain
     result = await db.execute(select(func.count()).select_from(Hall))
     hall_count = result.scalar()
 
     if hall_count == 0:
         await db.execute(text("ALTER SEQUENCE halls_id_seq RESTART WITH 1"))
+        await db.execute(text("ALTER SEQUENCE hall_rows_id_seq RESTART WITH 1"))
+        await db.execute(text("ALTER SEQUENCE seats_id_seq RESTART WITH 1"))
         await db.commit()
+
+    return {"detail": "Hall deleted successfully."}
