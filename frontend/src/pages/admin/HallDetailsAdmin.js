@@ -27,9 +27,19 @@ const HallDetailsAdmin = () => {
           params: { region },
         });
 
+        const seatsResponse = await api.get(`/seat/hall/${hallId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { region },
+        });
+
+        const rowsWithSeats = rowsResponse.data.map((row) => ({
+          ...row,
+          seats: seatsResponse.data.filter((seat) => seat.row_id === row.id),
+        }));
+
         setHall({
           name: hallResponse.data.name,
-          rows: rowsResponse.data,
+          rows: rowsWithSeats,
         });
       } catch (err) {
         setError(err.response?.data?.detail || "Failed to fetch hall details.");
@@ -49,12 +59,80 @@ const HallDetailsAdmin = () => {
   return (
     <div className="container mt-4">
       <h1 className="text-center mb-4">{hall.name}</h1>
-      <div className="row justify-content-center">
+      <div
+        className="screen"
+        style={{
+          width: "100%",
+          height: "40px",
+          backgroundColor: "#333",
+          color: "#fff",
+          textAlign: "center",
+          lineHeight: "40px",
+          borderRadius: "6px",
+          marginBottom: "20px", // Increased spacing below the screen
+        }}
+      >
+        Screen
+      </div>
+      <div
+        className="hall-layout"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "10px", // Increased spacing between rows
+        }}
+      >
         {hall.rows.map((row, rowIndex) => (
-          <div key={rowIndex} className="col-12 mb-3">
-            <div className="d-flex align-items-center mb-2">
-              <span className="fw-bold me-2">Row {row.row_number}:</span>
-              <span>{row.seat_count} seats</span>
+          <div
+            key={rowIndex}
+            className="row-layout"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "15px", // Increased spacing between row number and seats
+            }}
+          >
+            <div
+              className="row-number"
+              style={{
+                width: "30px",
+                textAlign: "center",
+                fontWeight: "bold",
+                color: "#333",
+              }}
+            >
+              {row.row_number}
+            </div>
+            <div
+              className="seats-layout"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "8px", // Increased spacing between seats
+              }}
+            >
+              {row.seats.map((seat) => (
+                <div
+                  key={seat.seat_number}
+                  className="seat-box"
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    backgroundColor: seat.is_reserved ? "#f00" : "#4caf50",
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: "4px",
+                    fontSize: "0.8rem",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  {seat.seat_number}
+                </div>
+              ))}
             </div>
           </div>
         ))}
