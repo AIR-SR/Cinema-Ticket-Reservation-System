@@ -26,14 +26,13 @@ const HallRowsForm = ({ newHallId, region }) => {
   const submitRows = async () => {
     setError(null);
 
-    // Filtrujemy puste wiersze i tworzymy dane do wysłania
     const validRows = rowData
       .map((row, i) => ({
         hall_id: newHallId,
         row_number: i + 1,
         seat_count: row.seat_count,
       }))
-      .filter((row) => row.seat_count); // Usuń puste wiersze, które nie mają przypisanego seat_count
+      .filter((row) => row.seat_count);
 
     if (!validRows.length) {
       setError("You must add at least one row.");
@@ -45,21 +44,38 @@ const HallRowsForm = ({ newHallId, region }) => {
       if (!token)
         throw new Error("Authentication token is missing. Please log in.");
 
-      const response = await api.post(
-        `/hall_rows/add-rows`, // Endpoint do dodawania rzędów
-        validRows, // Dane do wysłania - lista rzędów
-        {
-          params: { region }, // Przekazujemy region jako parametr
-          headers: { Authorization: `Bearer ${token}` }, // Wysłanie tokenu autoryzacyjnego
-        }
-      );
+      // First, add rows and retrieve their IDs
+      const rowResponse = await api.post(`/hall_rows/add-rows`, validRows, {
+        params: { region },
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // Jeśli operacja jest udana, przekieruj do innej strony lub wyświetl komunikat
-      alert("Rows added successfully!");
-      navigate("/admin/halls/list"); // Przykład przekierowania po udanym dodaniu rzędów
+      const rowsWithIds = rowResponse.data; // Assuming the API returns rows with their IDs
+
+      // Ensure rows are committed before adding seats
+      console.log("Rows added successfully:", rowsWithIds);
+
+      // Then, add seats for each row
+      for (const row of rowsWithIds) {
+        const seats = Array.from({ length: row.seat_count }, (_, i) => ({
+          row_id: row.id, // Use the returned row ID
+          seat_number: i + 1,
+          seat_type: "standard", // Default seat type
+        }));
+
+        console.log("Payload for /seat/add-seats:", seats); // Log the payload
+
+        await api.post(`/seat/add-seats`, seats, {
+          params: { region },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      alert("Rows and seats added successfully!");
+      navigate("/admin/halls/list");
     } catch (err) {
-      console.error("Error adding rows:", err);
-      setError("Failed to add rows.");
+      console.error("Error adding rows or seats:", err);
+      setError("Failed to add rows or seats.");
     }
   };
 
