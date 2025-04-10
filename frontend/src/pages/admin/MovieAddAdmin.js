@@ -1,14 +1,24 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import api from "../../utils/api";
 import { UserContext } from "../../context/UserContext";
 
 const MovieAddAdmin = () => {
   const { user } = useContext(UserContext); // Access user context
+  const location = useLocation(); // Access location object
   const [tmdbID, setTmdbID] = useState("");
   const [region, setRegion] = useState("krakow");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const regionFromQuery = queryParams.get("region");
+    if (regionFromQuery && ["krakow", "warsaw"].includes(regionFromQuery)) {
+      setRegion(regionFromQuery);
+    }
+  }, [location.search]);
 
   const handleAddMovie = async (e) => {
     e.preventDefault();

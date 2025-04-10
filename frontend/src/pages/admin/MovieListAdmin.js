@@ -72,7 +72,9 @@ const MovieListAdmin = () => {
         </div>
         <button
           className="btn btn-success"
-          onClick={() => (window.location.href = "/admin/movies/add")}
+          onClick={() =>
+            (window.location.href = `/admin/movies/add?region=${selectedRegion}`)
+          }
         >
           Add New Movie
         </button>
@@ -125,7 +127,9 @@ const MovieListAdmin = () => {
             </p>
             <button
               className="btn btn-success"
-              onClick={() => (window.location.href = "/admin/movies/add")}
+              onClick={() =>
+                (window.location.href = `/admin/movies/add?region=${selectedRegion}`)
+              }
             >
               Add a New Movie
             </button>

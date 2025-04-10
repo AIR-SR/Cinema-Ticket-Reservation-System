@@ -106,7 +106,9 @@ const HallListAdmin = () => {
         </div>
         <button
           className="btn btn-success"
-          onClick={() => (window.location.href = "/admin/halls/add")}
+          onClick={() =>
+            (window.location.href = `/admin/halls/add?region=${selectedRegion}`)
+          }
         >
           Add New Hall
         </button>

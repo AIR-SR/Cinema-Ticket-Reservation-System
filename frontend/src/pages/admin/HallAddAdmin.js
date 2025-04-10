@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import HallForm from "../../components/HallFormAdmin";
 import HallRowsForm from "../../components/HallRowsFormAdmin";
 
 const HallAddAdmin = () => {
+  const location = useLocation();
   const [region, setRegion] = useState("krakow");
   const [regions] = useState(["krakow", "warsaw"]);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [newHallId, setNewHallId] = useState(null);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const regionFromQuery = queryParams.get("region");
+    if (regionFromQuery && regions.includes(regionFromQuery)) {
+      setRegion(regionFromQuery);
+    }
+  }, [location.search, regions]);
 
   return (
     <div className="container mt-4">

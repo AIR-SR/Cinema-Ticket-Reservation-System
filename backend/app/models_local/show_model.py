@@ -26,4 +26,4 @@ class Show(LocalBase):
 
     movie = relationship("Movie", back_populates="shows")
     hall = relationship("Hall", back_populates="shows")
-    # reservation = relationship("Reservation", back_populates="show")
+    reservation = relationship("Reservation", back_populates="show")
