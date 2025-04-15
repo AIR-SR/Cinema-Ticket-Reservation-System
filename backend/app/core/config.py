@@ -1,9 +1,11 @@
 import logging
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger("uvicorn")
 logger.setLevel(logging.INFO)
 logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -13,6 +15,7 @@ class Settings(BaseSettings):
     DATABASE_URL_GLOBAL: str
     DATABASE_URL_KRAKOW: str
     DATABASE_URL_WARSAW: str
+    ADMIN_PASSWORD: str
     FRONTEND_URL: str
     SECRET_KEY: str
     ALGORITHM: str
@@ -25,7 +28,4 @@ class Settings(BaseSettings):
     ROLE_USER: str
     ROLE_EMPLOYEE: str
 
-settings = Settings(ROLE_ADMIN="admin",
-                   ROLE_USER="user",
-                   ROLE_EMPLOYEE="employee",
-                   TMDB_API_URL="https://api.themoviedb.org/3",)
+settings = Settings()

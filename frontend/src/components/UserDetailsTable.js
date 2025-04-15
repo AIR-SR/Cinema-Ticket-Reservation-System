@@ -8,12 +8,12 @@ const UserDetailsTable = ({ user, editableFields = [], onEdit }) => {
           .filter((field) => field !== "id")
           .map((field) => (
             <tr key={field}>
-              <th className="fw-bold">{field.replace("_", " ").toUpperCase()}</th>
+              <th className="fw-bold">
+                {field.replace("_", " ").toUpperCase()}
+              </th>
               <td>
                 <div className="d-flex justify-content-between align-items-center">
-                  <span>
-                    {user[field]?.toString()}
-                  </span>
+                  <span>{user[field]?.toString()}</span>
                   {editableFields.includes(field) && onEdit && (
                     <button
                       className="btn btn-primary btn-sm"

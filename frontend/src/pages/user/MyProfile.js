@@ -59,11 +59,9 @@ const MyProfile = () => {
     try {
       // Send only the field being updated
       const payload = { [field]: editedUser[field] };
-      await api.patch(
-        "/users/update/me",
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.patch("/users/update/me", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       await refreshUser();
       alert(`${field.replace("_", " ")} updated successfully!`);
@@ -102,11 +100,19 @@ const MyProfile = () => {
               <div className="card-body p-4">
                 <UserDetailsTable
                   user={user}
-                  editableFields={["username", "first_name", "last_name", "email"]}
+                  editableFields={[
+                    "username",
+                    "first_name",
+                    "last_name",
+                    "email",
+                  ]}
                   onEdit={handleEditModalOpen}
                 />
                 <div className="text-center mt-4">
-                  <button className="btn btn-warning" onClick={() => setShowModal(true)}>
+                  <button
+                    className="btn btn-warning"
+                    onClick={() => setShowModal(true)}
+                  >
                     Edit Password
                   </button>
                 </div>
@@ -162,7 +168,9 @@ const MyProfile = () => {
           }}
         >
           <div className="mb-3">
-            <label className="form-label">{editField.replace("_", " ").toUpperCase()}</label>
+            <label className="form-label">
+              {editField.replace("_", " ").toUpperCase()}
+            </label>
             <input
               type="text"
               className="form-control"

@@ -27,6 +27,7 @@ async def init_db():
             print(f"Tables {region} created successfully.")
         await local_engine.dispose()
 
+
 async def init_db_on_startup():
     """Initialize the database during app startup."""
     await init_db()

@@ -4,7 +4,9 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
   return (
     <>
       <div className="mb-3">
-        <label htmlFor="username" className="form-label">Username</label>
+        <label htmlFor="username" className="form-label">
+          Username
+        </label>
         <input
           type="text"
           id="username"
@@ -16,7 +18,9 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="first_name" className="form-label">First Name</label>
+        <label htmlFor="first_name" className="form-label">
+          First Name
+        </label>
         <input
           type="text"
           id="first_name"
@@ -28,7 +32,9 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="last_name" className="form-label">Last Name</label>
+        <label htmlFor="last_name" className="form-label">
+          Last Name
+        </label>
         <input
           type="text"
           id="last_name"
@@ -40,7 +46,9 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="email" className="form-label">Email</label>
+        <label htmlFor="email" className="form-label">
+          Email
+        </label>
         <input
           type="email"
           id="email"
@@ -52,7 +60,9 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
         />
       </div>
       <div className="mb-3">
-        <label htmlFor="password" className="form-label">Password</label>
+        <label htmlFor="password" className="form-label">
+          Password
+        </label>
         <input
           type="password"
           id="password"
@@ -65,7 +75,9 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
       </div>
       {includeRole && (
         <div className="mb-3">
-          <label htmlFor="role" className="form-label">Role</label>
+          <label htmlFor="role" className="form-label">
+            Role
+          </label>
           <select
             id="role"
             name="role"
@@ -73,7 +85,9 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
             value={formData.role}
             onChange={handleInputChange}
           >
-            <option value="" disabled>Select a role</option>
+            <option value="" disabled>
+              Select a role
+            </option>
             <optgroup label="Standard Roles">
               <option value="user">User</option>
             </optgroup>

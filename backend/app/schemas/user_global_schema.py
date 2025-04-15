@@ -1,4 +1,5 @@
 from typing import Literal, Optional
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -7,33 +8,33 @@ class UserGlobalBase(BaseModel):
     Base model for a global user, containing common fields shared across different representations of a user.
     """
     username: str = Field(
-        ..., 
-        title="Username", 
+        ...,
+        title="Username",
         description="A unique username for the user. This is a required field."
     )
     first_name: str = Field(
-        ..., 
-        title="First Name", 
+        ...,
+        title="First Name",
         description="The user's first name. This is a required field."
     )
     last_name: str = Field(
-        ..., 
-        title="Last Name", 
+        ...,
+        title="Last Name",
         description="The user's last name. This is a required field."
     )
     email: EmailStr = Field(
-        ..., 
-        title="Email", 
+        ...,
+        title="Email",
         description="The user's email address. This is a required field."
     )
     role: Literal["admin", "employee", "user"] = Field(
-        ..., 
-        title="Role", 
+        ...,
+        title="Role",
         description="The user's role in the system. Must be one of 'admin', 'employee', or 'user'."
     )
     hashed_password: str = Field(
-        ..., 
-        title="Hashed Password", 
+        ...,
+        title="Hashed Password",
         description="The securely stored hashed password for the user."
     )
 
@@ -43,9 +44,9 @@ class UserGlobalModel(BaseModel):
     Pydantic model representing a global user with an additional unique identifier.
     """
     id: int = Field(
-        ..., 
-        ge=1, 
-        title="User ID", 
+        ...,
+        ge=1,
+        title="User ID",
         description="A unique identifier for the user in the database. Must be a positive integer."
     )
     username: str = Field(..., title="Username",
@@ -120,12 +121,12 @@ class PasswordChangeRequest(BaseModel):
     Pydantic model for changing a user's password.
     """
     old_password: str = Field(
-        ..., 
-        title="Old Password", 
+        ...,
+        title="Old Password",
         description="The user's current password. This is a required field."
     )
     new_password: str = Field(
-        ..., 
-        title="New Password", 
+        ...,
+        title="New Password",
         description="The user's new password. This is a required field."
     )

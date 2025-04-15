@@ -1,5 +1,5 @@
 from core import LocalBase
-from sqlalchemy import Column, Integer, String, Date, JSON
+from sqlalchemy import JSON, Column, Date, Integer, String
 from sqlalchemy.orm import relationship
 
 

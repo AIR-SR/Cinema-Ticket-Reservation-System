@@ -8,10 +8,18 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow" style={{ paddingRight: "15px" }}>
+    <nav
+      className="navbar navbar-expand-lg navbar-dark bg-dark shadow"
+      style={{ paddingRight: "15px" }}
+    >
       <div className="container-fluid">
         <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img src={logo} alt="Cinema Logo" className="me-2" style={{ width: "40px", height: "40px" }} />
+          <img
+            src={logo}
+            alt="Cinema Logo"
+            className="me-2"
+            style={{ width: "40px", height: "40px" }}
+          />
           <span className="fw-bold">Cinema Ticket Reservation System</span>
         </Link>
         <button
@@ -39,7 +47,10 @@ const Navbar = () => {
                 >
                   Welcome, {user.username}
                 </a>
-                <ul className="dropdown-menu" aria-labelledby="userMenuDropdown">
+                <ul
+                  className="dropdown-menu"
+                  aria-labelledby="userMenuDropdown"
+                >
                   <li>
                     <Link className="dropdown-item" to="/users/myprofile">
                       My Profile
@@ -48,11 +59,6 @@ const Navbar = () => {
                   {user.role === "admin" && (
                     <>
                       <li>
-                        <Link className="dropdown-item" to="/register/admin">
-                          Register Admin
-                        </Link>
-                      </li>
-                      <li>
                         <Link className="dropdown-item" to="/users-list">
                           Manage Users
                         </Link>
@@ -60,6 +66,11 @@ const Navbar = () => {
                       <li>
                         <Link className="dropdown-item" to="/admin/movies/list">
                           Manage Movies
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/admin/halls/list">
+                          Manage Halls
                         </Link>
                       </li>
                     </>

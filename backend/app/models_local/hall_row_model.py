@@ -23,6 +23,4 @@ class Hall_Row(LocalBase):
     seat_count = Column(Integer, index=True)
 
     hall = relationship("Hall", back_populates="hall_rows")
-    seat = relationship("Seat", back_populates="hall_row")
-
-
+    seats = relationship("Seat", back_populates="hall_row")

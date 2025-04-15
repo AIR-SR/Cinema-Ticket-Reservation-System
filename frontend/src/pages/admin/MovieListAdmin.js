@@ -72,12 +72,15 @@ const MovieListAdmin = () => {
         </div>
         <button
           className="btn btn-success"
-          onClick={() => (window.location.href = "/admin/movies/add")}
+          onClick={() =>
+            (window.location.href = `/admin/movies/add?region=${selectedRegion}`)
+          }
         >
           Add New Movie
         </button>
       </div>
-      {moviesByRegion[selectedRegion] && moviesByRegion[selectedRegion].length > 0 ? (
+      {moviesByRegion[selectedRegion] &&
+      moviesByRegion[selectedRegion].length > 0 ? (
         <div className="mb-5">
           <h2 className="mb-3">
             {selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}
@@ -110,10 +113,28 @@ const MovieListAdmin = () => {
             </tbody>
           </table>
         </div>
-      ) : !loading && (
-        <div className="alert alert-warning text-center" role="alert">
-          <p className="mb-0">No movies available for the selected region.</p>
-        </div>
+      ) : (
+        !loading && (
+          <div className="d-flex flex-column align-items-center justify-content-center text-center py-5">
+            <div className="mb-3">
+              <i
+                className="bi bi-film"
+                style={{ fontSize: "3rem", color: "#6c757d" }}
+              ></i>
+            </div>
+            <p className="mb-3 fs-5 text-muted">
+              No movies available for the selected region.
+            </p>
+            <button
+              className="btn btn-success"
+              onClick={() =>
+                (window.location.href = `/admin/movies/add?region=${selectedRegion}`)
+              }
+            >
+              Add a New Movie
+            </button>
+          </div>
+        )
       )}
     </div>
   );

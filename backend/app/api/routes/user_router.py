@@ -1,16 +1,12 @@
 from typing import List
 
-from core import (
-    admin_required, get_current_user, get_db_global, hash_password,
-    verify_password, settings, logger
-)
+from core import (admin_required, get_current_user, get_db_global,
+                  hash_password, logger, settings, verify_password)
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from pydantic import ValidationError
-from schemas import (
-    PasswordChangeRequest, UserAdminGlobalCreate, UserGlobalCreate,
-    UserGlobalModel, UserGlobalUpdate
-)
+from schemas import (PasswordChangeRequest, UserAdminGlobalCreate,
+                     UserGlobalCreate, UserGlobalModel, UserGlobalUpdate)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -21,11 +17,11 @@ ROLE_USER = settings.ROLE_USER
 
 
 @router.post("/register",
-    response_model=UserGlobalModel,
-    response_description="Details of the newly registered user",
-    summary="Register User",
-    description="Register a new user by providing username, password, and personal details."
-)
+             response_model=UserGlobalModel,
+             response_description="Details of the newly registered user",
+             summary="Register User",
+             description="Register a new user by providing username, password, and personal details."
+             )
 async def create_user(user_data: UserGlobalCreate, db: AsyncSession = Depends(get_db_global)):
     """
     Register a new user.
@@ -43,7 +39,8 @@ async def create_user(user_data: UserGlobalCreate, db: AsyncSession = Depends(ge
         existing_user = await db.execute(select(UsersGlobal).filter(UsersGlobal.username == validated_data.username))
         existing_user = existing_user.scalar_one_or_none()
         if existing_user:
-            raise HTTPException(status_code=400, detail="Username already exists")
+            raise HTTPException(
+                status_code=400, detail="Username already exists")
 
         # Hash the password
         hashed_password = hash_password(validated_data.password)
@@ -69,13 +66,14 @@ async def create_user(user_data: UserGlobalCreate, db: AsyncSession = Depends(ge
 
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=e.errors())
-    
+
+
 @router.post("/register-admin",
-    response_model=UserGlobalModel,
-    response_description="Details of the newly registered admin user",
-    summary="Register Admin User",
-    description="Register a new admin user by providing username, password, and personal details."
-)
+             response_model=UserGlobalModel,
+             response_description="Details of the newly registered admin user",
+             summary="Register Admin User",
+             description="Register a new admin user by providing username, password, and personal details."
+             )
 async def create_admin_user(
     user_data: UserAdminGlobalCreate,
     db: AsyncSession = Depends(get_db_global),
@@ -98,7 +96,8 @@ async def create_admin_user(
         existing_user = await db.execute(select(UsersGlobal).filter(UsersGlobal.username == validated_data.username))
         existing_user = existing_user.scalar_one_or_none()
         if existing_user:
-            raise HTTPException(status_code=400, detail="Username already exists")
+            raise HTTPException(
+                status_code=400, detail="Username already exists")
 
         # Hash the password
         hashed_password = hash_password(validated_data.password)
@@ -123,11 +122,11 @@ async def create_admin_user(
 
 
 @router.get("/get",
-    response_model=List[UserGlobalModel],
-    response_description="List of all users",
-    summary="Fetch All Users",
-    description="Retrieve a list of all users in the system. Accessible only by admin users."
-)
+            response_model=List[UserGlobalModel],
+            response_description="List of all users",
+            summary="Fetch All Users",
+            description="Retrieve a list of all users in the system. Accessible only by admin users."
+            )
 async def get_users(
     db: AsyncSession = Depends(get_db_global),
     current_user: UsersGlobal = Depends(admin_required)
@@ -141,12 +140,13 @@ async def get_users(
     result = await db.execute(select(UsersGlobal))
     return result.scalars().all()
 
+
 @router.get("/get/{user_id}",
-    response_model=UserGlobalModel,
-    response_description="Details of the requested user",
-    summary="Fetch User by ID",
-    description="Retrieve details of a specific user by their ID. Accessible only by admin users."
-)
+            response_model=UserGlobalModel,
+            response_description="Details of the requested user",
+            summary="Fetch User by ID",
+            description="Retrieve details of a specific user by their ID. Accessible only by admin users."
+            )
 async def get_user(
     user_id: int,
     db: AsyncSession = Depends(get_db_global),
@@ -166,12 +166,13 @@ async def get_user(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+
 @router.get("/details",
-    response_model=UserGlobalModel,
-    response_description="Details of the currently authenticated user",
-    summary="Fetch Current User Details",
-    description="Retrieve details of the currently authenticated user."
-)
+            response_model=UserGlobalModel,
+            response_description="Details of the currently authenticated user",
+            summary="Fetch Current User Details",
+            description="Retrieve details of the currently authenticated user."
+            )
 async def get_me(current_user: UserGlobalModel = Depends(get_current_user)):
     """
     Retrieve details of the currently authenticated user.
@@ -180,12 +181,13 @@ async def get_me(current_user: UserGlobalModel = Depends(get_current_user)):
     """
     return current_user
 
+
 @router.patch("/update/me",
-    response_model=UserGlobalModel,
-    response_description="Updated details of the current user",
-    summary="Update Current User",
-    description="Update the details of the currently authenticated user."
-)
+              response_model=UserGlobalModel,
+              response_description="Updated details of the current user",
+              summary="Update Current User",
+              description="Update the details of the currently authenticated user."
+              )
 async def update_user(
     user_data: UserGlobalUpdate,
     db: AsyncSession = Depends(get_db_global),
@@ -204,7 +206,8 @@ async def update_user(
     if not user_to_update:
         raise HTTPException(status_code=404, detail="User not found")
     try:
-        validated_data = user_data.model_dump(exclude_unset=True)  # Pydantic handles validation
+        validated_data = user_data.model_dump(
+            exclude_unset=True)  # Pydantic handles validation
         for key, value in validated_data.items():
             setattr(user_to_update, key, value)
         await db.commit()
@@ -215,11 +218,12 @@ async def update_user(
         print(f"Validation Error: {e.errors()}")
         raise HTTPException(status_code=422, detail=e.errors())
 
+
 @router.patch("/change-password",
-    response_description="Password change confirmation",
-    summary="Change Password",
-    description="Change the password of the currently authenticated user by providing the old and new passwords."
-)
+              response_description="Password change confirmation",
+              summary="Change Password",
+              description="Change the password of the currently authenticated user by providing the old and new passwords."
+              )
 async def change_password(
     password_data: PasswordChangeRequest,
     db: AsyncSession = Depends(get_db_global),
@@ -246,11 +250,12 @@ async def change_password(
     else:
         raise HTTPException(status_code=400, detail="Incorrect old password")
 
+
 @router.delete("/delete/{user_id}",
-    response_description="Confirmation of user deletion",
-    summary="Delete User",
-    description="Delete a user by their ID. Accessible only by admin users."
-)
+               response_description="Confirmation of user deletion",
+               summary="Delete User",
+               description="Delete a user by their ID. Accessible only by admin users."
+               )
 async def delete_user(
     user_id: int,
     db: AsyncSession = Depends(get_db_global),

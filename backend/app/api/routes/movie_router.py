@@ -1,45 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.future import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from core import get_db_global, admin_required, get_db_local, settings
-from models_local import Movie
-from models_global import UsersGlobal
-from schemas import MovieModel, MovieBase, MovieAdd
+from datetime import datetime
+
 import requests
+from core import admin_required, get_db_local, settings
+from fastapi import APIRouter, Depends, HTTPException
+from models_global import UsersGlobal
+from models_local import Movie
 from pydantic import ValidationError
-from datetime import datetime  # Add this import
+from schemas import MovieAdd, MovieBase, MovieModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
 
-@router.get("/",
-    response_description="Retrieve list of movies",
-    summary="Fetch Movies",
-    description="Fetch a list of movies stored in the database."
-)
-async def get_movies(db: AsyncSession = Depends(get_db_global)):
-    """
-    Retrieve a list of movies stored in the database.
-
-    - **Returns**: A list of movies with their TMDB ID and title.
-    - **Raises**: HTTP 404 error if no movies are found.
-    """
-    query = select(Movie)
-    result = await db.execute(query)
-    movies = result.scalars().all()
-
-    if not movies:
-        raise HTTPException(status_code=404, detail="No movies found")
-
-    return [{"tmdbID": movie.tmdbID, "title": movie.title} for movie in movies]
-
-
 @router.post("/add",
-    response_model=MovieModel,
-    response_description="Add a new movie",
-    summary="Add Movie",
-    description="Adds a new movie to the database."
-)
+             response_model=MovieModel,
+             response_description="Add a new movie",
+             summary="Add Movie",
+             description="Adds a new movie to the database."
+             )
 async def add_movie(
     movie: MovieAdd,
     region: str,
@@ -57,7 +36,7 @@ async def add_movie(
     response = requests.get(
         f"{settings.TMDB_API_URL}/movie/{movie.tmdbID}?api_key={settings.TMDB_API_KEY}&language=en-US"
     )
-    
+
     # Check if tmdbID already exists in the database
     existing_movie_query = select(Movie).where(Movie.tmdbID == movie.tmdbID)
     existing_movie_result = await db.execute(existing_movie_query)
@@ -67,7 +46,7 @@ async def add_movie(
             status_code=400,
             detail=f"Movie with tmdbID {movie.tmdbID} already exists in the database."
         )
-    
+
     if response.status_code != 200:
         raise HTTPException(
             status_code=response.status_code,
@@ -80,7 +59,8 @@ async def add_movie(
         validated_movie = MovieBase(
             tmdbID=movie.tmdbID,
             title=movie_data.get("title"),
-            release_date=datetime.strptime(movie_data.get("release_date"), "%Y-%m-%d").date(),  # Convert to date object
+            release_date=datetime.strptime(movie_data.get(
+                "release_date"), "%Y-%m-%d").date(),  # Convert to date object
             poster_path=movie_data.get("poster_path"),
             runtime=movie_data.get("runtime"),
             description=movie_data.get("overview"),
@@ -107,17 +87,38 @@ async def add_movie(
     return new_movie
 
 
+@router.get("/get",
+            response_description="List of movies by city",
+            summary="Fetch Movies by City",
+            description="Retrieve movies based on the specified region."
+            )
+async def get_movies(region: str, db: AsyncSession = Depends(get_db_local)
+                     ):
+    """
+    Retrieve movies based on the specified region.
+
+    - **Input**: Region name ('krakow', 'warsaw').
+    - **Returns**: A list of movies for the selected region.
+    - **Raises**: HTTP 400 error if the region is invalid.
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.")
+
+    query = select(Movie)
+    result = await db.execute(query)
+    movies = result.scalars().all()
+
+    return movies
+
+
 @router.get("/get/{movie_id}",
-    response_model=MovieModel,
-    response_description="Get movie by ID",
-    summary="Get Movie by ID",
-    description="Returns a movie by its ID."
-)
-async def get_movie_by_id(
-    movie_id: int,
-    region: str,
-    db: AsyncSession = Depends(get_db_local)
-):
+            response_model=MovieModel,
+            response_description="Get movie by ID",
+            summary="Get Movie by ID",
+            description="Returns a movie by its ID."
+            )
+async def get_movie_by_id(movie_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve a movie by its ID.
 
@@ -133,29 +134,3 @@ async def get_movie_by_id(
         raise HTTPException(status_code=404, detail="Movie not found")
 
     return movie
-
-
-@router.get("/get",
-    response_description="List of movies by city",
-    summary="Fetch Movies by City",
-    description="Retrieve movies based on the specified region."
-)
-async def get_movies_by_city(
-    region: str,
-    db: AsyncSession = Depends(get_db_local)
-):
-    """
-    Retrieve movies based on the specified region.
-
-    - **Input**: Region name ('krakow', 'warsaw').
-    - **Returns**: A list of movies for the selected region.
-    - **Raises**: HTTP 400 error if the region is invalid.
-    """
-    if region not in ["krakow", "warsaw"]:
-        raise HTTPException(status_code=400, detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.")
-
-    query = select(Movie)
-    result = await db.execute(query)
-    movies = result.scalars().all()
-
-    return movies if movies else []

@@ -1,14 +1,24 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import api from "../../utils/api";
 import { UserContext } from "../../context/UserContext";
 
 const MovieAddAdmin = () => {
   const { user } = useContext(UserContext); // Access user context
+  const location = useLocation(); // Access location object
   const [tmdbID, setTmdbID] = useState("");
   const [region, setRegion] = useState("krakow");
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const regionFromQuery = queryParams.get("region");
+    if (regionFromQuery && ["krakow", "warsaw"].includes(regionFromQuery)) {
+      setRegion(regionFromQuery);
+    }
+  }, [location.search]);
 
   const handleAddMovie = async (e) => {
     e.preventDefault();
@@ -32,7 +42,10 @@ const MovieAddAdmin = () => {
       );
       setSuccessMessage(`Movie "${response.data.title}" added successfully!`);
     } catch (error) {
-      setErrorMessage(error.response?.data?.detail || "An error occurred while adding the movie.");
+      setErrorMessage(
+        error.response?.data?.detail ||
+          "An error occurred while adding the movie."
+      );
     } finally {
       setLoading(false);
     }
@@ -43,7 +56,9 @@ const MovieAddAdmin = () => {
       <h1 className="text-center mb-4">Add a New Movie</h1>
       <form onSubmit={handleAddMovie} className="card p-4 shadow-sm">
         <div className="mb-3">
-          <label htmlFor="tmdbID" className="form-label">TMDB ID:</label>
+          <label htmlFor="tmdbID" className="form-label">
+            TMDB ID:
+          </label>
           <input
             type="text"
             id="tmdbID"
@@ -54,7 +69,9 @@ const MovieAddAdmin = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="region" className="form-label">Region:</label>
+          <label htmlFor="region" className="form-label">
+            Region:
+          </label>
           <select
             id="region"
             className="form-select"
@@ -65,12 +82,20 @@ const MovieAddAdmin = () => {
             <option value="warsaw">Warsaw</option>
           </select>
         </div>
-        <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+        <button
+          type="submit"
+          className="btn btn-primary w-100"
+          disabled={loading}
+        >
           {loading ? "Adding..." : "Add Movie"}
         </button>
       </form>
-      {successMessage && <p className="text-success text-center mt-3">{successMessage}</p>}
-      {errorMessage && <p className="text-danger text-center mt-3">{errorMessage}</p>}
+      {successMessage && (
+        <p className="text-success text-center mt-3">{successMessage}</p>
+      )}
+      {errorMessage && (
+        <p className="text-danger text-center mt-3">{errorMessage}</p>
+      )}
     </div>
   );
 };
