@@ -1,0 +1,141 @@
+from datetime import datetime
+
+import requests
+from core import admin_required, get_db_local, settings, employee_required
+from fastapi import APIRouter, Depends, HTTPException
+from models_global import UsersGlobal
+from models_local import Show, Movie, Hall
+from schemas import ShowBase, ShowModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import delete, text, select, func
+
+
+router = APIRouter(prefix="/show", tags=["Shows"])
+
+
+@router.get("/get",
+            response_model=list[ShowModel],
+            response_description="Retrieve list of shows",
+            summary="Fetch Shows",
+            description="Fetch a list of shows stored in the database."
+            )
+async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
+    """
+    Retrieve a list of shows stored in the database.
+
+    - **Input**: Region name ('krakow', 'warsaw').
+    - **Returns**: A list of shows with their IDs and names.
+    - **Raises**: HTTP 404 error if no shows are found.
+    """
+
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.")
+
+    query = select(Show)
+    result = await db.execute(query)
+    shows = result.scalars().all()
+
+    return shows
+
+
+@router.post("/add",
+             response_model=ShowModel,
+             response_description="Add a new show",
+             summary="Add Show",
+             description="Adds a new show to the database."
+             )
+async def add_show(show: ShowBase, region: str, db: AsyncSession = Depends(get_db_local), current_user: UsersGlobal = Depends(admin_required)):
+    """
+    Add a new show to the database.
+
+    - **Input**: Show object containing the show details.
+    - **Validation**: Checks if the show already exists in the database.
+    - **Returns**: The added show object.
+    - **Raises**: HTTP error if the show already exists.
+    """
+
+    new_show = Show(**show.model_dump())
+    db.add(new_show)
+    await db.commit()
+    await db.refresh(new_show)
+
+    return new_show
+
+
+async def get_show(show_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
+    """
+    Retrieve details of a specific show by ID.
+
+    - **Input**: Show ID.
+    - **Returns**: Show object with its details.
+    - **Raises**: HTTP 404 error if the show is not found.
+    """
+    query = select(Show).where(Show.id == show_id)
+    result = await db.execute(query)
+    show = result.scalars().first()
+
+    if not show:
+        raise HTTPException(status_code=404, detail="Show not found")
+
+    return show
+
+
+@router.delete("/delete/{show_id}", status_code=204)
+async def delete_show(
+    show_id: int,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+    current_user: UsersGlobal = Depends(admin_required)
+):
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Invalid region.")
+
+    show = await db.get(Show, show_id)
+    if not show:
+        raise HTTPException(status_code=404, detail="Show not found.")
+
+
+    # Delete the show itself
+    await db.delete(show)
+    await db.commit()
+
+    # Reset sequence if no shows remain
+    result = await db.execute(select(func.count()).select_from(Show))
+    show_count = result.scalar()
+
+    if show_count == 0:
+        await db.execute(text("ALTER SEQUENCE shows_id_seq RESTART WITH 1"))
+
+    return {"detail": "Show deleted successfully."}
+
+
+@router.get("/get_details")
+async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
+    """
+    Pobiera wszystkie seanse dla określonego regionu, wraz z tytułem filmu i nazwą sali.
+
+    - **Input**: region (kraków, warszawa)
+    - **Returns**: lista seansów z dodatkowymi informacjami
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Niepoprawny region")
+
+    # Łączymy dane z tabel Show, Movie i Hall
+    query = select(Show, Movie.title, Hall.name).join(Movie).join(Hall)
+    result = await db.execute(query)
+    shows = result.all()
+
+    shows_data = [
+        {
+            "id": show.id,
+            "movie_title": title,
+            "start_time": show.start_time,
+            "hall_name": hall,
+            "price": show.price,
+            "region": region
+        }
+        for show, title, hall in shows
+    ]
+
+    return shows_data

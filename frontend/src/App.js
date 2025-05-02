@@ -32,6 +32,8 @@ import CinemaPage from "./pages/user/CinemaPage";
 import HallListAdmin from "./pages/admin/HallListAdmin";
 import HallAddAdmin from "./pages/admin/HallAddAdmin";
 import HallDetailsAdmin from "./pages/admin/HallDetailsAdmin";
+import ShowAddAdmin from "./pages/admin/ShowAddAdmin";
+import ShowListAdmin from "./pages/admin/ShowListAdmin";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -170,6 +172,25 @@ const App = () => {
               />
             }
           />
+            <Route
+              path="/admin/shows/list"
+              element={
+                <PrivateRoute
+                  element={<ShowListAdmin />}
+                  requiredRole={["admin"]}
+            />
+              }
+            />
+            <Route
+              path="/admin/shows/add"
+              element={
+                <PrivateRoute
+                  element={<ShowAddAdmin />}
+                  requiredRole={["admin"]}
+            />
+              }
+            />
+
         </Routes>
       </Router>
     </UserProvider>

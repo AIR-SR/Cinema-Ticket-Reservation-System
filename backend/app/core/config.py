@@ -1,5 +1,4 @@
 import logging
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger("uvicorn")
@@ -9,7 +8,7 @@ logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env"
+        env_file="../../../.env"
     )
 
     DATABASE_URL_GLOBAL: str
