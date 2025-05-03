@@ -21,7 +21,7 @@ const ShowListAdmin = () => {
         setError(null); // Clear any previous errors
       } catch (err) {
         console.error(err);
-        setError("Nie udało się pobrać seansów.");
+        setError("Failed to fetch shows.");
       } finally {
         setLoading(false);
       }
@@ -32,13 +32,13 @@ const ShowListAdmin = () => {
 
   const handleDelete = async (showId) => {
     const confirmDelete = window.confirm(
-      "Czy na pewno chcesz usunąć ten seans?"
+      "Are you sure you want to delete this show?"
     );
     if (!confirmDelete) return;
 
     const token = localStorage.getItem("token");
     if (!token) {
-      setError("Brak tokena. Zaloguj się ponownie.");
+      setError("No token found. Please log in again.");
       return;
     }
 
@@ -52,16 +52,16 @@ const ShowListAdmin = () => {
       setShows((prevShows) => prevShows.filter((show) => show.id !== showId));
     } catch (err) {
       console.error(err);
-      setError("Wystąpił problem podczas usuwania seansu.");
+      setError("An error occurred while deleting the show.");
     }
   };
 
-  if (loading) return <p>Ładowanie...</p>;
+  if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4">Lista Seansów</h1>
+      <h1 className="mb-4">Show List</h1>
       <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
         <RegionSelector
           selectedRegion={selectedRegion}
@@ -72,7 +72,7 @@ const ShowListAdmin = () => {
           to={`/admin/shows/add?region=${selectedRegion}`}
           className="btn btn-success"
         >
-          Dodaj nowy seans
+          Add New Show
         </Link>
       </div>
       {shows.length > 0 ? (
@@ -84,12 +84,12 @@ const ShowListAdmin = () => {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Nazwa filmu</th>
-                <th>Data i godzina</th>
-                <th>Sala</th>
-                <th>Cena biletu</th>
+                <th>Movie Title</th>
+                <th>Date and Time</th>
+                <th>Hall</th>
+                <th>Ticket Price</th>
                 <th>Region</th>
-                <th>Akcje</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -98,7 +98,7 @@ const ShowListAdmin = () => {
                   <td>{show.id}</td>
                   <td>{show.movie_title}</td>
                   <td>
-                    {new Date(show.start_time).toLocaleString("pl-PL", {
+                    {new Date(show.start_time).toLocaleString("en-GB", {
                       dateStyle: "short",
                       timeStyle: "short",
                     })}
@@ -111,7 +111,7 @@ const ShowListAdmin = () => {
                       className="btn btn-danger btn-sm"
                       onClick={() => handleDelete(show.id)}
                     >
-                      Usuń
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -129,13 +129,13 @@ const ShowListAdmin = () => {
               ></i>
             </div>
             <p className="mb-3 fs-5 text-muted">
-              Brak dostępnych seansów dla wybranego regionu.
+              No shows available for the selected region.
             </p>
             <Link
               to={`/admin/shows/add?region=${selectedRegion}`}
               className="btn btn-primary"
             >
-              Dodaj nowy seans
+              Add New Show
             </Link>
           </div>
         )

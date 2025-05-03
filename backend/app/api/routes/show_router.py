@@ -61,6 +61,12 @@ async def add_show(show: ShowBase, region: str, db: AsyncSession = Depends(get_d
     return new_show
 
 
+@router.get("/get/{show_id}",
+            response_model=ShowModel,
+            response_description="Retrieve show details",
+            summary="Fetch Show Details",
+            description="Fetch details of a specific show by ID."
+            )
 async def get_show(show_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve details of a specific show by ID.
@@ -92,7 +98,6 @@ async def delete_show(
     show = await db.get(Show, show_id)
     if not show:
         raise HTTPException(status_code=404, detail="Show not found.")
-
 
     # Delete the show itself
     await db.delete(show)
@@ -131,6 +136,7 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
 
     return shows_data
 
+
 @router.get("/check_conflict")
 async def check_show_conflict(
     hall_id: int,
@@ -166,7 +172,9 @@ async def check_show_conflict(
 
     for show, title, runtime in rows:
         existing_start = show.start_time
-        existing_end = existing_start + timedelta(minutes=runtime) + timedelta(minutes=15) # add 15 minutes after movie
+        existing_end = existing_start + \
+            timedelta(minutes=runtime) + \
+            timedelta(minutes=15)  # add 15 minutes after movie
 
         if (
             (new_start >= existing_start and new_start < existing_end) or
@@ -184,7 +192,6 @@ async def check_show_conflict(
         "conflict": len(conflicts) > 0,
         "conflicts": conflicts
     }
-
 
 
 @router.get("/movies_with_shows")
