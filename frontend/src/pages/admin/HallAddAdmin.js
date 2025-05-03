@@ -21,32 +21,35 @@ const HallAddAdmin = () => {
   }, [location.search, regions]);
 
   return (
-    <div className="container mt-4">
-      <h1 className="mb-4">Add New Hall</h1>
+    <div className="container mt-5">
+      <h1 className="text-center mb-4">Add New Hall</h1>
+      <div className="card">
+        <div className="card-body">
+          {successMessage && (
+            <div className="alert alert-success" role="alert">
+              {successMessage}
+            </div>
+          )}
+          {errorMessage && (
+            <div className="alert alert-danger" role="alert">
+              {errorMessage}
+            </div>
+          )}
 
-      {successMessage && (
-        <div className="alert alert-success" role="alert">
-          {successMessage}
+          {!newHallId && (
+            <HallForm
+              setNewHallId={setNewHallId}
+              setSuccessMessage={setSuccessMessage}
+              setErrorMessage={setErrorMessage}
+              region={region}
+              setRegion={setRegion}
+              regions={regions}
+            />
+          )}
+
+          {newHallId && <HallRowsForm newHallId={newHallId} region={region} />}
         </div>
-      )}
-      {errorMessage && (
-        <div className="alert alert-danger" role="alert">
-          {errorMessage}
-        </div>
-      )}
-
-      {!newHallId && (
-        <HallForm
-          setNewHallId={setNewHallId}
-          setSuccessMessage={setSuccessMessage}
-          setErrorMessage={setErrorMessage}
-          region={region}
-          setRegion={setRegion}
-          regions={regions}
-        />
-      )}
-
-      {newHallId && <HallRowsForm newHallId={newHallId} region={region} />}
+      </div>
     </div>
   );
 };

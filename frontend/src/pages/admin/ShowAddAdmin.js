@@ -29,7 +29,7 @@ const ShowAddAdmin = () => {
         setMovies(moviesResponse.data);
         setHalls(hallsResponse.data);
       } catch (err) {
-        setError("Wystąpił problem podczas ładowania danych.");
+        setError("There was a problem loading the data.");
       }
     };
 
@@ -66,7 +66,7 @@ const ShowAddAdmin = () => {
     e.preventDefault();
 
     if (!selectedMovieId || !selectedHallId || !date || !time) {
-      setError("Wszystkie pola są wymagane!");
+      setError("All fields are required!");
       return;
     }
 
@@ -84,10 +84,10 @@ const ShowAddAdmin = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error("Brak tokena. Zaloguj się ponownie.");
+        throw new Error("No token found. Please log in again.");
       }
 
-      // Sprawdzenie konfliktu
+      // Check for conflict
       const conflictResponse = await api.get("show/check_conflict", {
         params: {
           hall_id: selectedHallId,
@@ -101,11 +101,13 @@ const ShowAddAdmin = () => {
       });
 
       if (conflictResponse.data.conflict) {
-        setError("W wybranej sali trwa już inny seans w tym czasie.");
+        setError(
+          "Another show is already scheduled in the selected hall at this time."
+        );
         return;
       }
 
-      // Jeśli brak konfliktu, dodaj seans
+      // If no conflict, add the show
       const newShow = {
         movie_id: parseInt(selectedMovieId),
         hall_id: parseInt(selectedHallId),
@@ -120,17 +122,17 @@ const ShowAddAdmin = () => {
         },
       });
 
-      setSuccessMessage("Seans został dodany!");
+      setSuccessMessage("The show has been added!");
       setTimeout(() => navigate("/admin/shows/list"), 1500);
     } catch (err) {
       console.error(err);
-      setError("Wystąpił problem podczas dodawania seansu.");
+      setError("There was a problem adding the show.");
     }
   };
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4">Dodaj Nowy Seans</h1>
+      <h1 className="text-center mb-4">Add New Show</h1>
       <form onSubmit={handleSubmit} className="card p-4 shadow-sm">
         {error && <div className="alert alert-danger">{error}</div>}
         {successMessage && (
@@ -147,14 +149,14 @@ const ShowAddAdmin = () => {
             value={region}
             onChange={(e) => setRegion(e.target.value)}
           >
-            <option value="krakow">Kraków</option>
-            <option value="warsaw">Warszawa</option>
+            <option value="krakow">Krakow</option>
+            <option value="warsaw">Warsaw</option>
           </select>
         </div>
 
         <div className="mb-3">
           <label htmlFor="movieId" className="form-label">
-            Film
+            Movie
           </label>
           <select
             id="movieId"
@@ -162,7 +164,7 @@ const ShowAddAdmin = () => {
             value={selectedMovieId}
             onChange={(e) => setSelectedMovieId(e.target.value)}
           >
-            <option value="">Wybierz film</option>
+            <option value="">Select a movie</option>
             {movies.map((movie) => (
               <option key={movie.id} value={movie.id}>
                 {movie.title}
@@ -173,7 +175,7 @@ const ShowAddAdmin = () => {
 
         <div className="mb-3">
           <label htmlFor="hallId" className="form-label">
-            Sala
+            Hall
           </label>
           <select
             id="hallId"
@@ -181,7 +183,7 @@ const ShowAddAdmin = () => {
             value={selectedHallId}
             onChange={(e) => setSelectedHallId(e.target.value)}
           >
-            <option value="">Wybierz salę</option>
+            <option value="">Select a hall</option>
             {halls.map((hall) => (
               <option key={hall.id} value={hall.id}>
                 {hall.name}
@@ -192,7 +194,7 @@ const ShowAddAdmin = () => {
 
         <div className="mb-3">
           <label htmlFor="date" className="form-label">
-            Dzień
+            Date
           </label>
           <input
             type="date"
@@ -206,7 +208,7 @@ const ShowAddAdmin = () => {
 
         <div className="mb-3">
           <label htmlFor="time" className="form-label">
-            Godzina
+            Time
           </label>
           <select
             id="time"
@@ -214,7 +216,7 @@ const ShowAddAdmin = () => {
             value={time}
             onChange={(e) => setTime(e.target.value)}
           >
-            <option value="">Wybierz godzinę</option>
+            <option value="">Select a time</option>
             {getAvailableTimes().map((t) => (
               <option key={t} value={t}>
                 {t}
@@ -225,7 +227,7 @@ const ShowAddAdmin = () => {
 
         <div className="mb-3">
           <label htmlFor="price" className="form-label">
-            Cena biletu
+            Ticket Price
           </label>
           <select
             id="price"
@@ -233,14 +235,14 @@ const ShowAddAdmin = () => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           >
-            <option value="15.90">15,90 zł</option>
-            <option value="18.90">18,90 zł</option>
-            <option value="22.90">22,90 zł</option>
+            <option value="15.90">15.90 zł</option>
+            <option value="18.90">18.90 zł</option>
+            <option value="22.90">22.90 zł</option>
           </select>
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          Dodaj Seans
+          Add Show
         </button>
       </form>
     </div>
