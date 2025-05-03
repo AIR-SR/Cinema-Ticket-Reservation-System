@@ -1,13 +1,11 @@
-from datetime import datetime
-
-import requests
 from core import admin_required, get_db_local, settings, employee_required
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from models_local import Show, Movie, Hall
 from schemas import ShowBase, ShowModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import delete, text, select, func
+from sqlalchemy import text, select, func
+from datetime import datetime, timedelta
 
 
 router = APIRouter(prefix="/show", tags=["Shows"])
@@ -112,16 +110,9 @@ async def delete_show(
 
 @router.get("/get_details")
 async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
-    """
-    Pobiera wszystkie seanse dla określonego regionu, wraz z tytułem filmu i nazwą sali.
-
-    - **Input**: region (kraków, warszawa)
-    - **Returns**: lista seansów z dodatkowymi informacjami
-    """
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Niepoprawny region")
 
-    # Łączymy dane z tabel Show, Movie i Hall
     query = select(Show, Movie.title, Hall.name).join(Movie).join(Hall)
     result = await db.execute(query)
     shows = result.all()
@@ -132,10 +123,95 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
             "movie_title": title,
             "start_time": show.start_time,
             "hall_name": hall,
-            "price": show.price,
+            "price": f"{show.price:.2f}",
             "region": region
         }
         for show, title, hall in shows
     ]
 
     return shows_data
+
+@router.get("/check_conflict")
+async def check_show_conflict(
+    hall_id: int,
+    movie_id: int,
+    start_time: datetime,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+):
+
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Niepoprawny region")
+
+    movie_stmt = select(Movie.runtime).where(Movie.id == movie_id)
+    result = await db.execute(movie_stmt)
+    movie_runtime = result.scalar()
+
+    if movie_runtime is None:
+        raise HTTPException(status_code=404, detail="Nie znaleziono filmu")
+
+    new_start = start_time
+    new_end = new_start + timedelta(minutes=movie_runtime)
+
+    stmt = (
+        select(Show, Movie.title, Movie.runtime)
+        .join(Movie)
+        .where(Show.hall_id == hall_id)
+    )
+
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    conflicts = []
+
+    for show, title, runtime in rows:
+        existing_start = show.start_time
+        existing_end = existing_start + timedelta(minutes=runtime)
+
+        if (
+            (new_start >= existing_start and new_start < existing_end) or
+            (new_end > existing_start and new_end <= existing_end) or
+            (new_start <= existing_start and new_end >= existing_end)
+        ):
+            conflicts.append({
+                "show_id": show.id,
+                "movie_title": title,
+                "start_time": show.start_time,
+                "end_time": existing_end,
+            })
+
+    return {
+        "conflict": len(conflicts) > 0,
+        "conflicts": conflicts
+    }
+
+
+
+@router.get("/movies_with_shows")
+async def get_movies_with_shows(region: str, db: AsyncSession = Depends(get_db_local)):
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Niepoprawny region")
+
+    stmt = (
+        select(Movie, Show)
+        .join(Show, Movie.id == Show.movie_id)
+        .where(Show.start_time > datetime.utcnow())
+    )
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    movie_map = {}
+    for movie, show in rows:
+        if movie.id not in movie_map:
+            movie_map[movie.id] = {
+                "id": movie.id,
+                "title": movie.title,
+                "poster_path": movie.poster_path,
+                "shows": [],
+            }
+        movie_map[movie.id]["shows"].append({
+            "id": show.id,
+            "start_time": show.start_time.isoformat(),
+        })
+
+    return list(movie_map.values())

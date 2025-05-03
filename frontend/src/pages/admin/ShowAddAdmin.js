@@ -8,70 +8,111 @@ const ShowAddAdmin = () => {
   const [selectedMovieId, setSelectedMovieId] = useState("");
   const [selectedHallId, setSelectedHallId] = useState("");
   const [date, setDate] = useState("");
-  const [region, setRegion] = useState("krakow"); // Ustawienie domyślnego regionu na "krakow"
+  const [time, setTime] = useState("");
+  const [region, setRegion] = useState("krakow");
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [price, setPrice] = useState("15.90");
 
   const navigate = useNavigate();
 
-  // Funkcja do pobierania filmów i sal
+
   useEffect(() => {
     const fetchMoviesAndHalls = async () => {
       try {
         const moviesResponse = await api.get("/movies/get_title", { params: { region } });
-        console.log(moviesResponse.data); // Sprawdź, co zawiera odpowiedź
         const hallsResponse = await api.get("/halls/get", { params: { region } });
 
-        setMovies(moviesResponse.data); // Przypisz filmy
-        setHalls(hallsResponse.data); // Przypisz sale
+        setMovies(moviesResponse.data);
+        setHalls(hallsResponse.data);
       } catch (err) {
         setError("Wystąpił problem podczas ładowania danych.");
       }
     };
 
     fetchMoviesAndHalls();
-  }, [region]); // Ponownie załaduj dane po zmianie regionu
+  }, [region]);
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const getAvailableTimes = () => {
+    const times = [];
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0];
 
-    if (!selectedMovieId || !selectedHallId || !date) {
-      setError("Wszystkie pola są wymagane!");
+    for (let hour = 8; hour <= 20; hour++) {
+      const timeStr = `${hour.toString().padStart(2, "0")}:00`;
+      if (date === todayStr && hour <= now.getHours()) continue; // pomiń przeszłe godziny dla dzisiaj
+      times.push(timeStr);
+    }
+
+    return times;
+  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!selectedMovieId || !selectedHallId || !date || !time) {
+    setError("Wszystkie pola są wymagane!");
+    return;
+  }
+
+  const startDateTime = new Date(`${date}T${time}:00`);
+
+  const year = startDateTime.getFullYear();
+  const month = String(startDateTime.getMonth() + 1).padStart(2, '0');
+  const day = String(startDateTime.getDate()).padStart(2, '0');
+  const hours = String(startDateTime.getHours()).padStart(2, '0');
+  const minutes = String(startDateTime.getMinutes()).padStart(2, '0');
+  const seconds = String(startDateTime.getSeconds()).padStart(2, '0');
+
+  const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Brak tokena. Zaloguj się ponownie.");
+    }
+
+    // Sprawdzenie konfliktu
+    const conflictResponse = await api.get("show/check_conflict", {
+      params: {
+        hall_id: selectedHallId,
+        movie_id: selectedMovieId,
+        start_time: formattedDateTime,
+        region: region,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (conflictResponse.data.conflict) {
+      setError("W wybranej sali trwa już inny seans w tym czasie.");
       return;
     }
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Brak tokena. Zaloguj się ponownie.");
-      }
+    // Jeśli brak konfliktu, dodaj seans
+    const newShow = {
+      movie_id: parseInt(selectedMovieId),
+      hall_id: parseInt(selectedHallId),
+      start_time: formattedDateTime.replace("T", " "), // API expects space not 'T'
+      price: parseFloat(price),
+    };
 
-      const newShow = {
-        movie_id: parseInt(selectedMovieId),
-        hall_id: parseInt(selectedHallId),
-        start_time: date,
-        price: 20.0, // lub dodaj pole formularza dla ceny
-      };
+    await api.post("/show/add", newShow, {
+      params: { region },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      console.log("Wysyłam:", newShow);
-
-      const response = await api.post("/show/add", newShow, {
-        params: { region },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setSuccessMessage("Seans został dodany!");
-      setTimeout(() => navigate("/admin/shows/list"), 1500);
-    } catch (err) {
-      console.error(err);
-      setError("Wystąpił problem podczas dodawania seansu.");
-    }
-  };
-
+    setSuccessMessage("Seans został dodany!");
+    setTimeout(() => navigate("/admin/shows/list"), 1500);
+  } catch (err) {
+    console.error(err);
+    setError("Wystąpił problem podczas dodawania seansu.");
+  }
+};
 
 
   return (
@@ -114,7 +155,6 @@ const ShowAddAdmin = () => {
           </select>
         </div>
 
-
         {/* Wybór sali */}
         <div className="form-group">
           <label htmlFor="hallId">Sala</label>
@@ -127,7 +167,7 @@ const ShowAddAdmin = () => {
             <option value="">Wybierz salę</option>
             {halls.map((hall) => (
               <option key={hall.id} value={hall.id}>
-                {hall.name} {/* Wyświetlanie nazwy sali */}
+                {hall.name}
               </option>
             ))}
           </select>
@@ -135,16 +175,34 @@ const ShowAddAdmin = () => {
 
         {/* Wybór daty */}
         <div className="form-group">
-          <label htmlFor="date">Data i godzina</label>
+          <label htmlFor="date">Dzień</label>
           <input
-            type="datetime-local"
+            type="date"
             id="date"
             className="form-control"
             value={date}
+            min={new Date().toISOString().split("T")[0]} // Zablokowanie przeszłości
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
 
+        {/* Wybór godziny */}
+        <div className="form-group">
+          <label htmlFor="time">Godzina</label>
+          <select
+            id="time"
+            className="form-control"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+          >
+            <option value="">Wybierz godzinę</option>
+            {getAvailableTimes().map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Wybór ceny */}
         <div className="form-group">
           <label htmlFor="price">Cena biletu</label>
           <select
@@ -158,7 +216,6 @@ const ShowAddAdmin = () => {
             <option value="22.90">22,90 zł</option>
           </select>
         </div>
-
 
         <button type="submit" className="btn btn-success mt-4">
           Dodaj Seans
