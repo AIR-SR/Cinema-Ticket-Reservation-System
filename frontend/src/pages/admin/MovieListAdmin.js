@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api";
+import RegionSelector from "../../components/RegionSelector";
 
 const MovieListAdmin = () => {
   const [moviesByRegion, setMoviesByRegion] = useState({});
@@ -52,24 +53,11 @@ const MovieListAdmin = () => {
     <div className="container mt-4">
       <h1 className="mb-4">Movie List by Region</h1>
       <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
-        <div className="d-flex align-items-center gap-2">
-          <label htmlFor="regionSelect" className="form-label mb-0">
-            Select Region:
-          </label>
-          <select
-            id="regionSelect"
-            className="form-select"
-            value={selectedRegion}
-            onChange={(e) => setSelectedRegion(e.target.value)}
-            style={{ width: "auto" }}
-          >
-            {regions.map((region) => (
-              <option key={region} value={region}>
-                {region.charAt(0).toUpperCase() + region.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
+        <RegionSelector
+          selectedRegion={selectedRegion}
+          setSelectedRegion={setSelectedRegion}
+          regions={regions}
+        />
         <button
           className="btn btn-success"
           onClick={() =>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import HallForm from "../../components/HallFormAdmin";
 import HallRowsForm from "../../components/HallRowsFormAdmin";
+import RegionSelector from "../../components/RegionSelector";
 
 const HallAddAdmin = () => {
   const location = useLocation();

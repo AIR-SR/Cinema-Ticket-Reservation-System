@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../../utils/api";
 import { UserContext } from "../../context/UserContext";
+import RegionSelector from "../../components/RegionSelector";
 
 const MovieAddAdmin = () => {
   const { user } = useContext(UserContext); // Access user context
@@ -69,18 +70,11 @@ const MovieAddAdmin = () => {
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="region" className="form-label">
-            Region:
-          </label>
-          <select
-            id="region"
-            className="form-select"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-          >
-            <option value="krakow">Krakow</option>
-            <option value="warsaw">Warsaw</option>
-          </select>
+          <RegionSelector
+            selectedRegion={region}
+            setSelectedRegion={setRegion}
+            regions={["krakow", "warsaw"]}
+          />
         </div>
         <button
           type="submit"

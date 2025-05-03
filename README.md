@@ -8,11 +8,39 @@ The Cinema Ticket Reservation System is a distributed system designed to manage 
 
 ## Features
 
-- User authentication and role-based access control (Admin, Employee, User).
-- Movie and show management.
-- Seat reservation and payment processing.
-- Multi-region database architecture.
-- API health checks and monitoring.
+- **User Management**:
+
+  - User registration, login, and profile management.
+  - Role-based access control (Admin, Employee, User).
+  - Password change and profile updates.
+  - Admins can manage users (view, edit, delete).
+
+- **Movie and Show Management**:
+
+  - Admins can add, edit, and delete movies.
+  - Shows can be scheduled with date, time, and ticket pricing.
+  - Users can view movie details and available shows.
+
+- **Hall and Seat Management**:
+
+  - Admins can manage cinema halls and their seating arrangements.
+  - Visualization of hall layouts with rows and seats.
+  - Seat reservation status is displayed (reserved or available).
+
+- **Reservation and Payment**:
+
+  - Users can book seats for shows.
+  - Reservation status includes reserved, paid, and canceled.
+  - Payment processing with multiple methods (card, cash, online).
+
+- **Multi-Region Support**:
+
+  - Separate databases for different regions.
+  - Region-based filtering for movies, shows, and halls.
+
+- **Monitoring and Health Checks**:
+  - API health check dashboard.
+  - Admins can monitor the health of different user groups.
 
 ## Technologies Used
 
@@ -26,20 +54,24 @@ The Cinema Ticket Reservation System is a distributed system designed to manage 
 ## Setup Instructions
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-username/Cinema-Ticket-Reservation-System.git
    cd Cinema-Ticket-Reservation-System
    ```
 
 2. Set up environment variables:
+
    - Copy `.env.example` to `.env` and update the values as needed.
 
 3. Start the services using Docker Compose:
+
    ```bash
    docker-compose up --build
    ```
 
 4. Access the application:
+
    - Frontend: [http://localhost:3000](http://localhost:3000)
    - Backend API: [http://localhost:8000](http://localhost:8000)
 
@@ -85,34 +117,34 @@ erDiagram
     Cinema {
 
     }
-    
+
     HALLS {
         int id
         %% int cinema_id
         string name
     }
-    
+
     HALL_ROWS {
         int id
         int hall_id
         int row_number
         int seat_count
     }
-    
+
     SEATS {
         int id
         int row_id
         int seat_number
         string seat_type
     }
-    
+
     MOVIES {
         int id
         string tmdbID
         string title
         string description
     }
-    
+
     SHOWS {
         int id
         int movie_id
@@ -120,7 +152,7 @@ erDiagram
         datetime start_time
         float price
     }
-    
+
     RESERVATIONS {
         int id
         int user_id
@@ -128,12 +160,12 @@ erDiagram
         string status
         datetime created_at
     }
-    
+
     RESERVATION_SEATS {
         int reservation_id
         int seat_id
     }
-    
+
     PAYMENTS {
         int id
         int reservation_id

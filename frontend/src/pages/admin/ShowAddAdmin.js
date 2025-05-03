@@ -16,12 +16,15 @@ const ShowAddAdmin = () => {
 
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const fetchMoviesAndHalls = async () => {
       try {
-        const moviesResponse = await api.get("/movies/get_title", { params: { region } });
-        const hallsResponse = await api.get("/halls/get", { params: { region } });
+        const moviesResponse = await api.get("/movies/get_title", {
+          params: { region },
+        });
+        const hallsResponse = await api.get("/halls/get", {
+          params: { region },
+        });
 
         setMovies(moviesResponse.data);
         setHalls(hallsResponse.data);
@@ -33,122 +36,129 @@ const ShowAddAdmin = () => {
     fetchMoviesAndHalls();
   }, [region]);
 
-
   const getAvailableTimes = () => {
     const times = [];
     const now = new Date();
     const todayStr = now.toISOString().split("T")[0];
 
-  for (let hour = 8; hour <= 20; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) { 
-      const timeStr = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+    for (let hour = 8; hour <= 20; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeStr = `${hour.toString().padStart(2, "0")}:${minute
+          .toString()
+          .padStart(2, "0")}`;
 
-      if (date === todayStr && (hour < now.getHours() || (hour === now.getHours() && minute <= now.getMinutes()))) {
-        continue;
+        if (
+          date === todayStr &&
+          (hour < now.getHours() ||
+            (hour === now.getHours() && minute <= now.getMinutes()))
+        ) {
+          continue;
+        }
+
+        times.push(timeStr);
       }
-
-      times.push(timeStr);
     }
-  }
 
     return times;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!selectedMovieId || !selectedHallId || !date || !time) {
-    setError("Wszystkie pola są wymagane!");
-    return;
-  }
-
-  const startDateTime = new Date(`${date}T${time}:00`);
-
-  const year = startDateTime.getFullYear();
-  const month = String(startDateTime.getMonth() + 1).padStart(2, '0');
-  const day = String(startDateTime.getDate()).padStart(2, '0');
-  const hours = String(startDateTime.getHours()).padStart(2, '0');
-  const minutes = String(startDateTime.getMinutes()).padStart(2, '0');
-  const seconds = String(startDateTime.getSeconds()).padStart(2, '0');
-
-  const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
-
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Brak tokena. Zaloguj się ponownie.");
-    }
-
-    // Sprawdzenie konfliktu
-    const conflictResponse = await api.get("show/check_conflict", {
-      params: {
-        hall_id: selectedHallId,
-        movie_id: selectedMovieId,
-        start_time: formattedDateTime,
-        region: region,
-      },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (conflictResponse.data.conflict) {
-      setError("W wybranej sali trwa już inny seans w tym czasie.");
+    if (!selectedMovieId || !selectedHallId || !date || !time) {
+      setError("Wszystkie pola są wymagane!");
       return;
     }
 
-    // Jeśli brak konfliktu, dodaj seans
-    const newShow = {
-      movie_id: parseInt(selectedMovieId),
-      hall_id: parseInt(selectedHallId),
-      start_time: formattedDateTime.replace("T", " "), // API expects space not 'T'
-      price: parseFloat(price),
-    };
+    const startDateTime = new Date(`${date}T${time}:00`);
 
-    await api.post("/show/add", newShow, {
-      params: { region },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const year = startDateTime.getFullYear();
+    const month = String(startDateTime.getMonth() + 1).padStart(2, "0");
+    const day = String(startDateTime.getDate()).padStart(2, "0");
+    const hours = String(startDateTime.getHours()).padStart(2, "0");
+    const minutes = String(startDateTime.getMinutes()).padStart(2, "0");
+    const seconds = String(startDateTime.getSeconds()).padStart(2, "0");
 
-    setSuccessMessage("Seans został dodany!");
-    setTimeout(() => navigate("/admin/shows/list"), 1500);
-  } catch (err) {
-    console.error(err);
-    setError("Wystąpił problem podczas dodawania seansu.");
-  }
-};
+    const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Brak tokena. Zaloguj się ponownie.");
+      }
+
+      // Sprawdzenie konfliktu
+      const conflictResponse = await api.get("show/check_conflict", {
+        params: {
+          hall_id: selectedHallId,
+          movie_id: selectedMovieId,
+          start_time: formattedDateTime,
+          region: region,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (conflictResponse.data.conflict) {
+        setError("W wybranej sali trwa już inny seans w tym czasie.");
+        return;
+      }
+
+      // Jeśli brak konfliktu, dodaj seans
+      const newShow = {
+        movie_id: parseInt(selectedMovieId),
+        hall_id: parseInt(selectedHallId),
+        start_time: formattedDateTime.replace("T", " "), // API expects space not 'T'
+        price: parseFloat(price),
+      };
+
+      await api.post("/show/add", newShow, {
+        params: { region },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setSuccessMessage("Seans został dodany!");
+      setTimeout(() => navigate("/admin/shows/list"), 1500);
+    } catch (err) {
+      console.error(err);
+      setError("Wystąpił problem podczas dodawania seansu.");
+    }
+  };
 
   return (
-    <div className="container mt-4">
-      <h1>Dodaj Nowy Seans</h1>
+    <div className="container mt-5">
+      <h1 className="text-center mb-4">Dodaj Nowy Seans</h1>
+      <form onSubmit={handleSubmit} className="card p-4 shadow-sm">
+        {error && <div className="alert alert-danger">{error}</div>}
+        {successMessage && (
+          <div className="alert alert-success">{successMessage}</div>
+        )}
 
-      {error && <div className="alert alert-danger">{error}</div>}
-      {successMessage && <div className="alert alert-success">{successMessage}</div>}
-
-      <form onSubmit={handleSubmit}>
-        {/* Wybór regionu */}
-        <div className="form-group">
-          <label htmlFor="region">Region</label>
+        <div className="mb-3">
+          <label htmlFor="region" className="form-label">
+            Region
+          </label>
           <select
             id="region"
-            className="form-control"
+            className="form-select"
             value={region}
-            onChange={(e) => setRegion(e.target.value)} // Zmiana regionu
+            onChange={(e) => setRegion(e.target.value)}
           >
             <option value="krakow">Kraków</option>
             <option value="warsaw">Warszawa</option>
           </select>
         </div>
 
-        {/* Wybór filmu */}
-        <div className="form-group">
-          <label htmlFor="movieId">Film</label>
+        <div className="mb-3">
+          <label htmlFor="movieId" className="form-label">
+            Film
+          </label>
           <select
             id="movieId"
-            className="form-control"
+            className="form-select"
             value={selectedMovieId}
             onChange={(e) => setSelectedMovieId(e.target.value)}
           >
@@ -161,12 +171,13 @@ const handleSubmit = async (e) => {
           </select>
         </div>
 
-        {/* Wybór sali */}
-        <div className="form-group">
-          <label htmlFor="hallId">Sala</label>
+        <div className="mb-3">
+          <label htmlFor="hallId" className="form-label">
+            Sala
+          </label>
           <select
             id="hallId"
-            className="form-control"
+            className="form-select"
             value={selectedHallId}
             onChange={(e) => setSelectedHallId(e.target.value)}
           >
@@ -179,41 +190,46 @@ const handleSubmit = async (e) => {
           </select>
         </div>
 
-        {/* Wybór daty */}
-        <div className="form-group">
-          <label htmlFor="date">Dzień</label>
+        <div className="mb-3">
+          <label htmlFor="date" className="form-label">
+            Dzień
+          </label>
           <input
             type="date"
             id="date"
             className="form-control"
             value={date}
-            min={new Date().toISOString().split("T")[0]} // Zablokowanie przeszłości
+            min={new Date().toISOString().split("T")[0]}
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
 
-        {/* Wybór godziny */}
-        <div className="form-group">
-          <label htmlFor="time">Godzina</label>
+        <div className="mb-3">
+          <label htmlFor="time" className="form-label">
+            Godzina
+          </label>
           <select
             id="time"
-            className="form-control"
+            className="form-select"
             value={time}
             onChange={(e) => setTime(e.target.value)}
           >
             <option value="">Wybierz godzinę</option>
             {getAvailableTimes().map((t) => (
-              <option key={t} value={t}>{t}</option>
+              <option key={t} value={t}>
+                {t}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* Wybór ceny */}
-        <div className="form-group">
-          <label htmlFor="price">Cena biletu</label>
+        <div className="mb-3">
+          <label htmlFor="price" className="form-label">
+            Cena biletu
+          </label>
           <select
             id="price"
-            className="form-control"
+            className="form-select"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           >
@@ -223,7 +239,7 @@ const handleSubmit = async (e) => {
           </select>
         </div>
 
-        <button type="submit" className="btn btn-success mt-4">
+        <button type="submit" className="btn btn-primary w-100">
           Dodaj Seans
         </button>
       </form>
