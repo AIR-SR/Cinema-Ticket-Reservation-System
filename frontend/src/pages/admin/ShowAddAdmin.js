@@ -39,11 +39,17 @@ const ShowAddAdmin = () => {
     const now = new Date();
     const todayStr = now.toISOString().split("T")[0];
 
-    for (let hour = 8; hour <= 20; hour++) {
-      const timeStr = `${hour.toString().padStart(2, "0")}:00`;
-      if (date === todayStr && hour <= now.getHours()) continue; // pomiń przeszłe godziny dla dzisiaj
+  for (let hour = 8; hour <= 20; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) { 
+      const timeStr = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+
+      if (date === todayStr && (hour < now.getHours() || (hour === now.getHours() && minute <= now.getMinutes()))) {
+        continue;
+      }
+
       times.push(timeStr);
     }
+  }
 
     return times;
   };

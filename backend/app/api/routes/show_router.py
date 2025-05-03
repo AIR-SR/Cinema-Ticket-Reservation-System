@@ -166,7 +166,7 @@ async def check_show_conflict(
 
     for show, title, runtime in rows:
         existing_start = show.start_time
-        existing_end = existing_start + timedelta(minutes=runtime)
+        existing_end = existing_start + timedelta(minutes=runtime) + timedelta(minutes=15) # add 15 minutes after movie
 
         if (
             (new_start >= existing_start and new_start < existing_end) or
