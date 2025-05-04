@@ -83,16 +83,30 @@ const ShowListAdmin = () => {
           <h2 className="mb-3">
             {selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}
           </h2>
-          <table className="table table-striped">
+          <table
+            className="table table-striped"
+            style={{ tableLayout: "fixed", width: "100%" }}
+          >
             <thead>
               <tr>
-                <th>#</th>
-                <th>Movie Title</th>
-                <th>Date and Time</th>
-                <th>Hall</th>
-                <th>Ticket Price</th>
-                <th>Region</th>
-                <th>Actions</th>
+                <th scope="col" style={{ width: "5%" }}>
+                  #
+                </th>
+                <th scope="col" style={{ width: "30%" }}>
+                  Movie Title
+                </th>
+                <th scope="col" style={{ width: "25%" }}>
+                  Date and Time
+                </th>
+                <th scope="col" style={{ width: "20%" }}>
+                  Hall
+                </th>
+                <th scope="col" style={{ width: "15%" }}>
+                  Ticket Price
+                </th>
+                <th scope="col" style={{ width: "10%" }}>
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -108,7 +122,6 @@ const ShowListAdmin = () => {
                   </td>
                   <td>{show.hall_name}</td>
                   <td>{show.price} PLN</td>
-                  <td>{show.region}</td>
                   <td>
                     <button
                       className="btn btn-danger btn-sm"

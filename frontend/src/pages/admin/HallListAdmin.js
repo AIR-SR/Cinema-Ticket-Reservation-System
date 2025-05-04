@@ -104,13 +104,24 @@ const HallListAdmin = () => {
         </button>
       </div>
       {halls.length > 0 ? (
-        <table className="table table-striped">
+        <table
+          className="table table-striped"
+          style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Total Seats</th>
-              <th>Actions</th>
+              <th scope="col" style={{ width: "5%" }}>
+                ID
+              </th>
+              <th scope="col" style={{ width: "40%" }}>
+                Name
+              </th>
+              <th scope="col" style={{ width: "30%" }}>
+                Total Seats
+              </th>
+              <th scope="col" style={{ width: "25%" }}>
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>

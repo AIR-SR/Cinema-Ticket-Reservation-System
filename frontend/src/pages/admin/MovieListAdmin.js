@@ -75,13 +75,24 @@ const MovieListAdmin = () => {
           <h2 className="mb-3">
             {selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}
           </h2>
-          <table className="table table-striped">
+          <table
+            className="table table-striped"
+            style={{ tableLayout: "fixed", width: "100%" }}
+          >
             <thead>
               <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Title</th>
-                <th scope="col">TMDB ID</th>
-                <th scope="col">Actions</th>
+                <th scope="col" style={{ width: "5%" }}>
+                  ID
+                </th>
+                <th scope="col" style={{ width: "45%" }}>
+                  Title
+                </th>
+                <th scope="col" style={{ width: "30%" }}>
+                  TMDB ID
+                </th>
+                <th scope="col" style={{ width: "20%" }}>
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
