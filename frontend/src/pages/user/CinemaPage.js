@@ -39,6 +39,47 @@ const CinemaPage = () => {
     navigate(`/book-ticket/${movieId}/${showId}?region=${region}`);
   };
 
+  const renderShowButtons = (shows, movieId) => {
+    return shows
+      .sort((a, b) =>
+        dayjs(a.start_time).isBefore(dayjs(b.start_time)) ? -1 : 1
+      )
+      .map((show) => (
+        <button
+          key={show.id}
+          className="btn btn-outline-primary btn-sm me-2 mb-2"
+          onClick={() => handleShowBooking(show.id, movieId)}
+          style={{
+            transition: "all 0.3s ease",
+          }}
+          onMouseEnter={(e) => (e.target.style.backgroundColor = "#007bff")}
+          onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+        >
+          {dayjs(show.start_time).format("HH:mm")}
+        </button>
+      ));
+  };
+
+  const renderMovieShows = (movie) => {
+    const groupedShows = movie.shows?.reduce((acc, show) => {
+      const date = dayjs(show.start_time).format("DD MMM YYYY");
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(show);
+      return acc;
+    }, {});
+
+    return groupedShows ? (
+      Object.entries(groupedShows).map(([date, shows]) => (
+        <div key={date} className="mb-3">
+          <strong>{date}</strong>
+          <div className="mt-2">{renderShowButtons(shows, movie.id)}</div>
+        </div>
+      ))
+    ) : (
+      <div className="text-muted small">No shows available</div>
+    );
+  };
+
   if (loading) return <div className="text-center">Loading movies...</div>;
   if (error)
     return <div className="alert alert-danger text-center">{error}</div>;
@@ -66,53 +107,7 @@ const CinemaPage = () => {
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{movie.title}</h5>
                 <div className="mt-3 flex-grow-1">
-                  {movie.shows?.length > 0 ? (
-                    Object.entries(
-                      movie.shows.reduce((acc, show) => {
-                        const date = dayjs(show.start_time).format(
-                          "DD MMM YYYY"
-                        );
-                        if (!acc[date]) acc[date] = [];
-                        acc[date].push(show);
-                        return acc;
-                      }, {})
-                    ).map(([date, shows]) => (
-                      <div key={date} className="mb-3">
-                        <strong>{date}</strong>
-                        <div className="mt-2">
-                          {shows
-                            .sort((a, b) =>
-                              dayjs(a.start_time).isBefore(dayjs(b.start_time))
-                                ? -1
-                                : 1
-                            )
-                            .map((show) => (
-                              <button
-                                key={show.id}
-                                className="btn btn-outline-primary btn-sm me-2 mb-2"
-                                onClick={() =>
-                                  handleShowBooking(show.id, movie.id)
-                                }
-                                style={{
-                                  transition: "all 0.3s ease",
-                                }}
-                                onMouseEnter={(e) =>
-                                  (e.target.style.backgroundColor = "#007bff")
-                                }
-                                onMouseLeave={(e) =>
-                                  (e.target.style.backgroundColor =
-                                    "transparent")
-                                }
-                              >
-                                {dayjs(show.start_time).format("HH:mm")}
-                              </button>
-                            ))}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-muted small">No shows available</div>
-                  )}
+                  {renderMovieShows(movie)}
                 </div>
                 <button
                   className="btn btn-secondary mt-3"

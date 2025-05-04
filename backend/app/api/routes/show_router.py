@@ -5,7 +5,7 @@ from models_local import Show, Movie, Hall
 from schemas import ShowBase, ShowModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, func, cast, TIMESTAMP
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 
 
 router = APIRouter(prefix="/show", tags=["Shows"])
@@ -116,7 +116,7 @@ async def delete_show(
 @router.get("/get_details")
 async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
     if region not in ["krakow", "warsaw"]:
-        raise HTTPException(status_code=400, detail="Niepoprawny region")
+        raise HTTPException(status_code=400, detail="Invalid region")
 
     query = select(Show, Movie.title, Hall.name).join(Movie).join(Hall)
     result = await db.execute(query)
@@ -147,14 +147,14 @@ async def check_show_conflict(
 ):
 
     if region not in ["krakow", "warsaw"]:
-        raise HTTPException(status_code=400, detail="Niepoprawny region")
+        raise HTTPException(status_code=400, detail="Invalid region")
 
     movie_stmt = select(Movie.runtime).where(Movie.id == movie_id)
     result = await db.execute(movie_stmt)
     movie_runtime = result.scalar()
 
     if movie_runtime is None:
-        raise HTTPException(status_code=404, detail="Nie znaleziono filmu")
+        raise HTTPException(status_code=404, detail="Movie not found")
 
     new_start = start_time
     new_end = new_start + timedelta(minutes=movie_runtime)
@@ -197,12 +197,14 @@ async def check_show_conflict(
 @router.get("/movies_with_shows")
 async def get_movies_with_shows(region: str, db: AsyncSession = Depends(get_db_local)):
     if region not in ["krakow", "warsaw"]:
-        raise HTTPException(status_code=400, detail="Niepoprawny region")
+        raise HTTPException(status_code=400, detail="Invalid region")
+
+    current_time = datetime.now(timezone.utc).replace(tzinfo=None)
 
     stmt = (
         select(Movie, Show)
         .join(Show, Movie.id == Show.movie_id)
-        .where(Show.start_time > datetime.utcnow())
+        .where(Show.start_time > current_time)  # Use timezone-naive datetime
     )
     result = await db.execute(stmt)
     rows = result.all()
