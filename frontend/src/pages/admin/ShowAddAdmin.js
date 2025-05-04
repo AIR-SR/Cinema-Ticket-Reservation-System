@@ -15,6 +15,7 @@ const ShowAddAdmin = () => {
   const [successMessage, setSuccessMessage] = useState(null);
   const [price, setPrice] = useState("15.90");
   const [availableTimes, setAvailableTimes] = useState([]); // Add state for available times
+  const [scheduledShows, setScheduledShows] = useState([]); // Add state for scheduled shows
 
   const navigate = useNavigate();
   const location = useLocation(); // Get location object
@@ -107,6 +108,34 @@ const ShowAddAdmin = () => {
     }
   };
 
+  const fetchScheduledShows = async () => {
+    if (!selectedHallId || !date) {
+      setScheduledShows([]);
+      return;
+    }
+
+    try {
+      const response = await api.get(
+        `/show/get_by_hall_and_date/${selectedHallId}`,
+        {
+          params: {
+            date,
+            region,
+          },
+        }
+      );
+
+      const sortedShows = response.data.sort(
+        (a, b) => new Date(a.start_time) - new Date(b.start_time)
+      ); // Sort shows by start time
+
+      setScheduledShows(sortedShows); // Set sorted scheduled shows
+    } catch (err) {
+      console.error("Error fetching scheduled shows:", err);
+      setError("There was a problem fetching scheduled shows.");
+    }
+  };
+
   useEffect(() => {
     const fetchAvailableTimes = async () => {
       const times = await getAvailableTimes();
@@ -115,6 +144,10 @@ const ShowAddAdmin = () => {
 
     fetchAvailableTimes();
   }, [selectedHallId, date]);
+
+  useEffect(() => {
+    fetchScheduledShows();
+  }, [selectedHallId, date]); // Fetch scheduled shows when hall or date changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -185,7 +218,7 @@ const ShowAddAdmin = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h1 className="text-center mb-4">Add New Show</h1>
       <form onSubmit={handleSubmit} className="card p-4 shadow-sm">
         {error && <div className="alert alert-danger">{error}</div>}
@@ -274,6 +307,24 @@ const ShowAddAdmin = () => {
             ))}
           </select>
         </div>
+
+        {scheduledShows.length > 0 && (
+          <div className="mb-3">
+            <h5>Scheduled Shows</h5>
+            <ul className="list-group">
+              {scheduledShows.map((show) => (
+                <li key={show.id} className="list-group-item">
+                  {`Movie: ${show.movie_title}, Start: ${new Date(
+                    show.start_time
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}, Duration: ${show.duration} mins`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="mb-3">
           <label htmlFor="price" className="form-label">

@@ -246,7 +246,7 @@ async def get_shows_by_hall_and_date(
     end_of_day = start_of_day + timedelta(days=1) - timedelta(seconds=1)
 
     query = (
-        select(Show, Movie.runtime)
+        select(Show, Movie.runtime, Movie.title)
         .join(Movie)
         .where(Show.hall_id == hall_id)
         .where(Show.start_time.between(start_of_day, end_of_day))
@@ -261,6 +261,7 @@ async def get_shows_by_hall_and_date(
         {
             "start_time": show.start_time,
             "duration": runtime,
+            "movie_title": title,
         }
-        for show, runtime in shows
+        for show, runtime, title in shows
     ]
