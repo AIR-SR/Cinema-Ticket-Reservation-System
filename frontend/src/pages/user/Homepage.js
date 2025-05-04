@@ -33,7 +33,7 @@ const Homepage = () => {
             alt="Kraków"
             style={{ width: "200px", height: "200px", marginBottom: "10px" }}
           />
-          <p style={{ fontWeight: "bold", fontSize: "1.2rem" }}>Kraków</p>
+          <p style={{ fontWeight: "bold", fontSize: "1.2rem" }}>Krakow</p>
         </button>
         <button
           className="btn btn-light shadow p-3 mb-5 bg-white rounded"
@@ -49,7 +49,7 @@ const Homepage = () => {
             alt="Warszawa"
             style={{ width: "200px", height: "200px", marginBottom: "10px" }}
           />
-          <p style={{ fontWeight: "bold", fontSize: "1.2rem" }}>Warszawa</p>
+          <p style={{ fontWeight: "bold", fontSize: "1.2rem" }}>Warsaw</p>
         </button>
       </div>
     </div>

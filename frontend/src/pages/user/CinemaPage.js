@@ -85,43 +85,59 @@ const CinemaPage = () => {
     return <div className="alert alert-danger text-center">{error}</div>;
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">
+    <div className="container mt-5 mb-5">
+      <h1 className="text-center mb-5">
         Movies currently played in{" "}
         {city.charAt(0).toUpperCase() + city.slice(1)}
       </h1>
-      <div className="row">
-        {movies.map((movie) => (
-          <div key={movie.id} className="col-md-4 mb-4">
-            <div className="card shadow-sm h-100">
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                className="card-img-top"
-                style={{
-                  height: "300px",
-                  objectFit: "contain",
-                  backgroundColor: "#f8f9fa",
-                }}
-              />
-              <div className="card-body d-flex flex-column">
-                <h5 className="card-title">{movie.title}</h5>
-                <div className="mt-3 flex-grow-1">
-                  {renderMovieShows(movie)}
+      {movies.length === 0 ? (
+        <div className="text-center text-muted">
+          Currently there are no movies played in this city.
+        </div>
+      ) : (
+        <div className="row gx-4 gy-4">
+          {movies.map((movie) => (
+            <div
+              key={movie.id}
+              className="col-md-4 mb-4"
+              style={{ transition: "transform 0.2s" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.transform = "scale(1.05)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
+            >
+              <div className="card shadow-sm h-100">
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title}
+                  className="card-img-top"
+                  style={{
+                    height: "300px",
+                    objectFit: "contain",
+                    backgroundColor: "#f8f9fa",
+                  }}
+                />
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">{movie.title}</h5>
+                  <button
+                    className="btn btn-secondary mb-3"
+                    onClick={() =>
+                      navigate(`/movies/details/${movie.id}?region=${region}`)
+                    }
+                  >
+                    View Details
+                  </button>
+                  <div className="mt-3 flex-grow-1">
+                    {renderMovieShows(movie)}
+                  </div>
                 </div>
-                <button
-                  className="btn btn-secondary mt-3"
-                  onClick={() =>
-                    navigate(`/movies/details/${movie.id}?region=${region}`)
-                  }
-                >
-                  View Details
-                </button>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -40,38 +40,42 @@ const MovieDetails = () => {
 
   return (
     <div className="container mt-5 mb-5">
-      {movie && (
-        <div className="row align-items-center">
-          <div className="col-md-4 text-center mb-4 mb-md-0">
-            <img
-              src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
-              alt={`${movie.title} Poster`}
-              className="img-fluid rounded shadow"
-              style={{
-                aspectRatio: "2 / 3",
-                objectFit: "cover",
-                maxWidth: "100%",
-              }}
-            />
-          </div>
-          <div className="col-md-8">
-            <h1 className="mb-4">{movie.title}</h1>
-            <p>
-              <strong>Release Date:</strong>{" "}
-              {new Date(movie.release_date).toLocaleDateString("en-GB")}
-            </p>
-            <p>
-              <strong>Runtime:</strong> {movie.runtime} minutes
-            </p>
-            <p>
-              <strong>Genres:</strong> {movie.genres.join(", ")}
-            </p>
-            <p>
-              <strong>Description:</strong> {movie.description}
-            </p>
-          </div>
+      <div className="card shadow">
+        <div className="card-body">
+          {movie && (
+            <div className="row align-items-center">
+              <div className="col-md-4 text-center mb-4 mb-md-0">
+                <img
+                  src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+                  alt={`${movie.title} Poster`}
+                  className="img-fluid rounded shadow"
+                  style={{
+                    aspectRatio: "2 / 3",
+                    objectFit: "cover",
+                    maxWidth: "100%",
+                  }}
+                />
+              </div>
+              <div className="col-md-8">
+                <h1 className="mb-4">{movie.title}</h1>
+                <p>
+                  <strong>Release Date:</strong>{" "}
+                  {new Date(movie.release_date).toLocaleDateString("en-GB")}
+                </p>
+                <p>
+                  <strong>Runtime:</strong> {movie.runtime} minutes
+                </p>
+                <p>
+                  <strong>Genres:</strong> {movie.genres.join(", ")}
+                </p>
+                <p>
+                  <strong>Description:</strong> {movie.description}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
