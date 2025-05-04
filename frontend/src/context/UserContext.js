@@ -54,7 +54,20 @@ export const UserProvider = ({ children }) => {
       await handleTokenAndFetchUser();
       setLoading(false);
     };
+
     fetchUserDetails();
+
+    // Periodic token expiration check
+    const interval = setInterval(() => {
+      const token = localStorage.getItem("token");
+      if (token && isTokenExpired(token)) {
+        console.warn("Token expired. Logging out...");
+        logout();
+        window.location.reload(); // Reload the page to reflect the logout state
+      }
+    }, 60000); // Check every 60 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
 
   const logout = () => {

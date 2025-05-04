@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import RegionSelector from "../../components/RegionSelector";
 
 const HallListAdmin = () => {
   const [halls, setHalls] = useState([]);
@@ -86,24 +87,13 @@ const HallListAdmin = () => {
     <div className="container mt-4">
       <h1 className="mb-4">Hall List by Region</h1>
       <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
-        <div className="d-flex align-items-center gap-2">
-          <label htmlFor="regionSelect" className="form-label mb-0">
-            Select Region:
-          </label>
-          <select
-            id="regionSelect"
-            className="form-select"
-            value={selectedRegion}
-            onChange={(e) => setSelectedRegion(e.target.value)}
-            style={{ width: "auto" }}
-          >
-            {regions.map((region) => (
-              <option key={region} value={region}>
-                {region.charAt(0).toUpperCase() + region.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
+        <RegionSelector
+          selectedRegion={selectedRegion}
+          setSelectedRegion={setSelectedRegion}
+          regions={regions}
+          labelInline={true} // Inline label
+          fullWidth={false} // Not full width
+        />
         <button
           className="btn btn-success"
           onClick={() =>
@@ -114,13 +104,24 @@ const HallListAdmin = () => {
         </button>
       </div>
       {halls.length > 0 ? (
-        <table className="table table-striped">
+        <table
+          className="table table-striped"
+          style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Total Seats</th>
-              <th>Actions</th>
+              <th scope="col" style={{ width: "5%" }}>
+                ID
+              </th>
+              <th scope="col" style={{ width: "40%" }}>
+                Name
+              </th>
+              <th scope="col" style={{ width: "30%" }}>
+                Total Seats
+              </th>
+              <th scope="col" style={{ width: "25%" }}>
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>

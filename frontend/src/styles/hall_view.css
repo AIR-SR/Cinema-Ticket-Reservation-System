@@ -1,0 +1,57 @@
+.screen {
+    width: 100%;
+    height: 40px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  
+  .hall-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .row-layout {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .row-number {
+    width: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .seats-layout {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .seat-box {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .seat-box.reserved {
+    background-color: #f00;
+  }
+  
+  .seat-box.available {
+    background-color: #4caf50;
+  }

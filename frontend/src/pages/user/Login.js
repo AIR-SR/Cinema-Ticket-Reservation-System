@@ -34,9 +34,12 @@ const Login = () => {
       // Update user in context
       setUser(userResponse.data);
 
-      // Redirect to homepage
-      // navigate("/users/myprofile");
-      navigate("/");
+      // Redirect based on role
+      if (userResponse.data.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Login error:", error.response || error.message);
       alert("Invalid credentials");

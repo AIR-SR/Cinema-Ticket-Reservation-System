@@ -111,6 +111,29 @@ async def get_movies(region: str, db: AsyncSession = Depends(get_db_local)
 
     return movies
 
+@router.get("/get_title",
+            response_description="List of movies title by city",
+            summary="Fetch Movies by City",
+            description="Retrieve movies based on the specified region."
+            )
+async def get_movies_title(region: str, db: AsyncSession = Depends(get_db_local)
+                     ):
+    """
+    Retrieve movies based on the specified region.
+
+    - **Input**: Region name ('krakow', 'warsaw').
+    - **Returns**: A list of movies title for the selected region.
+    - **Raises**: HTTP 400 error if the region is invalid.
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(
+            status_code=400, detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.")
+
+    query = select(Movie)
+    result = await db.execute(query)
+    movies = result.scalars().all()
+
+    return [{"id": movie.id, "title": movie.title} for movie in movies]
 
 @router.get("/get/{movie_id}",
             response_model=MovieModel,

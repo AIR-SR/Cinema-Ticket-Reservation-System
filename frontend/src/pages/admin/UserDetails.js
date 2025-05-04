@@ -66,7 +66,7 @@ const UserDetails = () => {
   }
 
   return (
-    <div className="vh-100 d-flex justify-content-center align-items-center">
+    <div className="vh-90 d-flex justify-content-center align-items-center">
       <div className="container mt-5 mb-5">
         <div className="row justify-content-center">
           <div className="col-md-6">
