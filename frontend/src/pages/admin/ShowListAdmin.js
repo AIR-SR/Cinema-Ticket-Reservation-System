@@ -67,6 +67,9 @@ const ShowListAdmin = () => {
           selectedRegion={selectedRegion}
           setSelectedRegion={setSelectedRegion}
           regions={regions}
+          labelInline={true} // Inline label
+          fullWidth={false} // Not full width
+          showAllOption={true}
         />
         <Link
           to={`/admin/shows/add?region=${selectedRegion}`}

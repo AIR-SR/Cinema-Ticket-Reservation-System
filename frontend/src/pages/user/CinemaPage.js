@@ -38,11 +38,14 @@ const CinemaPage = () => {
   };
 
   if (loading) return <div className="text-center">Loading movies...</div>;
-  if (error) return <div className="alert alert-danger text-center">{error}</div>;
+  if (error)
+    return <div className="alert alert-danger text-center">{error}</div>;
 
   return (
     <div className="container mt-5">
-      <h1>Movies and Shows in {city.charAt(0).toUpperCase() + city.slice(1)}</h1>
+      <h1>
+        Movies and Shows in {city.charAt(0).toUpperCase() + city.slice(1)}
+      </h1>
       <div className="row">
         {movies.map((movie) => (
           <div key={movie.id} className="col-md-4 mb-4 text-center">

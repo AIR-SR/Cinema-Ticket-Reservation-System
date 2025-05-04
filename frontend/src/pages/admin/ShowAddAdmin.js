@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import RegionSelector from "../../components/RegionSelector"; // Import RegionSelector
 
 const ShowAddAdmin = () => {
   const [movies, setMovies] = useState([]);
@@ -139,19 +140,15 @@ const ShowAddAdmin = () => {
           <div className="alert alert-success">{successMessage}</div>
         )}
 
-        <div className="mb-3">
-          <label htmlFor="region" className="form-label">
-            Region
-          </label>
-          <select
-            id="region"
-            className="form-select"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-          >
-            <option value="krakow">Krakow</option>
-            <option value="warsaw">Warsaw</option>
-          </select>
+        <div className="mb-0">
+          <RegionSelector
+            selectedRegion={region}
+            setSelectedRegion={setRegion}
+            regions={["krakow", "warsaw"]}
+            className="mb-3"
+            fullWidth={true}
+            labelInline={false}
+          />
         </div>
 
         <div className="mb-3">

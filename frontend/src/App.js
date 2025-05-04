@@ -172,25 +172,24 @@ const App = () => {
               />
             }
           />
-            <Route
-              path="/admin/shows/list"
-              element={
-                <PrivateRoute
-                  element={<ShowListAdmin />}
-                  requiredRole={["admin"]}
-            />
-              }
-            />
-            <Route
-              path="/admin/shows/add"
-              element={
-                <PrivateRoute
-                  element={<ShowAddAdmin />}
-                  requiredRole={["admin"]}
-            />
-              }
-            />
-
+          <Route
+            path="/admin/shows/list"
+            element={
+              <PrivateRoute
+                element={<ShowListAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
+          <Route
+            path="/admin/shows/add"
+            element={
+              <PrivateRoute
+                element={<ShowAddAdmin />}
+                requiredRole={["admin"]}
+              />
+            }
+          />
         </Routes>
       </Router>
     </UserProvider>
