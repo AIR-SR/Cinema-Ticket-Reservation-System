@@ -42,6 +42,7 @@ const ShowAddAdmin = () => {
         setMovies(moviesResponse.data);
         setHalls(hallsResponse.data);
       } catch (err) {
+        console.error("Error fetching movies and halls:", err); // Log error details
         setError("There was a problem loading the data.");
       }
     };
