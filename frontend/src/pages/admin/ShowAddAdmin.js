@@ -10,7 +10,7 @@ const ShowAddAdmin = () => {
   const [selectedHallId, setSelectedHallId] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [region, setRegion] = useState("krakow");
+  const [region, setRegion] = useState(null);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [price, setPrice] = useState("15.90");
@@ -29,6 +29,7 @@ const ShowAddAdmin = () => {
 
   useEffect(() => {
     const fetchMoviesAndHalls = async () => {
+      if (!region) return; // Ensure region is set before fetching
       try {
         const moviesResponse = await api.get("/movies/get_title", {
           params: { region },
@@ -45,7 +46,7 @@ const ShowAddAdmin = () => {
     };
 
     fetchMoviesAndHalls();
-  }, [region]);
+  }, [region]); // Add region as a dependency
 
   const getAvailableTimes = async () => {
     if (!selectedHallId || !date) {

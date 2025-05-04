@@ -36,7 +36,6 @@ const CinemaPage = () => {
   }, [region]);
 
   const handleShowBooking = (showId, movieId) => {
-    // Przechodzi do strony rezerwacji biletów dla wybranego seansu
     navigate(`/book-ticket/${movieId}/${showId}?region=${region}`);
   };
 
@@ -46,23 +45,27 @@ const CinemaPage = () => {
 
   return (
     <div className="container mt-5">
-      <h1>
+      <h1 className="text-center mb-4">
         Movies currently played in{" "}
         {city.charAt(0).toUpperCase() + city.slice(1)}
       </h1>
-      <ul className="list-group">
+      <div className="row">
         {movies.map((movie) => (
-          <li key={movie.id} className="list-group-item">
-            <div className="d-flex align-items-center">
+          <div key={movie.id} className="col-md-4 mb-4">
+            <div className="card shadow-sm h-100">
               <img
-                src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
-                className="img-thumbnail me-3"
-                style={{ width: "100px", height: "150px", objectFit: "cover" }}
+                className="card-img-top"
+                style={{
+                  height: "300px",
+                  objectFit: "contain",
+                  backgroundColor: "#f8f9fa",
+                }}
               />
-              <div>
-                <h5>{movie.title}</h5>
-                <div className="mt-2">
+              <div className="card-body d-flex flex-column">
+                <h5 className="card-title">{movie.title}</h5>
+                <div className="mt-3 flex-grow-1">
                   {movie.shows?.length > 0 ? (
                     Object.entries(
                       movie.shows.reduce((acc, show) => {
@@ -76,7 +79,7 @@ const CinemaPage = () => {
                     ).map(([date, shows]) => (
                       <div key={date} className="mb-3">
                         <strong>{date}</strong>
-                        <div>
+                        <div className="mt-2">
                           {shows
                             .sort((a, b) =>
                               dayjs(a.start_time).isBefore(dayjs(b.start_time))
@@ -86,9 +89,19 @@ const CinemaPage = () => {
                             .map((show) => (
                               <button
                                 key={show.id}
-                                className="btn btn-primary btn-sm me-2 mb-2"
+                                className="btn btn-outline-primary btn-sm me-2 mb-2"
                                 onClick={() =>
                                   handleShowBooking(show.id, movie.id)
+                                }
+                                style={{
+                                  transition: "all 0.3s ease",
+                                }}
+                                onMouseEnter={(e) =>
+                                  (e.target.style.backgroundColor = "#007bff")
+                                }
+                                onMouseLeave={(e) =>
+                                  (e.target.style.backgroundColor =
+                                    "transparent")
                                 }
                               >
                                 {dayjs(show.start_time).format("HH:mm")}
@@ -102,7 +115,7 @@ const CinemaPage = () => {
                   )}
                 </div>
                 <button
-                  className="btn btn-secondary btn-sm mt-2"
+                  className="btn btn-secondary mt-3"
                   onClick={() =>
                     navigate(`/movies/details/${movie.id}?region=${region}`)
                   }
@@ -111,9 +124,9 @@ const CinemaPage = () => {
                 </button>
               </div>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

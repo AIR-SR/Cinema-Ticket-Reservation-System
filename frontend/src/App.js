@@ -15,6 +15,7 @@ import { UserProvider } from "./context/UserContext";
 
 // Components
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 import Homepage from "./pages/user/Homepage";
 import Login from "./pages/user/Login";
@@ -34,6 +35,7 @@ import HallAddAdmin from "./pages/admin/HallAddAdmin";
 import HallDetailsAdmin from "./pages/admin/HallDetailsAdmin";
 import ShowAddAdmin from "./pages/admin/ShowAddAdmin";
 import ShowListAdmin from "./pages/admin/ShowListAdmin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -72,125 +74,145 @@ const App = () => {
   return (
     <UserProvider>
       <Router>
-        <Navbar />
-        <Routes>
-          {/* Health Check */}
-          <Route path="/health-check" element={<HealthCheck />} />
+        <div className="d-flex flex-column min-vh-100">
+          <Navbar />
+          <main className="flex-grow-1">
+            <Routes>
+              {/* Health Check */}
+              <Route path="/health-check" element={<HealthCheck />} />
 
-          {/* Homepage */}
-          <Route path="/" element={<Homepage />} />
-          <Route path="/cinema/:city" element={<CinemaPage />} />
+              {/* Homepage */}
+              <Route path="/" element={<Homepage />} />
+              <Route path="/cinema/:city" element={<CinemaPage />} />
 
-          {/* Login */}
-          <Route path="/login" element={<Login setToken={setToken} />} />
-          <Route path="/logout" element={<Logout setToken={setToken} />} />
+              {/* Login */}
+              <Route path="/login" element={<Login setToken={setToken} />} />
+              <Route path="/logout" element={<Logout setToken={setToken} />} />
 
-          {/* Register */}
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/register/admin"
-            element={
-              <PrivateRoute
-                element={<RegisterAdmin />}
-                requiredRole={["admin"]}
+              {/* Register */}
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/register/admin"
+                element={
+                  <PrivateRoute
+                    element={<RegisterAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
 
-          {/* Movie Details */}
-          <Route path="/movies/details/:movieId" element={<MovieDetails />} />
+              {/* Movie Details */}
+              <Route
+                path="/movies/details/:movieId"
+                element={<MovieDetails />}
+              />
 
-          {/* Users */}
-          <Route
-            path="/users/myprofile"
-            element={
-              <PrivateRoute
-                element={<MyProfile />}
-                requiredRole={["admin", "employee", "user"]}
+              {/* Users */}
+              <Route
+                path="/users/myprofile"
+                element={
+                  <PrivateRoute
+                    element={<MyProfile />}
+                    requiredRole={["admin", "employee", "user"]}
+                  />
+                }
               />
-            }
-          />
 
-          {/* Admin */}
-          <Route
-            path="/users-list"
-            element={
-              <PrivateRoute element={<UserList />} requiredRole={["admin"]} />
-            }
-          />
-          <Route
-            path="/users/details/:userId"
-            element={
-              <PrivateRoute
-                element={<UserDetails />}
-                requiredRole={["admin"]}
+              {/* Admin */}
+              <Route
+                path="/users-list"
+                element={
+                  <PrivateRoute
+                    element={<UserList />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/admin/movies/list"
-            element={
-              <PrivateRoute
-                element={<MovieListAdmin />}
-                requiredRole={["admin"]}
+              <Route
+                path="/users/details/:userId"
+                element={
+                  <PrivateRoute
+                    element={<UserDetails />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/admin/halls/list"
-            element={
-              <PrivateRoute
-                element={<HallListAdmin />}
-                requiredRole={["admin"]}
+              <Route
+                path="/admin/movies/list"
+                element={
+                  <PrivateRoute
+                    element={<MovieListAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/admin/movies/add"
-            element={
-              <PrivateRoute
-                element={<MovieAddAdmin />}
-                requiredRole={["admin"]}
+              <Route
+                path="/admin/halls/list"
+                element={
+                  <PrivateRoute
+                    element={<HallListAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/admin/halls/add"
-            element={
-              <PrivateRoute
-                element={<HallAddAdmin />}
-                requiredRole={["admin"]}
+              <Route
+                path="/admin/movies/add"
+                element={
+                  <PrivateRoute
+                    element={<MovieAddAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/admin/halls/details/:hallId"
-            element={
-              <PrivateRoute
-                element={<HallDetailsAdmin />}
-                requiredRole={["admin"]}
+              <Route
+                path="/admin/halls/add"
+                element={
+                  <PrivateRoute
+                    element={<HallAddAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/admin/shows/list"
-            element={
-              <PrivateRoute
-                element={<ShowListAdmin />}
-                requiredRole={["admin"]}
+              <Route
+                path="/admin/halls/details/:hallId"
+                element={
+                  <PrivateRoute
+                    element={<HallDetailsAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-          <Route
-            path="/admin/shows/add"
-            element={
-              <PrivateRoute
-                element={<ShowAddAdmin />}
-                requiredRole={["admin"]}
+              <Route
+                path="/admin/shows/list"
+                element={
+                  <PrivateRoute
+                    element={<ShowListAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
               />
-            }
-          />
-        </Routes>
+              <Route
+                path="/admin/shows/add"
+                element={
+                  <PrivateRoute
+                    element={<ShowAddAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
+              />
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <PrivateRoute
+                    element={<AdminDashboard />}
+                    requiredRole={["admin"]}
+                  />
+                }
+              />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </Router>
     </UserProvider>
   );

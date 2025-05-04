@@ -116,11 +116,6 @@ const Navbar = () => {
                 </li>
               </>
             )}
-            <li className="nav-item">
-              <Link className="nav-link" to="/health-check">
-                Health Check
-              </Link>
-            </li>
           </ul>
         </div>
       </div>

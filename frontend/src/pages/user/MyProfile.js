@@ -88,7 +88,7 @@ const MyProfile = () => {
   }
 
   return (
-    <div className="vh-100 d-flex justify-content-center align-items-center">
+    <div className="vh-90 d-flex justify-content-center align-items-center">
       {showModal || editField ? <div className="modal-overlay"></div> : null}
       <div className="container mt-5 mb-5">
         <div className="row justify-content-center">
