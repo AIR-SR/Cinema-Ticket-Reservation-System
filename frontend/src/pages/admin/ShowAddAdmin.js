@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import RegionSelector from "../../components/RegionSelector"; // Import RegionSelector
 
 const ShowAddAdmin = () => {
@@ -14,8 +14,18 @@ const ShowAddAdmin = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [price, setPrice] = useState("15.90");
+  const [availableTimes, setAvailableTimes] = useState([]); // Add state for available times
 
   const navigate = useNavigate();
+  const location = useLocation(); // Get location object
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const regionFromQuery = queryParams.get("region");
+    if (regionFromQuery && ["krakow", "warsaw"].includes(regionFromQuery)) {
+      setRegion(regionFromQuery); // Set region from query params
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const fetchMoviesAndHalls = async () => {
@@ -37,31 +47,73 @@ const ShowAddAdmin = () => {
     fetchMoviesAndHalls();
   }, [region]);
 
-  const getAvailableTimes = () => {
-    const times = [];
-    const now = new Date();
-    const todayStr = now.toISOString().split("T")[0];
-
-    for (let hour = 8; hour <= 20; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        const timeStr = `${hour.toString().padStart(2, "0")}:${minute
-          .toString()
-          .padStart(2, "0")}`;
-
-        if (
-          date === todayStr &&
-          (hour < now.getHours() ||
-            (hour === now.getHours() && minute <= now.getMinutes()))
-        ) {
-          continue;
-        }
-
-        times.push(timeStr);
-      }
+  const getAvailableTimes = async () => {
+    if (!selectedHallId || !date) {
+      return [];
     }
 
-    return times;
+    try {
+      const response = await api.get(
+        `/show/get_by_hall_and_date/${selectedHallId}`,
+        {
+          params: {
+            date,
+            region,
+          },
+        }
+      );
+
+      const existingShows = response.data; // Array of existing shows
+      const times = [];
+      const now = new Date();
+      const todayStr = now.toISOString().split("T")[0];
+
+      for (let hour = 8; hour <= 20; hour++) {
+        for (let minute = 0; minute < 60; minute += 30) {
+          const timeStr = `${hour.toString().padStart(2, "0")}:${minute
+            .toString()
+            .padStart(2, "0")}`;
+          const startTime = new Date(`${date}T${timeStr}:00`);
+
+          if (
+            date === todayStr &&
+            (hour < now.getHours() ||
+              (hour === now.getHours() && minute <= now.getMinutes()))
+          ) {
+            continue;
+          }
+
+          // Check for conflicts with existing shows
+          const hasConflict = existingShows.some((show) => {
+            const showStart = new Date(show.start_time);
+            const showEnd = new Date(showStart);
+            showEnd.setMinutes(showEnd.getMinutes() + show.duration);
+
+            return startTime >= showStart && startTime < showEnd;
+          });
+
+          if (!hasConflict) {
+            times.push(timeStr);
+          }
+        }
+      }
+
+      return times;
+    } catch (err) {
+      console.error("Error fetching existing shows:", err);
+      setError("There was a problem checking for conflicting shows.");
+      return [];
+    }
   };
+
+  useEffect(() => {
+    const fetchAvailableTimes = async () => {
+      const times = await getAvailableTimes();
+      setAvailableTimes(times);
+    };
+
+    fetchAvailableTimes();
+  }, [selectedHallId, date]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -214,7 +266,7 @@ const ShowAddAdmin = () => {
             onChange={(e) => setTime(e.target.value)}
           >
             <option value="">Select a time</option>
-            {getAvailableTimes().map((t) => (
+            {availableTimes.map((t) => (
               <option key={t} value={t}>
                 {t}
               </option>

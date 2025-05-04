@@ -4,8 +4,8 @@ from models_global import UsersGlobal
 from models_local import Show, Movie, Hall
 from schemas import ShowBase, ShowModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text, select, func
-from datetime import datetime, timedelta
+from sqlalchemy import text, select, func, cast, TIMESTAMP
+from datetime import datetime, timedelta, date
 
 
 router = APIRouter(prefix="/show", tags=["Shows"])
@@ -222,3 +222,45 @@ async def get_movies_with_shows(region: str, db: AsyncSession = Depends(get_db_l
         })
 
     return list(movie_map.values())
+
+
+@router.get("/get_by_hall_and_date/{hall_id}")
+async def get_shows_by_hall_and_date(
+    hall_id: int,
+    date: date,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+):
+    """
+    Retrieve shows for a specific hall and date.
+
+    - **Input**: Hall ID (path parameter), date, and region.
+    - **Returns**: List of shows with their start times and durations.
+    - **Raises**: HTTP 404 error if no shows are found.
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Invalid region.")
+
+    # Convert date to datetime objects for start and end of the day
+    start_of_day = datetime.combine(date, datetime.min.time())
+    end_of_day = start_of_day + timedelta(days=1) - timedelta(seconds=1)
+
+    query = (
+        select(Show, Movie.runtime)
+        .join(Movie)
+        .where(Show.hall_id == hall_id)
+        .where(Show.start_time.between(start_of_day, end_of_day))
+    )
+    result = await db.execute(query)
+    shows = result.all()
+
+    if not shows:
+        return []
+
+    return [
+        {
+            "start_time": show.start_time,
+            "duration": runtime,
+        }
+        for show, runtime in shows
+    ]

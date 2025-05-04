@@ -39,7 +39,7 @@ const MovieDetails = () => {
     return <div className="alert alert-danger text-center mt-5">{error}</div>;
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       {movie && (
         <div className="card shadow-lg">
           <img
