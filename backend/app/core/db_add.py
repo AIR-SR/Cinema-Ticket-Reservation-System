@@ -8,13 +8,13 @@ TMDB_API_BASE_URL = settings.TMDB_API_URL
 ADMIN_PASSWORD = settings.ADMIN_PASSWORD
 
 
-def get_now_playing_movies():
+def get_now_playing_movies(page: int = 1):
     url = f"{TMDB_API_BASE_URL}/movie/now_playing"
-    params = {"api_key": TMDB_API_KEY, "language": "pl-PL", "page": 1}
+    params = {"api_key": TMDB_API_KEY, "language": "pl-PL", "page": page}
     response = requests.get(url, params=params)
 
     if response.status_code == 200:
-        return response.json().get("results", [])[:20]
+        return response.json().get("results", [])
     else:
         raise ValueError(
             f"Błąd pobierania danych z API: {response.status_code}")
@@ -44,16 +44,16 @@ def populate_db():
     token = login()
     headers = {"Authorization": f"Bearer {token}"}
 
-    movies = get_now_playing_movies()
+    movies = get_now_playing_movies(1)
+    movies += get_now_playing_movies(2)
     movie_data = []
     for movie in movies:
         movie_details = get_movie_details(movie["id"])
         movie_data.append({
             "tmdbID": movie_details.get("id"),
         })
-
-    movies_krakow = movie_data[0:10]
-    movies_warsaw = movie_data[10:20]
+    movies_krakow = movie_data[0:20]
+    movies_warsaw = movie_data[20:40]
 
     print(movies_krakow)
     print(movies_warsaw)
