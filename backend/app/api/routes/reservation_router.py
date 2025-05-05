@@ -105,3 +105,50 @@ async def get_reservations(
     """
     result = await db.execute(select(Reservation))
     return result.scalars().all()
+
+
+@router.get("/my-reservations",
+            response_model=List[ReservationModel],
+            response_description="Get all reservations for the current user",
+            summary="Get all reservations for the current user",
+            description="Retrieve all reservations for the current user from the database. Returns a list of reservations.",
+            )
+async def get_my_reservations(
+    db: AsyncSession = Depends(get_db_local),
+    current_user: UsersGlobal = Depends(user_required)
+):
+    """
+    Retrieve all reservations for the current user from the database.
+    - **Returns**: A list of reservation objects.
+    """
+    result = await db.execute(
+        select(Reservation).where(Reservation.user_id == current_user.id))
+    return result.scalars().all()
+
+
+# @router.get("/get/{reservation_id}",
+#             response_model=ReservationModel,
+#             response_description="Get a reservation by ID",
+#             summary="Get a reservation by ID",
+#             description="Retrieve a reservation by its ID from the database. Returns the reservation.",
+#             )
+# async def get_reservation(
+#     reservation_id: int,
+#     db: AsyncSession = Depends(get_db_local),
+#     current_user: UsersGlobal = Depends(user_required)
+# ):
+#     """
+#     Retrieve a reservation by its ID from the database.
+#     - **Input**: Reservation ID.
+#     - **Returns**: The reservation object.
+#     - **Raises**: HTTP error if the reservation is not found.
+#     """
+#     logger.info(f"Fetching reservation with ID: {reservation_id}")
+#     result = await db.execute(
+#         select(Reservation).where(Reservation.id == reservation_id))
+#     reservation = result.scalars().first()
+#     if not reservation:
+#         logger.warning(
+#             f"Reservation with ID {reservation_id} not found.")
+#         raise HTTPException(status_code=404, detail="Reservation not found.")
+#     return reservation

@@ -13,23 +13,30 @@ const BookTicketPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSeats = async () => {
+    const fetchShowAndSeats = async () => {
       setLoading(true);
       setError(null);
       try {
-        const { data } = await api.get(`/seat/hall/${showId}`, {
+        // Fetch show details
+        const showResponse = await api.get(`/show/get/${showId}`, {
           params: { region },
         });
-        setSeats(data);
+        const hallId = showResponse.data.hall_id;
+
+        // Fetch seats using hallId
+        const { data: seatsData } = await api.get(`/seat/hall/${hallId}`, {
+          params: { region },
+        });
+        setSeats(seatsData);
       } catch (err) {
-        console.error("Failed to fetch seats:", err);
-        setError("Failed to load seats.");
+        console.error("Failed to fetch show or seats:", err);
+        setError("Failed to load show or seats.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSeats();
+    fetchShowAndSeats();
   }, [showId, region]);
 
   const handleSeatSelection = (seatId) => {

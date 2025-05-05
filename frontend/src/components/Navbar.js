@@ -55,6 +55,11 @@ const Navbar = () => {
                       My Profile
                     </Link>
                   </li>
+                  <li>
+                    <Link className="dropdown-item" to="/users/reservations">
+                      My Reservations
+                    </Link>
+                  </li>
                   {user.role === "admin" && (
                     <>
                       <li>
