@@ -50,6 +50,17 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+        <div className="col-md-4">
+          <div className="card shadow-sm">
+            <div className="card-body text-center">
+              <h5 className="card-title">Manage Reservations</h5>
+              <p className="card-text">Add, edit, or delete reservations.</p>
+              <Link to="/admin/reservations/list" className="btn btn-primary">
+                Go to Reservations
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -36,6 +36,7 @@ import HallDetailsAdmin from "./pages/admin/HallDetailsAdmin";
 import ShowAddAdmin from "./pages/admin/ShowAddAdmin";
 import ShowListAdmin from "./pages/admin/ShowListAdmin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ReservationListAdmin from "./pages/admin/ReservationListAdmin";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -205,6 +206,15 @@ const App = () => {
                 element={
                   <PrivateRoute
                     element={<AdminDashboard />}
+                    requiredRole={["admin"]}
+                  />
+                }
+              />
+              <Route
+                path="/admin/reservations/list"
+                element={
+                  <PrivateRoute
+                    element={<ReservationListAdmin />}
                     requiredRole={["admin"]}
                   />
                 }
