@@ -10,6 +10,7 @@ const BookTicketPage = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showDetails, setShowDetails] = useState(null); // New state for show details
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,12 +23,51 @@ const BookTicketPage = () => {
           params: { region },
         });
         const hallId = showResponse.data.hall_id;
+        const movieId = showResponse.data.movie_id;
+
+        // Fetch movie details
+        const movieResponse = await api.get(`/movies/get/${movieId}`, {
+          params: { region },
+        });
+
+        setShowDetails({
+          movieTitle: movieResponse.data.title, // Fetch movie title
+          showTime: showResponse.data.start_time,
+          hallName: showResponse.data.hall_name,
+        });
 
         // Fetch seats using hallId
         const { data: seatsData } = await api.get(`/seat/hall/${hallId}`, {
           params: { region },
         });
-        setSeats(seatsData);
+
+        // Fetch reserved seats for the show
+        let reservedSeats = [];
+        try {
+          const { data } = await api.get(`/show/get_reserved_seats/${showId}`, {
+            params: { region },
+          });
+          reservedSeats = data;
+        } catch (err) {
+          if (err.response && err.response.status === 404) {
+            reservedSeats = []; // Treat 404 as no reserved seats
+          } else {
+            throw err; // Re-throw other errors
+          }
+        }
+
+        // Ensure reservedSeats is an array
+        const reservedSeatIds = Array.isArray(reservedSeats)
+          ? reservedSeats
+          : [];
+
+        // Mark reserved seats
+        const updatedSeats = seatsData.map((seat) => ({
+          ...seat,
+          is_reserved: reservedSeatIds.includes(seat.id),
+        }));
+
+        setSeats(updatedSeats);
       } catch (err) {
         console.error("Failed to fetch show or seats:", err);
         setError("Failed to load show or seats.");
@@ -86,15 +126,27 @@ const BookTicketPage = () => {
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Book Tickets</h1>
+      {showDetails && ( // Display show details
+        <div className="show-details text-center mb-4">
+          <h2>{showDetails.movieTitle}</h2>
+          <p>
+            <strong>Show Time:</strong>{" "}
+            {new Date(showDetails.showTime).toLocaleString()}
+          </p>
+          <p>
+            <strong>Hall:</strong> {showDetails.hallName}
+          </p>
+        </div>
+      )}
       <div className="hall-layout">
         {seats.map((seat) => (
           <div
             key={seat.id}
             className={`seat-box ${
-              selectedSeats.includes(seat.id)
+              seat.is_reserved
+                ? "reserved" // Mark reserved seats with the "reserved" class
+                : selectedSeats.includes(seat.id)
                 ? "selected"
-                : seat.is_reserved
-                ? "reserved"
                 : "available"
             }`}
             onClick={() => !seat.is_reserved && handleSeatSelection(seat.id)}

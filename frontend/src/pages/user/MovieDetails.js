@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom"; // Import useSearchParams for query parameters
+import { useParams, useSearchParams, useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import api from "../../utils/api"; // Import the configured Axios instance
 
 const MovieDetails = () => {
   const { movieId } = useParams(); // Get movie ID from the URL
   const [searchParams] = useSearchParams(); // Get query parameters
+  const navigate = useNavigate(); // Initialize navigate function
   const region = searchParams.get("region"); // Extract the 'region' query parameter
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +41,12 @@ const MovieDetails = () => {
 
   return (
     <div className="container mt-5 mb-5">
+      <button
+        className="btn btn-secondary mb-4"
+        onClick={() => navigate(-1)} // Go back to the previous page
+      >
+        Go Back
+      </button>
       <div className="card shadow">
         <div className="card-body">
           {movie && (

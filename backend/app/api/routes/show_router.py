@@ -1,7 +1,7 @@
 from core import admin_required, get_db_local, settings, employee_required
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import Show, Movie, Hall
+from models_local import Show, Movie, Hall, Reservation, Reservation_Seat, Seat
 from schemas import ShowBase, ShowModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, func, cast, TIMESTAMP
@@ -267,3 +267,35 @@ async def get_shows_by_hall_and_date(
         }
         for show, runtime, title in shows
     ]
+
+
+@router.get("/get_reserved_seats/{show_id}")
+async def get_reserved_seats(
+    show_id: int,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+):
+    """
+    Retrieve reserved seats for a specific show.
+
+    - **Input**: Show ID (path parameter) and region.
+    - **Returns**: List of reserved seat IDs.
+    - **Raises**: HTTP 404 error if the show is not found.
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Invalid region.")
+
+    query = (
+        select(Seat.id)
+        .join(Reservation_Seat, Seat.id == Reservation_Seat.seat_id)
+        .join(Reservation, Reservation.id == Reservation_Seat.reservation_id)
+        .where(Reservation.show_id == show_id)
+    )
+    result = await db.execute(query)
+    reserved_seats = result.scalars().all()
+
+    if not reserved_seats:
+        raise HTTPException(
+            status_code=404, detail="No reserved seats found for the show.")
+
+    return reserved_seats
