@@ -5,7 +5,6 @@ import { UserContext } from "../../context/UserContext";
 import RegionSelector from "../../components/RegionSelector";
 
 const MovieAddAdmin = () => {
-  const { user } = useContext(UserContext); // Access user context
   const location = useLocation(); // Access location object
   const [tmdbID, setTmdbID] = useState("");
   const [region, setRegion] = useState("krakow");

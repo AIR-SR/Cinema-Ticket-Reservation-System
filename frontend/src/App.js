@@ -69,7 +69,7 @@ const PrivateRoute = ({ element, requiredRole }) => {
 };
 
 const App = () => {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [_, setToken] = useState(localStorage.getItem("token"));
 
   return (
     <UserProvider>

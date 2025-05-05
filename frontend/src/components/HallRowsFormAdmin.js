@@ -8,7 +8,7 @@ const HallRowsForm = ({ newHallId, region }) => {
   const navigate = useNavigate();
 
   const addNewRow = () => {
-    setRowData([...rowData, { seat_count: "" }]);
+    setRowData([...rowData, { id: Date.now(), seat_count: "" }]); // Add unique ID
   };
 
   const updateRow = (index, field, value) => {
@@ -93,9 +93,12 @@ const HallRowsForm = ({ newHallId, region }) => {
           </tr>
         </thead>
         <tbody>
-          {rowData.map((row, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
+          {rowData.map((row) => (
+            <tr key={row.id}>
+              {" "}
+              {/* Use unique ID as key */}
+              <td>{rowData.indexOf(row) + 1}</td>{" "}
+              {/* Adjust row number display */}
               <td>
                 <input
                   type="number"
@@ -103,7 +106,7 @@ const HallRowsForm = ({ newHallId, region }) => {
                   value={row.seat_count}
                   onChange={(e) =>
                     updateRow(
-                      index,
+                      rowData.indexOf(row),
                       "seat_count",
                       parseInt(e.target.value) || ""
                     )
@@ -116,7 +119,7 @@ const HallRowsForm = ({ newHallId, region }) => {
                 <button
                   type="button"
                   className="btn btn-danger"
-                  onClick={() => removeRow(index)}
+                  onClick={() => removeRow(rowData.indexOf(row))}
                 >
                   Remove
                 </button>

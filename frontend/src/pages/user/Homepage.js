@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState("krakow");
+  const [selectedCity, setSelectedCity] = useState();
 
   const handleCinemaSelection = (city) => {
     setSelectedCity(city);

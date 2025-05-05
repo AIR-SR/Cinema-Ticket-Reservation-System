@@ -129,27 +129,36 @@ const MyProfile = () => {
           onSave={handlePasswordChange}
         >
           <div className="mb-3">
-            <label className="form-label">Current Password</label>
+            <label className="form-label" htmlFor="current-password">
+              Current Password
+            </label>
             <input
               type="password"
+              id="current-password"
               className="form-control"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">New Password</label>
+            <label className="form-label" htmlFor="new-password">
+              New Password
+            </label>
             <input
               type="password"
+              id="new-password"
               className="form-control"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Confirm Password</label>
+            <label className="form-label" htmlFor="confirm-password">
+              Confirm Password
+            </label>
             <input
               type="password"
+              id="confirm-password"
               className="form-control"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

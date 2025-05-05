@@ -52,12 +52,15 @@ const HealthCheck = () => {
     if (!status) {
       return <p className="text-muted">Checking {group} health...</p>;
     }
-    const alertClass =
-      status.status === "connected"
-        ? "alert-success"
-        : status.status === "misconfigured"
-        ? "alert-warning"
-        : "alert-danger";
+
+    let alertClass;
+    if (status.status === "connected") {
+      alertClass = "alert-success";
+    } else if (status.status === "misconfigured") {
+      alertClass = "alert-warning";
+    } else {
+      alertClass = "alert-danger";
+    }
 
     return (
       <div className={`alert ${alertClass} mt-2`}>

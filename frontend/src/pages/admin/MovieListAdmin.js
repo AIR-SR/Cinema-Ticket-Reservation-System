@@ -7,7 +7,7 @@ const MovieListAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState("krakow"); // Default to the first region
-  const [regions, setRegions] = useState(["krakow", "warsaw"]); // List of regions
+  const [regions] = useState(["krakow", "warsaw"]); // List of regions
 
   useEffect(() => {
     const fetchMovies = async () => {

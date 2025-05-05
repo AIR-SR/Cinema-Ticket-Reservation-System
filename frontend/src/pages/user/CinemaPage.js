@@ -101,12 +101,16 @@ const CinemaPage = () => {
               key={movie.id}
               className="col-md-4 mb-4"
               style={{ transition: "transform 0.2s" }}
+              role="button"
+              tabIndex={0}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.transform = "scale(1.05)")
               }
               onMouseLeave={(e) =>
                 (e.currentTarget.style.transform = "scale(1)")
               }
+              onFocus={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+              onBlur={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               <div className="card shadow-sm h-100">
                 <img
