@@ -19,7 +19,7 @@ const Navbar = () => {
             className="me-2"
             style={{ width: "40px", height: "40px" }}
           />
-          <span className="fw-bold">Cinema Ticket Reservation System</span>
+          <span className="fw-bold">LFKG Cinemas</span>
         </Link>
         <button
           className="navbar-toggler"

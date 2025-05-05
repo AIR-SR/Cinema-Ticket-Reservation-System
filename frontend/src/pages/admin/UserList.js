@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import BackButton from "../../components/BackButton";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -8,7 +9,7 @@ const UserList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "Warehouse Manager | User List";
+    document.title = "Cinema | User List";
 
     const fetchUsers = async () => {
       try {
@@ -41,7 +42,7 @@ const UserList = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h1 className="text-center mb-4">User List</h1>
       {error && <div className="alert alert-danger">{error}</div>}
       <div className="d-flex justify-content-between mb-3">
@@ -81,6 +82,9 @@ const UserList = () => {
       ) : (
         <p className="text-center">No users found.</p>
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };

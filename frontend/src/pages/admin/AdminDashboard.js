@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h1 className="text-center mb-4">Admin Dashboard</h1>
       <div className="row g-4">
         <div className="col-md-4">

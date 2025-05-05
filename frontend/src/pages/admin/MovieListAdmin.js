@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import RegionSelector from "../../components/RegionSelector";
+import BackButton from "../../components/BackButton";
 
 const MovieListAdmin = () => {
   const [moviesByRegion, setMoviesByRegion] = useState({});
@@ -8,6 +10,7 @@ const MovieListAdmin = () => {
   const [error, setError] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState("krakow"); // Default to the first region
   const [regions] = useState(["krakow", "warsaw"]); // List of regions
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -46,11 +49,15 @@ const MovieListAdmin = () => {
     window.location.href = `/movies/details/${movieId}?region=${region}`;
   };
 
+  const handleGoBack = () => {
+    navigate(-1); // Navigate to the previous page
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 mb-4">
       <h1 className="mb-4">Movie List by Region</h1>
       <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
         <RegionSelector
@@ -72,9 +79,6 @@ const MovieListAdmin = () => {
       {moviesByRegion[selectedRegion] &&
       moviesByRegion[selectedRegion].length > 0 ? (
         <div className="mb-5">
-          <h2 className="mb-3">
-            {selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}
-          </h2>
           <table
             className="table table-striped"
             style={{ tableLayout: "fixed", width: "100%" }}
@@ -137,6 +141,9 @@ const MovieListAdmin = () => {
           </div>
         )
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };
