@@ -1,4 +1,4 @@
-from core import admin_required, get_db_local, user_required
+from core import admin_required, get_db_local, user_required, logger
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from models_global import UsersGlobal
@@ -8,6 +8,7 @@ from schemas import ReservationSeatBase, ReservationSeatModel, ReservationBase, 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete, text, select, func
+from datetime import datetime
 
 router = APIRouter(prefix="/reservation", tags=["Reservation"])
 
@@ -31,30 +32,61 @@ async def create_reservation(
     - **Returns**: The newly created reservation object.
     - **Raises**: HTTP error if any seat is already reserved.
     """
-    # Check if any of the seats are already reserved
-    existing_reservations = await db.execute(
-        select(Reservation_Seat).where(Reservation_Seat.seat_id.in_(seat_ids))
-    )
-    if existing_reservations.scalars().first():
-        raise HTTPException(
-            status_code=400,
-            detail="One or more seats are already reserved."
+    logger.info(
+        f"Creating reservation for user {current_user.id} with data: {reservation} and seat IDs: {seat_ids}")
+    try:
+        # Convert created_at to offset-naive datetime
+        if isinstance(reservation.created_at, datetime) and reservation.created_at.tzinfo is not None:
+            reservation.created_at = reservation.created_at.replace(
+                tzinfo=None)
+
+        # Check if any of the seats are already reserved
+        existing_reservations = await db.execute(
+            select(Reservation_Seat).where(
+                Reservation_Seat.seat_id.in_(seat_ids))
         )
+        if existing_reservations.scalars().first():
+            logger.warning(
+                f"Reservation failed: One or more seats are already reserved. Seat IDs: {seat_ids}")
+            raise HTTPException(
+                status_code=400,
+                detail="One or more seats are already reserved."
+            )
 
-    # Create the reservation
-    new_reservation = Reservation(**reservation.model_dump())
-    db.add(new_reservation)
-    await db.flush()  # Flush to get the reservation ID
+        # Create the reservation
+        new_reservation = Reservation(
+            user_id=current_user.id,
+            show_id=reservation.show_id,
+            status=reservation.status,
+            created_at=reservation.created_at
+        )
+        db.add(new_reservation)
+        await db.flush()  # Flush to get the reservation ID
 
-    # Create reservation_seat entries
-    reservation_seats = [
-        Reservation_Seat(seat_id=seat_id, reservation_id=new_reservation.id)
-        for seat_id in seat_ids
-    ]
-    db.add_all(reservation_seats)
-    await db.commit()
+        # Create reservation_seat entries
+        reservation_seats = [
+            Reservation_Seat(
+                seat_id=seat_id, reservation_id=new_reservation.id)
+            for seat_id in seat_ids
+        ]
+        db.add_all(reservation_seats)
+        await db.commit()
 
-    return new_reservation
+        logger.info(
+            f"Reservation created successfully with ID: {new_reservation.id}")
+        return new_reservation
+    except ValidationError as e:
+        logger.error(f"Validation error while creating reservation: {e}")
+        raise HTTPException(status_code=422, detail=str(e))
+    except HTTPException as e:
+        # Re-raise HTTP exceptions to avoid overwriting
+        logger.error(f"HTTP exception: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.exception(
+            "Unexpected error occurred while creating the reservation.")
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}")
 
 
 @router.get("/get-all",

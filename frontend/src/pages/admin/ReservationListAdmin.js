@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import RegionSelector from "../../components/RegionSelector"; // Import RegionSelector
 
 const ReservationListAdmin = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedRegion, setSelectedRegion] = useState("krakow"); // Default region
+  const [regions] = useState(["krakow", "warsaw"]); // List of regions
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +20,7 @@ const ReservationListAdmin = () => {
 
         const response = await api.get("/reservation/get-all", {
           headers: { Authorization: `Bearer ${token}` },
+          params: { region: selectedRegion }, // Pass selected region as a parameter
         });
 
         setReservations(response.data);
@@ -33,7 +37,7 @@ const ReservationListAdmin = () => {
     };
 
     fetchReservations();
-  }, []);
+  }, [selectedRegion]); // Re-fetch reservations when selectedRegion changes
 
   if (loading) return <p>Loading reservations...</p>;
   if (error) return <p className="text-danger">{error}</p>;
@@ -41,6 +45,15 @@ const ReservationListAdmin = () => {
   return (
     <div className="container mt-4">
       <h1 className="mb-4">All Reservations</h1>
+      <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
+        <RegionSelector
+          selectedRegion={selectedRegion}
+          setSelectedRegion={setSelectedRegion}
+          regions={regions}
+          labelInline={true} // Inline label
+          fullWidth={false} // Not full width
+        />
+      </div>
       {reservations.length > 0 ? (
         <table className="table table-striped">
           <thead>

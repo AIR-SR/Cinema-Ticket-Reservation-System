@@ -7,12 +7,6 @@ class ReservationBase(BaseModel):
     """
     Base model for a reservation, containing common fields shared across different representations of a reservation.
     """
-    user_id: int = Field(
-        ...,
-        ge=1,
-        title="User ID",
-        description="The unique identifier of the user making the reservation. Must be a positive integer."
-    )
     show_id: int = Field(
         ...,
         ge=1,
@@ -40,6 +34,12 @@ class ReservationModel(ReservationBase):
         ge=1,
         title="Reservation ID",
         description="A unique identifier for the reservation in the database. Must be a positive integer."
+    )
+    user_id: int = Field(
+        ...,
+        ge=1,
+        title="User ID",
+        description="The unique identifier of the user making the reservation. Must be a positive integer."
     )
 
     class Config:
