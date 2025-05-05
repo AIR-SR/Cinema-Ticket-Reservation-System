@@ -269,6 +269,55 @@ async def get_shows_by_hall_and_date(
     ]
 
 
+@router.get("/get-for-reservation/{show_id}")
+async def get_show_for_reservation(
+    show_id: int,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+):
+    """
+    Retrieve show details for reservation, including movie and hall details.
+
+    - **Input**: Show ID (path parameter) and region.
+    - **Returns**: Show object with its details, movie details, and hall details.
+    - **Raises**: HTTP 404 error if the show is not found.
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Invalid region.")
+
+    query = (
+        select(Show, Movie, Hall)
+        .join(Movie, Show.movie_id == Movie.id)
+        .join(Hall, Show.hall_id == Hall.id)
+        .where(Show.id == show_id)
+    )
+    result = await db.execute(query)
+    row = result.first()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Show not found")
+
+    show, movie, hall = row
+
+    return {
+        "show": {
+            "id": show.id,
+            "start_time": show.start_time,
+            "price": show.price,
+        },
+        "movie": {
+            "id": movie.id,
+            "title": movie.title,
+            "runtime": movie.runtime,
+            "poster_path": movie.poster_path,
+        },
+        "hall": {
+            "id": hall.id,
+            "name": hall.name,
+        },
+    }
+
+
 @router.get("/get_reserved_seats/{show_id}")
 async def get_reserved_seats(
     show_id: int,

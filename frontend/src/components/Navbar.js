@@ -44,7 +44,7 @@ const Navbar = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Welcome, {user.username}
+                  Welcome, {user.first_name}
                 </a>
                 <ul
                   className="dropdown-menu"
@@ -55,11 +55,13 @@ const Navbar = () => {
                       My Profile
                     </Link>
                   </li>
-                  <li>
-                    <Link className="dropdown-item" to="/users/reservations">
-                      My Reservations
-                    </Link>
-                  </li>
+                  {user.role === "user" && (
+                    <li>
+                      <Link className="dropdown-item" to="/users/reservations">
+                        My Reservations
+                      </Link>
+                    </li>
+                  )}
                   {user.role === "admin" && (
                     <>
                       <li>

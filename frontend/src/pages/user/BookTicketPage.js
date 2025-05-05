@@ -10,7 +10,7 @@ const BookTicketPage = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showDetails, setShowDetails] = useState(null); // New state for show details
+  const [showDetails, setShowDetails] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,30 +18,25 @@ const BookTicketPage = () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch show details
-        const showResponse = await api.get(`/show/get/${showId}`, {
-          params: { region },
-        });
-        const hallId = showResponse.data.hall_id;
-        const movieId = showResponse.data.movie_id;
-
-        // Fetch movie details
-        const movieResponse = await api.get(`/movies/get/${movieId}`, {
-          params: { region },
-        });
+        const showResponse = await api.get(
+          `/show/get-for-reservation/${showId}`,
+          {
+            params: { region },
+          }
+        );
 
         setShowDetails({
-          movieTitle: movieResponse.data.title, // Fetch movie title
-          showTime: showResponse.data.start_time,
-          hallName: showResponse.data.hall_name,
+          movieTitle: showResponse.data.movie.title,
+          showTime: showResponse.data.show.start_time,
+          hallName: showResponse.data.hall.name,
         });
 
-        // Fetch seats using hallId
+        const hallId = showResponse.data.hall.id;
+
         const { data: seatsData } = await api.get(`/seat/hall/${hallId}`, {
           params: { region },
         });
 
-        // Fetch reserved seats for the show
         let reservedSeats = [];
         try {
           const { data } = await api.get(`/show/get_reserved_seats/${showId}`, {
@@ -50,24 +45,32 @@ const BookTicketPage = () => {
           reservedSeats = data;
         } catch (err) {
           if (err.response && err.response.status === 404) {
-            reservedSeats = []; // Treat 404 as no reserved seats
+            reservedSeats = [];
           } else {
-            throw err; // Re-throw other errors
+            throw err;
           }
         }
 
-        // Ensure reservedSeats is an array
         const reservedSeatIds = Array.isArray(reservedSeats)
           ? reservedSeats
           : [];
 
-        // Mark reserved seats
         const updatedSeats = seatsData.map((seat) => ({
           ...seat,
           is_reserved: reservedSeatIds.includes(seat.id),
         }));
 
-        setSeats(updatedSeats);
+        const rowsWithSeats = updatedSeats.reduce((acc, seat) => {
+          const row = acc.find((r) => r.row_id === seat.row_id);
+          if (row) {
+            row.seats.push(seat);
+          } else {
+            acc.push({ row_id: seat.row_id, seats: [seat] });
+          }
+          return acc;
+        }, []);
+
+        setSeats(rowsWithSeats);
       } catch (err) {
         console.error("Failed to fetch show or seats:", err);
         setError("Failed to load show or seats.");
@@ -126,7 +129,7 @@ const BookTicketPage = () => {
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Book Tickets</h1>
-      {showDetails && ( // Display show details
+      {showDetails && (
         <div className="show-details text-center mb-4">
           <h2>{showDetails.movieTitle}</h2>
           <p>
@@ -138,30 +141,42 @@ const BookTicketPage = () => {
           </p>
         </div>
       )}
+      <div className="screen">Screen</div>
       <div className="hall-layout">
-        {seats.map((seat) => (
-          <div
-            key={seat.id}
-            className={`seat-box ${
-              seat.is_reserved
-                ? "reserved" // Mark reserved seats with the "reserved" class
-                : selectedSeats.includes(seat.id)
-                ? "selected"
-                : "available"
-            }`}
-            onClick={() => !seat.is_reserved && handleSeatSelection(seat.id)}
-          >
-            {seat.seat_number}
+        {seats.map((row) => (
+          <div key={row.row_id} className="row-layout">
+            <div className="row-number">{row.row_id}</div>
+            <div className="seats-layout">
+              {row.seats.map((seat) => (
+                <div
+                  key={seat.id}
+                  className={`seat-box ${
+                    seat.is_reserved
+                      ? "reserved"
+                      : selectedSeats.includes(seat.id)
+                      ? "selected"
+                      : "available"
+                  }`}
+                  onClick={() =>
+                    !seat.is_reserved && handleSeatSelection(seat.id)
+                  }
+                >
+                  {seat.seat_number}
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
-      <button
-        className="btn btn-primary mt-4"
-        onClick={handleBooking}
-        disabled={selectedSeats.length === 0}
-      >
-        Confirm Booking
-      </button>
+      <div className="d-flex justify-content-end mt-4">
+        <button
+          className="btn btn-primary"
+          onClick={handleBooking}
+          disabled={selectedSeats.length === 0}
+        >
+          Confirm Booking
+        </button>
+      </div>
     </div>
   );
 };

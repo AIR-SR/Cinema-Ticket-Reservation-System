@@ -18,12 +18,8 @@ const HallDetailsAdmin = () => {
         if (!token)
           throw new Error("Authentication token is missing. Please log in.");
 
-        const [hallResponse, rowsResponse, seatsResponse] = await Promise.all([
+        const [hallResponse, seatsResponse] = await Promise.all([
           api.get(`/halls/get/${hallId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { region },
-          }),
-          api.get(`/halls/get/${hallId}/rows`, {
             headers: { Authorization: `Bearer ${token}` },
             params: { region },
           }),
@@ -33,16 +29,15 @@ const HallDetailsAdmin = () => {
           }),
         ]);
 
-        const mapSeatsToRows = (rows, seats) =>
-          rows.map((row) => ({
-            ...row,
-            seats: seats.filter((seat) => seat.row_id === row.id),
-          }));
-
-        const rowsWithSeats = mapSeatsToRows(
-          rowsResponse.data,
-          seatsResponse.data
-        );
+        const rowsWithSeats = seatsResponse.data.reduce((acc, seat) => {
+          const row = acc.find((r) => r.row_id === seat.row_id);
+          if (row) {
+            row.seats.push(seat);
+          } else {
+            acc.push({ row_id: seat.row_id, seats: [seat] });
+          }
+          return acc;
+        }, []);
 
         setHall({ name: hallResponse.data.name, rows: rowsWithSeats });
       } catch (err) {
@@ -66,8 +61,8 @@ const HallDetailsAdmin = () => {
       <div className="screen">Screen</div>
       <div className="hall-layout">
         {hall.rows.map((row) => (
-          <div key={row.id} className="row-layout">
-            <div className="row-number">{row.row_number}</div>
+          <div key={row.row_id} className="row-layout">
+            <div className="row-number">{row.row_id}</div>
             <div className="seats-layout">
               {row.seats.map((seat) => (
                 <div
