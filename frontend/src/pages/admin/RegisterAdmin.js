@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import UserForm from "../../components/UserForm";
 
@@ -12,7 +11,6 @@ const RegisterAdmin = () => {
     password: "",
     role: "", // Default role
   });
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

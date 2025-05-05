@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useMemo } from "react";
 import api from "../utils/api";
 
 export const UserContext = createContext({
@@ -79,11 +79,16 @@ export const UserProvider = ({ children }) => {
     await handleTokenAndFetchUser();
   };
 
-  return (
-    <UserContext.Provider
-      value={{ user, setUser, loading, logout, refreshUser }}
-    >
-      {children}
-    </UserContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      setUser,
+      loading,
+      logout,
+      refreshUser,
+    }),
+    [user, loading]
   );
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

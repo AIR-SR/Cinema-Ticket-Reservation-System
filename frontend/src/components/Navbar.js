@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom"; // Removed useNavigate import
 import { UserContext } from "../context/UserContext";
 import logo from "../assets/logo.png"; // Assuming you have a logo image in the assets folder
 
 const Navbar = () => {
   const { user } = useContext(UserContext);
-  const navigate = useNavigate();
 
   return (
     <nav
@@ -39,7 +38,7 @@ const Navbar = () => {
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle"
-                  href="#"
+                  href="/"
                   id="userMenuDropdown"
                   role="button"
                   data-bs-toggle="dropdown"

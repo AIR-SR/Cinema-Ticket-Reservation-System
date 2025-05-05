@@ -33,10 +33,16 @@ const HallDetailsAdmin = () => {
           }),
         ]);
 
-        const rowsWithSeats = rowsResponse.data.map((row) => ({
-          ...row,
-          seats: seatsResponse.data.filter((seat) => seat.row_id === row.id),
-        }));
+        const mapSeatsToRows = (rows, seats) =>
+          rows.map((row) => ({
+            ...row,
+            seats: seats.filter((seat) => seat.row_id === row.id),
+          }));
+
+        const rowsWithSeats = mapSeatsToRows(
+          rowsResponse.data,
+          seatsResponse.data
+        );
 
         setHall({ name: hallResponse.data.name, rows: rowsWithSeats });
       } catch (err) {
