@@ -23,9 +23,7 @@ logger.info("Logger is configured and working.")
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file="../../../.env"
-    )
+    model_config = SettingsConfigDict(env_file="../../../.env")
 
     DATABASE_URL_GLOBAL: str
     DATABASE_URL_KRAKOW: str

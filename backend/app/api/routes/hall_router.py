@@ -13,12 +13,13 @@ from sqlalchemy import delete, text, select, func
 router = APIRouter(prefix="/halls", tags=["Halls"])
 
 
-@router.get("/get",
-            response_model=list[HallModel],
-            response_description="Retrieve list of halls",
-            summary="Fetch Halls",
-            description="Fetch a list of halls stored in the database."
-            )
+@router.get(
+    "/get",
+    response_model=list[HallModel],
+    response_description="Retrieve list of halls",
+    summary="Fetch Halls",
+    description="Fetch a list of halls stored in the database.",
+)
 async def get_halls(region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve a list of halls stored in the database.
@@ -30,7 +31,9 @@ async def get_halls(region: str, db: AsyncSession = Depends(get_db_local)):
 
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(
-            status_code=400, detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.")
+            status_code=400,
+            detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.",
+        )
 
     query = select(Hall)
     result = await db.execute(query)
@@ -39,13 +42,19 @@ async def get_halls(region: str, db: AsyncSession = Depends(get_db_local)):
     return halls
 
 
-@router.post("/add",
-             response_model=HallModel,
-             response_description="Add a new hall",
-             summary="Add Hall",
-             description="Adds a new hall to the database."
-             )
-async def add_hall(hall: HallBase, region: str, db: AsyncSession = Depends(get_db_local), current_user: UsersGlobal = Depends(admin_required)):
+@router.post(
+    "/add",
+    response_model=HallModel,
+    response_description="Add a new hall",
+    summary="Add Hall",
+    description="Adds a new hall to the database.",
+)
+async def add_hall(
+    hall: HallBase,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+    current_user: UsersGlobal = Depends(admin_required),
+):
     """
     Add a new hall to the database.
 
@@ -54,9 +63,7 @@ async def add_hall(hall: HallBase, region: str, db: AsyncSession = Depends(get_d
     - **Returns**: The added hall object.
     - **Raises**: HTTP error if the hall name already exists.
     """
-    existing_hall = await db.execute(
-        select(Hall).where(Hall.name == hall.name)
-    )
+    existing_hall = await db.execute(select(Hall).where(Hall.name == hall.name))
     if existing_hall.scalars().first():
         raise HTTPException(status_code=400, detail="Hall name already exists")
 
@@ -68,12 +75,13 @@ async def add_hall(hall: HallBase, region: str, db: AsyncSession = Depends(get_d
     return new_hall
 
 
-@router.get("/get/{hall_id}",
-            response_model=HallModel,
-            response_description="Retrieve hall details",
-            summary="Fetch Hall Details",
-            description="Fetch details of a specific hall by ID."
-            )
+@router.get(
+    "/get/{hall_id}",
+    response_model=HallModel,
+    response_description="Retrieve hall details",
+    summary="Fetch Hall Details",
+    description="Fetch details of a specific hall by ID.",
+)
 async def get_hall(hall_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve details of a specific hall by ID.
@@ -92,13 +100,16 @@ async def get_hall(hall_id: int, region: str, db: AsyncSession = Depends(get_db_
     return hall
 
 
-@router.get("/get/{hall_id}/rows",
-            response_model=list[HallRowsModel],
-            response_description="Retrieve hall rows",
-            summary="Fetch Hall Rows",
-            description="Fetch rows of a specific hall by ID."
-            )
-async def get_hall_rows(hall_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
+@router.get(
+    "/get/{hall_id}/rows",
+    response_model=list[HallRowsModel],
+    response_description="Retrieve hall rows",
+    summary="Fetch Hall Rows",
+    description="Fetch rows of a specific hall by ID.",
+)
+async def get_hall_rows(
+    hall_id: int, region: str, db: AsyncSession = Depends(get_db_local)
+):
     """
     Retrieve rows of a specific hall by ID.
 
@@ -121,7 +132,7 @@ async def delete_hall(
     hall_id: int,
     region: str,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required)
+    current_user: UsersGlobal = Depends(admin_required),
 ):
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region.")

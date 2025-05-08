@@ -18,7 +18,8 @@ class Movie(LocalBase):
         description (str): A brief description of the movie.
         shows (list): A list of shows associated with the movie.
     """
-    __tablename__ = 'movies'
+
+    __tablename__ = "movies"
 
     id = Column(Integer, primary_key=True, index=True)
     tmdbID = Column(Integer, index=True, unique=True)

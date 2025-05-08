@@ -15,10 +15,11 @@ class Hall_Row(LocalBase):
         hall (Hall): The hall this row is associated with.
         seat (list): A list of seats in this row.
     """
-    __tablename__ = 'hall_rows'
+
+    __tablename__ = "hall_rows"
 
     id = Column(Integer, primary_key=True, index=True)
-    hall_id = Column(Integer, ForeignKey('halls.id'), index=True)
+    hall_id = Column(Integer, ForeignKey("halls.id"), index=True)
     row_number = Column(Integer, index=True)
     seat_count = Column(Integer, index=True)
 

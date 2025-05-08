@@ -12,17 +12,18 @@ from sqlalchemy import delete, text, select, func
 router = APIRouter(prefix="/seat", tags=["Seat"])
 
 
-@router.post("/add-seats",
-             response_model=List[SeatModel],
-             response_description="Add multiple seats",
-             summary="Add multiple seats",
-             description="Add multiple seats to the database. Returns the added seats.",
-             )
+@router.post(
+    "/add-seats",
+    response_model=List[SeatModel],
+    response_description="Add multiple seats",
+    summary="Add multiple seats",
+    description="Add multiple seats to the database. Returns the added seats.",
+)
 async def add_multiple_seats(
     seats: List[SeatBase],
     region: str,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required)
+    current_user: UsersGlobal = Depends(admin_required),
 ):
     """
     Add multiple seats to the database.
@@ -34,14 +35,13 @@ async def add_multiple_seats(
     for seat in seats:
         existing = await db.execute(
             select(Seat).where(
-                Seat.row_id == seat.row_id,
-                Seat.seat_number == seat.seat_number
+                Seat.row_id == seat.row_id, Seat.seat_number == seat.seat_number
             )
         )
         if existing.scalars().first():
             raise HTTPException(
                 status_code=400,
-                detail=f"Seat {seat.seat_number} already exists in row {seat.row_id}"
+                detail=f"Seat {seat.seat_number} already exists in row {seat.row_id}",
             )
     new_seats = [Seat(**seat.model_dump()) for seat in seats]
     db.add_all(new_seats)
@@ -49,19 +49,17 @@ async def add_multiple_seats(
     result = await db.execute(select(func.count()).select_from(Seat))
     seat_count = result.scalar()
     if seat_count == 0:
-        raise HTTPException(
-            status_code=404,
-            detail="No seats found"
-        )
+        raise HTTPException(status_code=404, detail="No seats found")
     return new_seats
 
 
-@router.get("/hall/{hall_id}",
-            response_model=List[SeatModel],
-            response_description="Retrieve seats in a specific hall",
-            summary="Fetch Seats in Hall",
-            description="Fetch a list of seats in a specific hall, grouped by rows."
-            )
+@router.get(
+    "/hall/{hall_id}",
+    response_model=List[SeatModel],
+    response_description="Retrieve seats in a specific hall",
+    summary="Fetch Seats in Hall",
+    description="Fetch a list of seats in a specific hall, grouped by rows.",
+)
 async def get_seats_in_hall(hall_id: int, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve a list of seats in a specific hall, grouped by rows.
@@ -76,6 +74,7 @@ async def get_seats_in_hall(hall_id: int, db: AsyncSession = Depends(get_db_loca
 
     if not seats:
         raise HTTPException(
-            status_code=404, detail=f"No seats found for hall ID {hall_id}")
+            status_code=404, detail=f"No seats found for hall ID {hall_id}"
+        )
 
     return seats

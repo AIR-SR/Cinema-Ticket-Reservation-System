@@ -2,8 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
-from core import (create_default_user, get_db_global, init_db_on_startup,
-                  logger, settings)
+from core import (
+    create_default_user,
+    get_db_global,
+    init_db_on_startup,
+    logger,
+    settings,
+)
 
 
 async def app_lifespan(app: FastAPI):
@@ -23,6 +28,7 @@ async def app_lifespan(app: FastAPI):
     yield  # Yield control for the application to run
     logger.info("Shutting down the application...")
 
+
 app = FastAPI(lifespan=app_lifespan)
 
 origins = [
@@ -32,8 +38,13 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_methods=["GET", "POST", "PATCH", "PUT",
-                   "DELETE"],  # Restrict to necessary methods
+    allow_methods=[
+        "GET",
+        "POST",
+        "PATCH",
+        "PUT",
+        "DELETE",
+    ],  # Restrict to necessary methods
     # Restrict to necessary headers
     allow_headers=["Authorization", "Content-Type"],
 )

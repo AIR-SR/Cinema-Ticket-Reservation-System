@@ -1,7 +1,16 @@
 from fastapi import APIRouter
 
-from .routes import (hall_router, health_router, login_router, movie_router,
-                     user_router, hall_rows_router, seat_router, show_router, reservation_router)
+from .routes import (
+    hall_router,
+    health_router,
+    login_router,
+    movie_router,
+    user_router,
+    hall_rows_router,
+    seat_router,
+    show_router,
+    reservation_router,
+)
 
 api_router = APIRouter()
 

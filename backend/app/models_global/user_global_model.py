@@ -15,7 +15,8 @@ class UsersGlobal(GlobalBase):
         hashed_password (str): The hashed password of the user.
         role (str): The role of the user in the system.
     """
-    __tablename__ = 'users_global'
+
+    __tablename__ = "users_global"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True)
     first_name = Column(String)
@@ -28,4 +29,5 @@ class UsersGlobal(GlobalBase):
         """
         Configuration for the SQLAlchemy model.
         """
+
         orm_mode = True

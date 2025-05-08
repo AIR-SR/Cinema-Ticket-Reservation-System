@@ -11,12 +11,13 @@ from datetime import datetime, timedelta, date, timezone
 router = APIRouter(prefix="/show", tags=["Shows"])
 
 
-@router.get("/get",
-            response_model=list[ShowModel],
-            response_description="Retrieve list of shows",
-            summary="Fetch Shows",
-            description="Fetch a list of shows stored in the database."
-            )
+@router.get(
+    "/get",
+    response_model=list[ShowModel],
+    response_description="Retrieve list of shows",
+    summary="Fetch Shows",
+    description="Fetch a list of shows stored in the database.",
+)
 async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve a list of shows stored in the database.
@@ -28,7 +29,9 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
 
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(
-            status_code=400, detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.")
+            status_code=400,
+            detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.",
+        )
 
     query = select(Show)
     result = await db.execute(query)
@@ -37,13 +40,19 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
     return shows
 
 
-@router.post("/add",
-             response_model=ShowModel,
-             response_description="Add a new show",
-             summary="Add Show",
-             description="Adds a new show to the database."
-             )
-async def add_show(show: ShowBase, region: str, db: AsyncSession = Depends(get_db_local), current_user: UsersGlobal = Depends(admin_required)):
+@router.post(
+    "/add",
+    response_model=ShowModel,
+    response_description="Add a new show",
+    summary="Add Show",
+    description="Adds a new show to the database.",
+)
+async def add_show(
+    show: ShowBase,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+    current_user: UsersGlobal = Depends(admin_required),
+):
     """
     Add a new show to the database.
 
@@ -61,12 +70,13 @@ async def add_show(show: ShowBase, region: str, db: AsyncSession = Depends(get_d
     return new_show
 
 
-@router.get("/get/{show_id}",
-            response_model=ShowModel,
-            response_description="Retrieve show details",
-            summary="Fetch Show Details",
-            description="Fetch details of a specific show by ID."
-            )
+@router.get(
+    "/get/{show_id}",
+    response_model=ShowModel,
+    response_description="Retrieve show details",
+    summary="Fetch Show Details",
+    description="Fetch details of a specific show by ID.",
+)
 async def get_show(show_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve details of a specific show by ID.
@@ -90,7 +100,7 @@ async def delete_show(
     show_id: int,
     region: str,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required)
+    current_user: UsersGlobal = Depends(admin_required),
 ):
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region.")
@@ -129,7 +139,7 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
             "start_time": show.start_time,
             "hall_name": hall,
             "price": f"{show.price:.2f}",
-            "region": region
+            "region": region,
         }
         for show, title, hall in shows
     ]
@@ -145,7 +155,6 @@ async def check_show_conflict(
     region: str,
     db: AsyncSession = Depends(get_db_local),
 ):
-
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region")
 
@@ -172,26 +181,25 @@ async def check_show_conflict(
 
     for show, title, runtime in rows:
         existing_start = show.start_time
-        existing_end = existing_start + \
-            timedelta(minutes=runtime) + \
-            timedelta(minutes=15)  # add 15 minutes after movie
+        existing_end = (
+            existing_start + timedelta(minutes=runtime) + timedelta(minutes=15)
+        )  # add 15 minutes after movie
 
         if (
-            (new_start >= existing_start and new_start < existing_end) or
-            (new_end > existing_start and new_end <= existing_end) or
-            (new_start <= existing_start and new_end >= existing_end)
+            (new_start >= existing_start and new_start < existing_end)
+            or (new_end > existing_start and new_end <= existing_end)
+            or (new_start <= existing_start and new_end >= existing_end)
         ):
-            conflicts.append({
-                "show_id": show.id,
-                "movie_title": title,
-                "start_time": show.start_time,
-                "end_time": existing_end,
-            })
+            conflicts.append(
+                {
+                    "show_id": show.id,
+                    "movie_title": title,
+                    "start_time": show.start_time,
+                    "end_time": existing_end,
+                }
+            )
 
-    return {
-        "conflict": len(conflicts) > 0,
-        "conflicts": conflicts
-    }
+    return {"conflict": len(conflicts) > 0, "conflicts": conflicts}
 
 
 @router.get("/movies_with_shows")
@@ -218,10 +226,12 @@ async def get_movies_with_shows(region: str, db: AsyncSession = Depends(get_db_l
                 "poster_path": movie.poster_path,
                 "shows": [],
             }
-        movie_map[movie.id]["shows"].append({
-            "id": show.id,
-            "start_time": show.start_time.isoformat(),
-        })
+        movie_map[movie.id]["shows"].append(
+            {
+                "id": show.id,
+                "start_time": show.start_time.isoformat(),
+            }
+        )
 
     return list(movie_map.values())
 
@@ -345,6 +355,7 @@ async def get_reserved_seats(
 
     if not reserved_seats:
         raise HTTPException(
-            status_code=404, detail="No reserved seats found for the show.")
+            status_code=404, detail="No reserved seats found for the show."
+        )
 
     return reserved_seats

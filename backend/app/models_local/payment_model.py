@@ -16,10 +16,11 @@ class Payment(LocalBase):
         created_at (datetime): The timestamp when the payment was created.
         reservation (Reservation): The reservation associated with this payment.
     """
-    __tablename__ = 'payments'
+
+    __tablename__ = "payments"
 
     id = Column(Integer, primary_key=True, index=True)
-    reservation_id = Column(Integer, ForeignKey('reservations.id'), index=True)
+    reservation_id = Column(Integer, ForeignKey("reservations.id"), index=True)
     amount = Column(Float)
     payment_method = Column(String)
     status = Column(String)

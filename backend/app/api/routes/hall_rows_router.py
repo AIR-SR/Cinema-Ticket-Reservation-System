@@ -13,20 +13,21 @@ from sqlalchemy import delete, text, select, func
 router = APIRouter(prefix="/hall_rows", tags=["Hall Rows"])
 
 
-
 from typing import List
 
-@router.post("/add-rows",
-             response_model=List[HallRowsModel],
-             response_description="Add multiple hall rows",
-             summary="Add Multiple Hall Rows",
-             description="Adds multiple rows to a hall, each with custom seat counts."
-             )
+
+@router.post(
+    "/add-rows",
+    response_model=List[HallRowsModel],
+    response_description="Add multiple hall rows",
+    summary="Add Multiple Hall Rows",
+    description="Adds multiple rows to a hall, each with custom seat counts.",
+)
 async def add_multiple_hall_rows(
     rows: List[HallRowsBase],
     region: str,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required)
+    current_user: UsersGlobal = Depends(admin_required),
 ):
     """
     Add multiple rows to a hall in the database.
@@ -40,14 +41,13 @@ async def add_multiple_hall_rows(
     for row in rows:
         existing = await db.execute(
             select(Hall_Row).where(
-                Hall_Row.hall_id == row.hall_id,
-                Hall_Row.row_number == row.row_number
+                Hall_Row.hall_id == row.hall_id, Hall_Row.row_number == row.row_number
             )
         )
         if existing.scalars().first():
             raise HTTPException(
                 status_code=400,
-                detail=f"Row {row.row_number} already exists in hall {row.hall_id}"
+                detail=f"Row {row.row_number} already exists in hall {row.hall_id}",
             )
 
     new_rows = [Hall_Row(**row.model_dump()) for row in rows]
@@ -61,23 +61,21 @@ async def add_multiple_hall_rows(
         await db.execute(text("ALTER SEQUENCE hall_rows_id_seq RESTART WITH 1"))
         await db.commit()
 
-
     for r in new_rows:
         await db.refresh(r)
 
     return new_rows
 
 
-@router.get("/rows",
-            response_model=List[HallRowsModel],
-            response_description="Retrieve all hall rows",
-            summary="Fetch All Hall Rows",
-            description="Fetch a list of all hall rows. You can optionally filter by hall ID."
-            )
+@router.get(
+    "/rows",
+    response_model=List[HallRowsModel],
+    response_description="Retrieve all hall rows",
+    summary="Fetch All Hall Rows",
+    description="Fetch a list of all hall rows. You can optionally filter by hall ID.",
+)
 async def get_all_rows(
-    region: str,
-    hall_id: int = None,
-    db: AsyncSession = Depends(get_db_local)
+    region: str, hall_id: int = None, db: AsyncSession = Depends(get_db_local)
 ):
     """
     Retrieve a list of all hall rows.
@@ -102,16 +100,15 @@ async def get_all_rows(
     return rows
 
 
-@router.get("/rows/{hall_id}",
-            response_model=List[HallRowsModel],
-            response_description="Retrieve rows for a specific hall",
-            summary="Fetch Rows by Hall ID",
-            description="Fetch all rows belonging to a specific hall by its ID."
-            )
+@router.get(
+    "/rows/{hall_id}",
+    response_model=List[HallRowsModel],
+    response_description="Retrieve rows for a specific hall",
+    summary="Fetch Rows by Hall ID",
+    description="Fetch all rows belonging to a specific hall by its ID.",
+)
 async def get_rows_by_hall(
-    hall_id: int,
-    region: str,
-    db: AsyncSession = Depends(get_db_local)
+    hall_id: int, region: str, db: AsyncSession = Depends(get_db_local)
 ):
     """
     Retrieve all rows for a specific hall.
@@ -131,4 +128,3 @@ async def get_rows_by_hall(
         raise HTTPException(status_code=404, detail="No rows found for this hall.")
 
     return rows
-
