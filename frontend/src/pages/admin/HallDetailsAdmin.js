@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import api from "../../utils/api";
+import HallView from "../../components/HallView";
 import "../../styles/hall_view.css"; // Adjust the path as necessary
 
 const HallDetailsAdmin = () => {
@@ -58,26 +59,7 @@ const HallDetailsAdmin = () => {
   return (
     <div className="container mt-4">
       <h1 className="text-center mb-4">{hall.name}</h1>
-      <div className="screen">Screen</div>
-      <div className="hall-layout">
-        {hall.rows.map((row) => (
-          <div key={row.row_id} className="row-layout">
-            <div className="row-number">{row.row_id}</div>
-            <div className="seats-layout">
-              {row.seats.map((seat) => (
-                <div
-                  key={seat.seat_number}
-                  className={`seat-box ${
-                    seat.is_reserved ? "reserved" : "available"
-                  }`}
-                >
-                  {seat.seat_number}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <HallView rows={hall.rows} />
     </div>
   );
 };

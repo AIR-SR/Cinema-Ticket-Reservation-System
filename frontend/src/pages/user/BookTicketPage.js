@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import HallView from "../../components/HallView";
 
 const BookTicketPage = () => {
   const { movieId, showId } = useParams();
@@ -141,33 +142,11 @@ const BookTicketPage = () => {
           </p>
         </div>
       )}
-      <div className="screen">Screen</div>
-      <div className="hall-layout">
-        {seats.map((row) => (
-          <div key={row.row_id} className="row-layout">
-            <div className="row-number">{row.row_id}</div>
-            <div className="seats-layout">
-              {row.seats.map((seat) => (
-                <div
-                  key={seat.id}
-                  className={`seat-box ${
-                    seat.is_reserved
-                      ? "reserved"
-                      : selectedSeats.includes(seat.id)
-                      ? "selected"
-                      : "available"
-                  }`}
-                  onClick={() =>
-                    !seat.is_reserved && handleSeatSelection(seat.id)
-                  }
-                >
-                  {seat.seat_number}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <HallView
+        rows={seats}
+        onSeatClick={handleSeatSelection}
+        selectedSeats={selectedSeats}
+      />
       <div className="d-flex justify-content-end mt-4">
         <button
           className="btn btn-primary"
