@@ -36,9 +36,12 @@ const BookTicketPage = () => {
 
         const hallId = showResponse.data.hall.id;
 
-        const { data: seatsData } = await api.get(`/seat/hall/${hallId}`, {
-          params: { region },
-        });
+        const { data: rowsSeatsData } = await api.get(
+          `/halls/get/${hallId}/rows_seats`,
+          {
+            params: { region },
+          }
+        );
 
         let reservedSeats = [];
         try {
@@ -58,22 +61,15 @@ const BookTicketPage = () => {
           ? reservedSeats
           : [];
 
-        const updatedSeats = seatsData.map((seat) => ({
-          ...seat,
-          is_reserved: reservedSeatIds.includes(seat.id),
+        const updatedRowsSeats = rowsSeatsData.map((row) => ({
+          ...row,
+          seats: row.seats.map((seat) => ({
+            ...seat,
+            is_reserved: reservedSeatIds.includes(seat.id),
+          })),
         }));
 
-        const rowsWithSeats = updatedSeats.reduce((acc, seat) => {
-          const row = acc.find((r) => r.row_id === seat.row_id);
-          if (row) {
-            row.seats.push(seat);
-          } else {
-            acc.push({ row_id: seat.row_id, seats: [seat] });
-          }
-          return acc;
-        }, []);
-
-        setSeats(rowsWithSeats);
+        setSeats(updatedRowsSeats);
       } catch (err) {
         console.error("Failed to fetch show or seats:", err);
         setError("Failed to load show or seats.");

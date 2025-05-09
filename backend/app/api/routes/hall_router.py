@@ -127,6 +127,46 @@ async def get_hall_rows(
     return rows
 
 
+@router.get(
+    "/get/{hall_id}/rows_seats",
+    response_description="Retrieve hall rows and seats",
+    summary="Fetch Hall, Hall Rows and Seats",
+    description="Fetch rows and seats of a specific hall by ID.",
+)
+async def get_hall_rows_seats(
+    hall_id: int, region: str, db: AsyncSession = Depends(get_db_local)
+):
+    """
+    Retrieve rows and seats of a specific hall by ID.
+
+    - **Input**: Hall ID.
+    - **Returns**: List of rows with their associated seats in the hall.
+    - **Raises**: HTTP 404 error if the hall is not found.
+    """
+    query = select(Hall_Row).where(Hall_Row.hall_id == hall_id)
+    result = await db.execute(query)
+    rows = result.scalars().all()
+
+    if not rows:
+        raise HTTPException(status_code=404, detail="Rows not found")
+
+    rows_with_seats = []
+    for row in rows:
+        seats_query = select(Seat).where(Seat.row_id == row.id)
+        seats_result = await db.execute(seats_query)
+        seats = seats_result.scalars().all()
+
+        rows_with_seats.append({
+            "row_number": row.row_number,
+            "hall_id": row.hall_id,
+            "id": row.id,
+            "seat_count": len(seats),
+            "seats": [{"id": seat.id, "seat_number": seat.seat_number} for seat in seats],
+        })
+
+    return rows_with_seats
+
+
 @router.delete("/{hall_id}", status_code=204)
 async def delete_hall(
     hall_id: int,

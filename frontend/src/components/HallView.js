@@ -7,8 +7,8 @@ const HallView = ({ rows, onSeatClick, selectedSeats = [] }) => {
       <div className="screen">Screen</div>
       <div className="hall-layout">
         {rows.map((row) => (
-          <div key={row.row_id} className="row-layout">
-            <div className="row-number">{row.row_id}</div>
+          <div key={row.id} className="row-layout">
+            <div className="row-number">{row.row_number}</div>
             <div className="seats-layout">
               {row.seats.map((seat) => (
                 <div
