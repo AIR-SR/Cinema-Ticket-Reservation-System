@@ -11,7 +11,7 @@ const Logout = () => {
     logout(); // Call the logout function from UserContext
     const timer = setTimeout(() => {
       navigate("/");
-    }, 3000); // Redirect to homepage after 3 seconds
+    }, 1); // Redirect to homepage after 3 seconds
     return () => clearTimeout(timer); // Cleanup timer on component unmount
   }, [logout, navigate]);
 

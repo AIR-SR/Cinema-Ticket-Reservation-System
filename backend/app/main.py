@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio  # Import asyncio for adding delay
 
 from api import api_router
 from core import (
@@ -9,6 +10,19 @@ from core import (
     logger,
     settings,
 )
+
+
+class DelayMiddleware:
+    """Middleware to introduce a delay in API responses."""
+
+    def __init__(self, app: FastAPI, delay: float):
+        self.app = app
+        self.delay = delay
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            await asyncio.sleep(self.delay)  # Introduce the delay
+        await self.app(scope, receive, send)
 
 
 async def app_lifespan(app: FastAPI):
@@ -30,6 +44,8 @@ async def app_lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=app_lifespan)
+
+app.add_middleware(DelayMiddleware, delay=0)
 
 origins = [
     settings.FRONTEND_URL,  # Existing frontend URL

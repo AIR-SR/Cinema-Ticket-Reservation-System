@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import HallView from "../../components/HallView";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const BookTicketPage = () => {
   const { movieId, showId } = useParams();
@@ -116,16 +118,16 @@ const BookTicketPage = () => {
       });
 
       alert("Booking successful!");
-      navigate(`/movies/details/${movieId}?region=${region}`);
+      navigate(`/users/reservations`);
     } catch (err) {
       console.error("Failed to book tickets:", err);
       setError("Failed to book tickets.");
     }
   };
 
-  if (loading) return <div className="text-center">Loading seats...</div>;
+  if (loading) return <Loading message="Fetching the reservation for you..." />;
   if (error)
-    return <div className="alert alert-danger text-center">{error}</div>;
+    return <Error message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container mt-5">

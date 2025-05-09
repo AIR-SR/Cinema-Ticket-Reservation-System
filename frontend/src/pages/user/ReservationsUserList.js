@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api"; // Use the configured API instance
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const ReservationsUserList = () => {
   const [reservations, setReservations] = useState([]);
@@ -68,9 +70,9 @@ const ReservationsUserList = () => {
     fetchReservations();
   }, []);
 
-  if (loading) return <div className="text-center mt-5">Loading...</div>;
+  if (loading) return <Loading message="Fetching your reservations..." />;
   if (error)
-    return <div className="alert alert-danger text-center">{error}</div>;
+    return <Error message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container mt-5">

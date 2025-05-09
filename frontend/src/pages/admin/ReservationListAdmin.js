@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
-import RegionSelector from "../../components/RegionSelector"; // Import RegionSelector
+import RegionSelector from "../../components/RegionSelector";
+import BackButton from "../../components/BackButton";
 
 const ReservationListAdmin = () => {
   const [reservations, setReservations] = useState([]);
@@ -91,6 +92,9 @@ const ReservationListAdmin = () => {
       ) : (
         <p>No reservations found.</p>
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };

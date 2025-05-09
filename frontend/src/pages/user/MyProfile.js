@@ -3,6 +3,8 @@ import { UserContext } from "../../context/UserContext";
 import api from "../../utils/api";
 import UserDetailsTable from "../../components/UserDetailsTable";
 import Modal from "../../components/Modal";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const MyProfile = () => {
   const { user, loading, refreshUser } = useContext(UserContext);
@@ -79,13 +81,14 @@ const MyProfile = () => {
     setEditField(null);
   };
 
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
-
-  if (!user) {
-    return <div className="text-center mt-5">No user data available.</div>;
-  }
+  if (loading) return <Loading message="Fetching your profile details..." />;
+  if (!user)
+    return (
+      <Error
+        message={"User not found"}
+        onRetry={() => window.location.reload()}
+      />
+    );
 
   return (
     <div className="vh-90 d-flex justify-content-center align-items-center">

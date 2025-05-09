@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../utils/api";
 import { Link } from "react-router-dom";
 import RegionSelector from "../../components/RegionSelector";
+import BackButton from "../../components/BackButton";
 
 const ShowListAdmin = () => {
   const [shows, setShows] = useState([]);
@@ -156,6 +157,9 @@ const ShowListAdmin = () => {
           </div>
         )
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };

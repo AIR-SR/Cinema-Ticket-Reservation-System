@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import RegionSelector from "../../components/RegionSelector";
+import BackButton from "../../components/BackButton";
 
 const HallListAdmin = () => {
   const [halls, setHalls] = useState([]);
@@ -155,6 +156,9 @@ const HallListAdmin = () => {
       ) : (
         <p>No halls available for the selected region.</p>
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };
