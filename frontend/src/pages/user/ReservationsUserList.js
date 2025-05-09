@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../utils/api"; // Use the configured API instance
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
+import BackButton from "../../components/BackButton"; // Import the BackButton component
 
 const ReservationsUserList = () => {
   const [reservations, setReservations] = useState([]);
@@ -111,6 +112,9 @@ const ReservationsUserList = () => {
           ))}
         </div>
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };
