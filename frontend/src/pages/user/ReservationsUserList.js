@@ -24,36 +24,30 @@ const ReservationsUserList = () => {
             params: { region }, // Pass region as a parameter
           });
 
-          const reservationsWithDetails = await Promise.all(
-            response.data.map(async (reservation) => {
-              // Fetch show details
-              const showResponse = await api.get(
-                `/show/get/${reservation.show_id}`,
-                {
-                  params: { region },
-                }
-              );
-
-              const { movie_id, hall_id, start_time } = showResponse.data;
-
-              // Fetch hall details
-              const hallResponse = await api.get(`/halls/get/${hall_id}`, {
-                params: { region },
-              });
-
-              // Fetch movie details
-              const movieResponse = await api.get(`/movies/get/${movie_id}`, {
-                params: { region },
-              });
+          const reservationsWithDetails = response.data.map(
+            (reservationData) => {
+              const {
+                reservation,
+                seat_details,
+                hall_name,
+                movie_details,
+                show_start_time,
+              } = reservationData;
 
               return {
-                ...reservation,
+                id: reservation.id,
+                userId: reservation.user_id,
+                createdAt: reservation.created_at,
+                showId: reservation.show_id,
+                status: reservation.status,
+                seatDetails: seat_details,
+                hallName: hall_name,
+                movieTitle: movie_details.title,
+                movieRuntime: movie_details.runtime,
+                startTime: show_start_time, // Include show start time
                 region,
-                movieTitle: movieResponse.data.title,
-                hallName: hallResponse.data.name,
-                startTime: start_time,
               };
-            })
+            }
           );
 
           allReservations.push(...reservationsWithDetails);
@@ -102,10 +96,14 @@ const ReservationsUserList = () => {
                   <p className="card-text">
                     <strong>Region:</strong> {reservation.region}
                   </p>
-                  <p className="card-text">
-                    <strong>Created At:</strong>{" "}
-                    {new Date(reservation.created_at).toLocaleString()}
-                  </p>
+                  <button
+                    className="btn btn-primary mt-2"
+                    onClick={() =>
+                      (window.location.href = `/users/reservations/${reservation.id}?region=${reservation.region}`)
+                    }
+                  >
+                    View Details
+                  </button>
                 </div>
               </div>
             </div>

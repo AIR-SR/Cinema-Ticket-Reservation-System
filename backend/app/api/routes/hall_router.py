@@ -156,13 +156,17 @@ async def get_hall_rows_seats(
         seats_result = await db.execute(seats_query)
         seats = seats_result.scalars().all()
 
-        rows_with_seats.append({
-            "row_number": row.row_number,
-            "hall_id": row.hall_id,
-            "id": row.id,
-            "seat_count": len(seats),
-            "seats": [{"id": seat.id, "seat_number": seat.seat_number} for seat in seats],
-        })
+        rows_with_seats.append(
+            {
+                "row_number": row.row_number,
+                "hall_id": row.hall_id,
+                "id": row.id,
+                "seat_count": len(seats),
+                "seats": [
+                    {"id": seat.id, "seat_number": seat.seat_number} for seat in seats
+                ],
+            }
+        )
 
     return rows_with_seats
 
