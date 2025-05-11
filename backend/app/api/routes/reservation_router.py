@@ -2,7 +2,15 @@ from core import admin_required, employee_required, get_db_local, user_required,
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from models_global import UsersGlobal
-from models_local import Reservation, Reservation_Seat, Seat, Hall_Row, Hall, Show, Movie
+from models_local import (
+    Reservation,
+    Reservation_Seat,
+    Seat,
+    Hall_Row,
+    Hall,
+    Show,
+    Movie,
+)
 from pydantic import ValidationError
 from schemas import (
     ReservationSeatBase,
@@ -47,13 +55,11 @@ async def create_reservation(
             isinstance(reservation.created_at, datetime)
             and reservation.created_at.tzinfo is not None
         ):
-            reservation.created_at = reservation.created_at.replace(
-                tzinfo=None)
+            reservation.created_at = reservation.created_at.replace(tzinfo=None)
 
         # Check if any of the seats are already reserved
         existing_reservations = await db.execute(
-            select(Reservation_Seat).where(
-                Reservation_Seat.seat_id.in_(seat_ids))
+            select(Reservation_Seat).where(Reservation_Seat.seat_id.in_(seat_ids))
         )
         if existing_reservations.scalars().first():
             logger.warning(
@@ -75,15 +81,13 @@ async def create_reservation(
 
         # Create reservation_seat entries
         reservation_seats = [
-            Reservation_Seat(
-                seat_id=seat_id, reservation_id=new_reservation.id)
+            Reservation_Seat(seat_id=seat_id, reservation_id=new_reservation.id)
             for seat_id in seat_ids
         ]
         db.add_all(reservation_seats)
         await db.commit()
 
-        logger.info(
-            f"Reservation created successfully with ID: {new_reservation.id}")
+        logger.info(f"Reservation created successfully with ID: {new_reservation.id}")
         return new_reservation
     except ValidationError as e:
         logger.error(f"Validation error while creating reservation: {e}")
@@ -93,8 +97,7 @@ async def create_reservation(
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while creating the reservation.")
+        logger.exception("Unexpected error occurred while creating the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )
@@ -216,8 +219,7 @@ async def get_my_reservations(
 async def get_reservation(
     reservation_id: int,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(
-        user_required),  # Default to user_required
+    current_user: UsersGlobal = Depends(user_required),  # Default to user_required
 ):
     """
     Retrieve a reservation by its ID from the database.
@@ -233,8 +235,7 @@ async def get_reservation(
         reservation = reservation_query.scalars().first()
 
         if not reservation:
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         # Check access permissions
         if reservation.user_id != current_user.id:
