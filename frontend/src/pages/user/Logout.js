@@ -7,7 +7,7 @@ const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "Warehouse Manager | Logout";
+    document.title = "LFKG Cinemas | Logout";
     logout(); // Call the logout function from UserContext
     const timer = setTimeout(() => {
       navigate("/");

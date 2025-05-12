@@ -79,10 +79,12 @@ const ReservationListAdmin = () => {
                   <button
                     className="btn btn-primary btn-sm me-2"
                     onClick={() =>
-                      navigate(`/admin/reservations/${reservation.id}`)
+                      navigate(
+                        `/admin/reservations/user/${reservation.user_id}/details/${reservation.id}?region=${selectedRegion}`
+                      )
                     }
                   >
-                    View
+                    View Details
                   </button>
                 </td>
               </tr>

@@ -40,6 +40,8 @@ import ReservationListAdmin from "./pages/admin/ReservationListAdmin";
 import BookTicketPage from "./pages/user/BookTicketPage";
 import ReservationsUserList from "./pages/user/ReservationsUserList";
 import ReservationDetails from "./pages/user/ReservationDetails";
+import ReservationUserDetails from "./pages/admin/ReservationUserDetails";
+import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -166,7 +168,7 @@ const App = () => {
                 element={
                   <PrivateRoute
                     element={<MovieListAdmin />}
-                    requiredRole={["admin"]}
+                    requiredRole={["admin", "employee"]}
                   />
                 }
               />
@@ -184,7 +186,7 @@ const App = () => {
                 element={
                   <PrivateRoute
                     element={<MovieAddAdmin />}
-                    requiredRole={["admin"]}
+                    requiredRole={["admin", "employee"]}
                   />
                 }
               />
@@ -202,7 +204,7 @@ const App = () => {
                 element={
                   <PrivateRoute
                     element={<HallDetailsAdmin />}
-                    requiredRole={["admin"]}
+                    requiredRole={["admin", "employee"]}
                   />
                 }
               />
@@ -211,7 +213,7 @@ const App = () => {
                 element={
                   <PrivateRoute
                     element={<ShowListAdmin />}
-                    requiredRole={["admin"]}
+                    requiredRole={["admin", "employee"]}
                   />
                 }
               />
@@ -220,7 +222,7 @@ const App = () => {
                 element={
                   <PrivateRoute
                     element={<ShowAddAdmin />}
-                    requiredRole={["admin"]}
+                    requiredRole={["admin", "employee"]}
                   />
                 }
               />
@@ -234,11 +236,29 @@ const App = () => {
                 }
               />
               <Route
+                path="/employee/dashboard"
+                element={
+                  <PrivateRoute
+                    element={<EmployeeDashboard />}
+                    requiredRole={["employee"]}
+                  />
+                }
+              />
+              <Route
                 path="/admin/reservations/list"
                 element={
                   <PrivateRoute
                     element={<ReservationListAdmin />}
-                    requiredRole={["admin"]}
+                    requiredRole={["admin", "employee"]}
+                  />
+                }
+              />
+              <Route
+                path="/admin/reservations/user/:userId/details/:reservationId"
+                element={
+                  <PrivateRoute
+                    element={<ReservationUserDetails />}
+                    requiredRole={["admin", "employee"]}
                   />
                 }
               />

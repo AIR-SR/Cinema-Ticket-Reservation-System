@@ -10,6 +10,7 @@ const ReservationsUserList = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    document.title = "LFKG Cinemas | My Reservations"; // Set the document title
     const fetchReservations = async () => {
       try {
         const token = localStorage.getItem("token"); // Retrieve token from localStorage

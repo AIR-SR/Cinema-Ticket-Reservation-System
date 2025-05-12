@@ -51,7 +51,7 @@ async def add_show(
     show: ShowBase,
     region: str,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required),
+    current_user: UsersGlobal = Depends(employee_required),
 ):
     """
     Add a new show to the database.
@@ -100,7 +100,7 @@ async def delete_show(
     show_id: int,
     region: str,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required),
+    current_user: UsersGlobal = Depends(employee_required),
 ):
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region.")

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, use } from "react";
 import { UserContext } from "../../context/UserContext";
 import api from "../../utils/api";
 import UserDetailsTable from "../../components/UserDetailsTable";
@@ -14,6 +14,10 @@ const MyProfile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [editField, setEditField] = useState(null);
   const [editedUser, setEditedUser] = useState({ ...user });
+
+  useEffect(() => {
+    document.title = "LFKG Cinemas | My Profile";
+  }, []);
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {

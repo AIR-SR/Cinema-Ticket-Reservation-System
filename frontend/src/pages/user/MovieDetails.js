@@ -14,6 +14,8 @@ const MovieDetails = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    document.title = "LFKG Cinemas | Movie Details"; // Set the document title
+
     const fetchMovieDetails = async () => {
       try {
         const response = await api.get(`/movies/get/${movieId}`, {

@@ -62,44 +62,6 @@ const Navbar = () => {
                       </Link>
                     </li>
                   )}
-                  {user.role === "admin" && (
-                    <>
-                      <li>
-                        <Link className="dropdown-item" to="/users-list">
-                          Manage Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/movies/list">
-                          Manage Movies
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/halls/list">
-                          Manage Halls
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/shows/list">
-                          Manage Shows
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                  {user.role === "employee" && (
-                    <>
-                      <li>
-                        <Link className="dropdown-item" to="/manage/bookings">
-                          Manage Bookings
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/manage/schedules">
-                          Manage Schedules
-                        </Link>
-                      </li>
-                    </>
-                  )}
                   <li>
                     <Link className="dropdown-item" to="/logout">
                       Logout

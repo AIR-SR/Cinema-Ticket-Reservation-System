@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { use, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
+  useEffect(() => {
+    document.title = "LFKG Cinemas | Homepage";
+  }, []);
   const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState();
 

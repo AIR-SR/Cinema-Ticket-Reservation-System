@@ -17,6 +17,7 @@ const BookTicketPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "LFKG Cinemas | Book Tickets";
     const fetchShowAndSeats = async () => {
       setLoading(true);
       setError(null);

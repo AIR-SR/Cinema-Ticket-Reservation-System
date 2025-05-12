@@ -1,4 +1,11 @@
-from core import admin_required, employee_required, get_db_local, user_required, logger
+from core import (
+    admin_required,
+    employee_required,
+    get_db_local,
+    get_db_global,
+    user_required,
+    logger,
+)
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from models_global import UsersGlobal
@@ -112,7 +119,7 @@ async def create_reservation(
 )
 async def get_reservations(
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required),
+    current_user: UsersGlobal = Depends(employee_required),
 ):
     """
     Retrieve all reservations from the database.
@@ -250,6 +257,7 @@ async def get_reservation(
                 Hall.name.label("hall_name"),
                 Movie.title.label("movie_title"),
                 Movie.runtime.label("movie_runtime"),
+                Movie.id.label("movie_id"),
                 Show.start_time.label("show_start_time"),  # Add start time
             )
             .join(Reservation_Seat, Reservation_Seat.seat_id == Seat.id)
@@ -274,8 +282,8 @@ async def get_reservation(
         hall_name = seat_hall_movie_data[0].hall_name
         movie_title = seat_hall_movie_data[0].movie_title
         movie_runtime = seat_hall_movie_data[0].movie_runtime
-        # Extract start time
         show_start_time = seat_hall_movie_data[0].show_start_time
+        movie_id = seat_hall_movie_data[0].movie_id
 
         return {
             "reservation": reservation,
@@ -284,6 +292,7 @@ async def get_reservation(
             "movie_details": {
                 "title": movie_title,
                 "runtime": movie_runtime,
+                "id": movie_id,
             },
             "show_start_time": show_start_time,  # Include start time
         }
@@ -294,6 +303,117 @@ async def get_reservation(
     except Exception as e:
         logger.exception(
             "Unexpected error occurred while retrieving reservation details."
+        )
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        )
+
+
+@router.get(
+    "/user/{userId}/details/{reservationId}",
+    response_description="Get a user's reservation by ID",
+    summary="Get a user's reservation by ID",
+    description="Retrieve a user's reservation by its ID from the database. Returns the reservation along with seat numbers, hall name, movie details, show start time, and user name.",
+)
+async def get_user_reservation_details(
+    userId: int,
+    reservationId: int,
+    db: AsyncSession = Depends(get_db_local),
+    # Use global DB for user details
+    db_global: AsyncSession = Depends(get_db_global),
+    current_user: UsersGlobal = Depends(employee_required),
+):
+    """
+    Retrieve a user's reservation by its ID from the database.
+    - **Input**: User ID and Reservation ID.
+    - **Returns**: The reservation object along with seat numbers, hall name, movie details, show start time, and user name.
+    - **Raises**: HTTP error if the reservation is not found or access is denied.
+    """
+    try:
+        # Fetch reservation
+        reservation_query = await db.execute(
+            select(Reservation).where(
+                Reservation.id == reservationId, Reservation.user_id == userId
+            )
+        )
+        reservation = reservation_query.scalars().first()
+
+        if not reservation:
+            raise HTTPException(status_code=404, detail="Reservation not found.")
+
+        # Fetch user details from global DB
+        user_query = await db_global.execute(
+            select(
+                UsersGlobal.first_name,
+                UsersGlobal.last_name,
+                UsersGlobal.username,
+                UsersGlobal.email,
+            ).where(UsersGlobal.id == userId)
+        )
+        user_details = user_query.first()
+        if not user_details:
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        # Fetch seat details, hall name, movie details, and show start time in a single query
+        seat_hall_movie_query = await db.execute(
+            select(
+                Seat.seat_number,
+                Hall_Row.row_number,
+                Hall.name.label("hall_name"),
+                Movie.title.label("movie_title"),
+                Movie.runtime.label("movie_runtime"),
+                Movie.id.label("movie_id"),
+                Show.start_time.label("show_start_time"),
+            )
+            .join(Reservation_Seat, Reservation_Seat.seat_id == Seat.id)
+            .join(Hall_Row, Seat.row_id == Hall_Row.id)
+            .join(Show, Show.id == reservation.show_id)
+            .join(Hall, Show.hall_id == Hall.id)
+            .join(Movie, Show.movie_id == Movie.id)
+            .where(Reservation_Seat.reservation_id == reservation.id)
+        )
+        seat_hall_movie_data = seat_hall_movie_query.all()
+
+        if not seat_hall_movie_data:
+            raise HTTPException(
+                status_code=404, detail="Seat, hall, or movie details not found."
+            )
+
+        # Extract seat details, hall name, movie details, and show start time
+        seat_details = [
+            {"seat_number": row.seat_number, "row_number": row.row_number}
+            for row in seat_hall_movie_data
+        ]
+        hall_name = seat_hall_movie_data[0].hall_name
+        movie_title = seat_hall_movie_data[0].movie_title
+        movie_runtime = seat_hall_movie_data[0].movie_runtime
+        show_start_time = seat_hall_movie_data[0].show_start_time
+        movie_id = seat_hall_movie_data[0].movie_id
+
+        return {
+            "reservation": reservation,
+            "seat_details": seat_details,
+            "hall_name": hall_name,
+            "movie_details": {
+                "title": movie_title,
+                "runtime": movie_runtime,
+                "id": movie_id,
+            },
+            "show_start_time": show_start_time,
+            "user_details": {
+                "first_name": user_details.first_name,
+                "last_name": user_details.last_name,
+                "username": user_details.username,
+                "email": user_details.email,
+            },
+        }
+    except HTTPException as e:
+        # Re-raise HTTP exceptions
+        logger.error(f"HTTP exception: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.exception(
+            "Unexpected error occurred while retrieving user reservation details."
         )
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
 import api from "../../utils/api";
@@ -9,6 +9,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false); // Add loading state
   const { setUser } = useContext(UserContext); // Access setUser from UserContext
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "LFKG Cinemas | Login";
+  }, []);
 
   const handleLogin = async () => {
     setLoading(true); // Set loading to true when login starts

@@ -18,6 +18,7 @@ const CinemaPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "LFKG Cinemas | Browse Movies";
     const fetchMovies = async () => {
       setLoading(true);
       setError(null);

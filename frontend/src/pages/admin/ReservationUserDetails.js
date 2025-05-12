@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useParams, useSearchParams } from "react-router-dom";
 import api from "../../utils/api";
 import Loading from "../../components/Loading";
 import Error from "../../components/Error";
-import BackButton from "../../components/BackButton"; // Import the BackButton component
+import BackButton from "../../components/BackButton";
 
-const ReservationDetails = () => {
-  const { reservationId } = useParams();
+const ReservationUserDetails = () => {
+  const { userId, reservationId } = useParams();
   const [searchParams] = useSearchParams();
   const region = searchParams.get("region");
   const [reservationDetails, setReservationDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
-    document.title = "LFKG Cinemas | Reservation Details"; // Set the document title
     const fetchReservationDetails = async () => {
       setLoading(true);
       setError(null);
@@ -24,9 +22,8 @@ const ReservationDetails = () => {
         if (!token) throw new Error("Authentication token is missing.");
 
         const response = await api.get(
-          `/reservation/get-details/${reservationId}`,
+          `/reservation/user/${userId}/details/${reservationId}?region=${region}`,
           {
-            params: { region },
             headers: { Authorization: `Bearer ${token}` },
           }
         );
@@ -41,7 +38,7 @@ const ReservationDetails = () => {
     };
 
     fetchReservationDetails();
-  }, [reservationId, region]);
+  }, [userId, reservationId]);
 
   if (loading) return <Loading message="Loading reservation details..." />;
   if (error)
@@ -53,11 +50,34 @@ const ReservationDetails = () => {
     hall_name,
     movie_details,
     show_start_time,
+    user_details,
   } = reservationDetails;
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4 text-primary">Reservation Details</h1>
+      <h1 className="text-center mb-4 text-primary">
+        User Reservation Details
+      </h1>
+
+      {/* User Information */}
+      <div className="card shadow-sm mb-4">
+        <div className="card-body">
+          <h5 className="card-title text-secondary">User Information</h5>
+          <hr />
+          <p className="card-text">
+            <strong>First Name:</strong> {user_details.first_name}
+          </p>
+          <p className="card-text">
+            <strong>Last Name:</strong> {user_details.last_name}
+          </p>
+          <p className="card-text">
+            <strong>Username:</strong> {user_details.username}
+          </p>
+          <p className="card-text">
+            <strong>Email:</strong> {user_details.email}
+          </p>
+        </div>
+      </div>
 
       {/* Movie Information */}
       <div className="card shadow-sm mb-4">
@@ -70,14 +90,9 @@ const ReservationDetails = () => {
           <p className="card-text">
             <strong>Runtime:</strong> {movie_details.runtime} minutes
           </p>
-          <button
-            className="btn btn-primary mt-3"
-            onClick={() =>
-              navigate(`/movies/details/${movie_details.id}?region=${region}`)
-            } // Navigate to movie details page
-          >
-            View Movie Details
-          </button>
+          <p className="card-text">
+            <strong>Movie ID:</strong> {movie_details.id}
+          </p>
         </div>
       </div>
 
@@ -99,7 +114,9 @@ const ReservationDetails = () => {
       {/* Combined Hall, Show, and Seat Details */}
       <div className="card shadow-sm mb-4">
         <div className="card-body">
-          <h5 className="card-title text-secondary">Show Details</h5>
+          <h5 className="card-title text-secondary">
+            Hall, Show, and Seat Details
+          </h5>
           <hr />
           <p className="card-text">
             <strong>Hall Name:</strong> {hall_name}
@@ -128,4 +145,4 @@ const ReservationDetails = () => {
   );
 };
 
-export default ReservationDetails;
+export default ReservationUserDetails;
