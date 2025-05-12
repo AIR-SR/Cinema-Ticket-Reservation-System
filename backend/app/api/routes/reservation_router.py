@@ -74,6 +74,94 @@ async def create_reservation_entry(
     return new_reservation
 
 
+async def handle_exceptions(func, *args, **kwargs):
+    """
+    Wrapper to handle exceptions for API endpoints.
+    - **Input**: Function to execute, along with its arguments.
+    - **Raises**: HTTPException with appropriate status code and message.
+    """
+    try:
+        return await func(*args, **kwargs)
+    except HTTPException as e:
+        logger.error(f"HTTP exception: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.exception("Unexpected error occurred.")
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        )
+
+
+async def validate_and_create_reservation(
+    user_id: int, reservation: ReservationBase, seat_ids: List[int], db: AsyncSession
+):
+    """
+    Validate seat availability and create a reservation.
+    - **Input**: User ID, reservation data, and seat IDs.
+    - **Returns**: The newly created reservation object.
+    """
+    if (
+        isinstance(reservation.created_at, datetime)
+        and reservation.created_at.tzinfo is not None
+    ):
+        reservation.created_at = reservation.created_at.replace(tzinfo=None)
+
+    await check_reserved_seats(seat_ids, db)
+    return await create_reservation_entry(user_id, reservation, seat_ids, db)
+
+
+async def fetch_reservation_by_id(reservation_id: int, db: AsyncSession):
+    """
+    Fetch a reservation by its ID.
+    - **Input**: Reservation ID.
+    - **Returns**: The reservation object or None if not found.
+    """
+    reservation_query = await db.execute(
+        select(Reservation).where(Reservation.id == reservation_id)
+    )
+    return reservation_query.scalars().first()
+
+
+async def fetch_reservations_by_user(user_id: int, db: AsyncSession):
+    """
+    Fetch all reservations for a specific user.
+    - **Input**: User ID.
+    - **Returns**: A list of reservation objects.
+    """
+    reservations_query = await db.execute(
+        select(Reservation).where(Reservation.user_id == user_id)
+    )
+    return reservations_query.scalars().all()
+
+
+async def fetch_seat_hall_movie_details(reservation_ids: List[int], db: AsyncSession):
+    """
+    Fetch seat details, hall name, movie details, and show start time for given reservation IDs.
+    - **Input**: List of reservation IDs.
+    - **Returns**: Query result containing the details.
+    """
+    seat_hall_movie_query = await db.execute(
+        select(
+            Reservation_Seat.reservation_id,
+            Seat.seat_number,
+            Hall_Row.row_number,
+            Hall.name.label("hall_name"),
+            Movie.id.label("movie_id"),
+            Movie.title.label("movie_title"),
+            Movie.runtime.label("movie_runtime"),
+            Show.start_time.label("show_start_time"),
+        )
+        .join(Reservation, Reservation.id == Reservation_Seat.reservation_id)
+        .join(Seat, Reservation_Seat.seat_id == Seat.id)
+        .join(Hall_Row, Seat.row_id == Hall_Row.id)
+        .join(Show, Show.id == Reservation.show_id)
+        .join(Hall, Show.hall_id == Hall.id)
+        .join(Movie, Show.movie_id == Movie.id)
+        .where(Reservation_Seat.reservation_id.in_(reservation_ids))
+    )
+    return seat_hall_movie_query.all()
+
+
 @router.post(
     "/create",
     response_model=ReservationModel,
@@ -90,33 +178,9 @@ async def create_reservation(
     """
     Create a reservation in the database.
     """
-    logger.info(
-        f"Creating reservation for user {current_user.id} with data: {reservation} and seat IDs: {seat_ids}"
+    return await handle_exceptions(
+        validate_and_create_reservation, current_user.id, reservation, seat_ids, db
     )
-    try:
-        if (
-            isinstance(reservation.created_at, datetime)
-            and reservation.created_at.tzinfo is not None
-        ):
-            reservation.created_at = reservation.created_at.replace(
-                tzinfo=None)
-
-        await check_reserved_seats(seat_ids, db)
-        new_reservation = await create_reservation_entry(
-            current_user.id, reservation, seat_ids, db
-        )
-        logger.info(
-            f"Reservation created successfully with ID: {new_reservation.id}")
-        return new_reservation
-    except HTTPException as e:
-        logger.error(f"HTTP exception: {e.detail}")
-        raise e
-    except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while creating the reservation.")
-        raise HTTPException(
-            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
-        )
 
 
 @router.post(
@@ -136,33 +200,9 @@ async def create_reservation_for_user(
     """
     Create a reservation in the database for a specific user.
     """
-    logger.info(
-        f"Employee {current_user.id} creating reservation for user {user_id} with data: {reservation} and seat IDs: {seat_ids}"
+    return await handle_exceptions(
+        validate_and_create_reservation, user_id, reservation, seat_ids, db
     )
-    try:
-        if (
-            isinstance(reservation.created_at, datetime)
-            and reservation.created_at.tzinfo is not None
-        ):
-            reservation.created_at = reservation.created_at.replace(
-                tzinfo=None)
-
-        await check_reserved_seats(seat_ids, db)
-        new_reservation = await create_reservation_entry(
-            user_id, reservation, seat_ids, db
-        )
-        logger.info(
-            f"Reservation created successfully with ID: {new_reservation.id}")
-        return new_reservation
-    except HTTPException as e:
-        logger.error(f"HTTP exception: {e.detail}")
-        raise e
-    except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while creating the reservation.")
-        raise HTTPException(
-            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
-        )
 
 
 @router.get(
@@ -199,36 +239,13 @@ async def get_my_reservations(
     - **Returns**: A list of reservation objects with detailed information.
     """
     try:
-        # Fetch reservations for the current user
-        reservations_query = await db.execute(
-            select(Reservation).where(Reservation.user_id == current_user.id)
-        )
-        reservations = reservations_query.scalars().all()
+        reservations = await fetch_reservations_by_user(current_user.id, db)
 
         if not reservations:
             return []
 
-        # Fetch seat details, hall name, movie details, and show start time for all reservations
         reservation_ids = [reservation.id for reservation in reservations]
-        seat_hall_movie_query = await db.execute(
-            select(
-                Reservation_Seat.reservation_id,
-                Seat.seat_number,
-                Hall_Row.row_number,
-                Hall.name.label("hall_name"),
-                Movie.title.label("movie_title"),
-                Movie.runtime.label("movie_runtime"),
-                Show.start_time.label("show_start_time"),  # Add start time
-            )
-            .join(Reservation, Reservation.id == Reservation_Seat.reservation_id)
-            .join(Seat, Reservation_Seat.seat_id == Seat.id)
-            .join(Hall_Row, Seat.row_id == Hall_Row.id)
-            .join(Show, Show.id == Reservation.show_id)
-            .join(Hall, Show.hall_id == Hall.id)
-            .join(Movie, Show.movie_id == Movie.id)
-            .where(Reservation_Seat.reservation_id.in_(reservation_ids))
-        )
-        seat_hall_movie_data = seat_hall_movie_query.all()
+        seat_hall_movie_data = await fetch_seat_hall_movie_details(reservation_ids, db)
 
         # Organize seat details, hall name, movie details, and show start time by reservation ID
         reservation_details = {}
@@ -241,7 +258,7 @@ async def get_my_reservations(
                         "title": row.movie_title,
                         "runtime": row.movie_runtime,
                     },
-                    "show_start_time": row.show_start_time,  # Include start time
+                    "show_start_time": row.show_start_time,
                 }
             reservation_details[row.reservation_id]["seat_details"].append(
                 {"seat_number": row.seat_number, "row_number": row.row_number}
@@ -257,7 +274,6 @@ async def get_my_reservations(
                     "seat_details": details.get("seat_details", []),
                     "hall_name": details.get("hall_name"),
                     "movie_details": details.get("movie_details"),
-                    # Include start time
                     "show_start_time": details.get("show_start_time"),
                 }
             )
@@ -281,8 +297,7 @@ async def get_my_reservations(
 async def get_reservation(
     reservation_id: int,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(
-        user_required),  # Default to user_required
+    current_user: UsersGlobal = Depends(user_required),
 ):
     """
     Retrieve a reservation by its ID from the database.
@@ -291,40 +306,16 @@ async def get_reservation(
     - **Raises**: HTTP error if the reservation is not found or access is denied.
     """
     try:
-        # Fetch reservation
-        reservation_query = await db.execute(
-            select(Reservation).where(Reservation.id == reservation_id)
-        )
-        reservation = reservation_query.scalars().first()
+        reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation:
             raise HTTPException(
                 status_code=404, detail="Reservation not found.")
 
-        # Check access permissions
         if reservation.user_id != current_user.id:
-            # Allow access for admins or employees
             await employee_required(current_user)
 
-        # Fetch seat details, hall name, movie details, and show start time in a single query
-        seat_hall_movie_query = await db.execute(
-            select(
-                Seat.seat_number,
-                Hall_Row.row_number,
-                Hall.name.label("hall_name"),
-                Movie.title.label("movie_title"),
-                Movie.runtime.label("movie_runtime"),
-                Movie.id.label("movie_id"),
-                Show.start_time.label("show_start_time"),  # Add start time
-            )
-            .join(Reservation_Seat, Reservation_Seat.seat_id == Seat.id)
-            .join(Hall_Row, Seat.row_id == Hall_Row.id)
-            .join(Show, Show.id == reservation.show_id)
-            .join(Hall, Show.hall_id == Hall.id)
-            .join(Movie, Show.movie_id == Movie.id)
-            .where(Reservation_Seat.reservation_id == reservation.id)
-        )
-        seat_hall_movie_data = seat_hall_movie_query.all()
+        seat_hall_movie_data = await fetch_seat_hall_movie_details([reservation.id], db)
 
         if not seat_hall_movie_data:
             raise HTTPException(
@@ -351,10 +342,9 @@ async def get_reservation(
                 "runtime": movie_runtime,
                 "id": movie_id,
             },
-            "show_start_time": show_start_time,  # Include start time
+            "show_start_time": show_start_time,
         }
     except HTTPException as e:
-        # Re-raise HTTP exceptions
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
@@ -387,15 +377,9 @@ async def get_user_reservation_details(
     - **Raises**: HTTP error if the reservation is not found or access is denied.
     """
     try:
-        # Fetch reservation
-        reservation_query = await db.execute(
-            select(Reservation).where(
-                Reservation.id == reservationId, Reservation.user_id == userId
-            )
-        )
-        reservation = reservation_query.scalars().first()
+        reservation = await fetch_reservation_by_id(reservationId, db)
 
-        if not reservation:
+        if not reservation or reservation.user_id != userId:
             raise HTTPException(
                 status_code=404, detail="Reservation not found.")
 
@@ -412,25 +396,7 @@ async def get_user_reservation_details(
         if not user_details:
             raise HTTPException(status_code=404, detail="User not found.")
 
-        # Fetch seat details, hall name, movie details, and show start time in a single query
-        seat_hall_movie_query = await db.execute(
-            select(
-                Seat.seat_number,
-                Hall_Row.row_number,
-                Hall.name.label("hall_name"),
-                Movie.title.label("movie_title"),
-                Movie.runtime.label("movie_runtime"),
-                Movie.id.label("movie_id"),
-                Show.start_time.label("show_start_time"),
-            )
-            .join(Reservation_Seat, Reservation_Seat.seat_id == Seat.id)
-            .join(Hall_Row, Seat.row_id == Hall_Row.id)
-            .join(Show, Show.id == reservation.show_id)
-            .join(Hall, Show.hall_id == Hall.id)
-            .join(Movie, Show.movie_id == Movie.id)
-            .where(Reservation_Seat.reservation_id == reservation.id)
-        )
-        seat_hall_movie_data = seat_hall_movie_query.all()
+        seat_hall_movie_data = await fetch_seat_hall_movie_details([reservation.id], db)
 
         if not seat_hall_movie_data:
             raise HTTPException(
@@ -466,7 +432,6 @@ async def get_user_reservation_details(
             },
         }
     except HTTPException as e:
-        # Re-raise HTTP exceptions
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
@@ -500,18 +465,13 @@ async def delete_reservation(
         f"Admin {current_user.id} attempting to delete reservation ID: {reservation_id}"
     )
     try:
-        # Fetch the reservation
-        reservation_query = await db.execute(
-            select(Reservation).where(Reservation.id == reservation_id)
-        )
-        reservation = reservation_query.scalars().first()
+        reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation:
             logger.warning(f"Reservation ID {reservation_id} not found.")
             raise HTTPException(
                 status_code=404, detail="Reservation not found.")
 
-        # Delete the reservation and associated reservation_seat entries
         await db.execute(
             delete(Reservation_Seat).where(
                 Reservation_Seat.reservation_id == reservation_id
@@ -525,7 +485,6 @@ async def delete_reservation(
         )
         return {"message": f"Reservation ID {reservation_id} deleted successfully."}
     except HTTPException as e:
-        # Re-raise HTTP exceptions
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
