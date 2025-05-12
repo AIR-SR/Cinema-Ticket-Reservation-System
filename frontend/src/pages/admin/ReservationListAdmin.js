@@ -86,6 +86,46 @@ const ReservationListAdmin = () => {
                   >
                     View Details
                   </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={async () => {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to delete this reservation?"
+                        )
+                      ) {
+                        try {
+                          const token = localStorage.getItem("token");
+                          if (!token)
+                            throw new Error(
+                              "Authentication token is missing. Please log in."
+                            );
+
+                          await api.delete(
+                            `/reservation/delete/${reservation.id}`,
+                            {
+                              headers: { Authorization: `Bearer ${token}` },
+                              params: { region: selectedRegion }, // Pass region as query parameter
+                            }
+                          );
+
+                          setReservations((prev) =>
+                            prev.filter((res) => res.id !== reservation.id)
+                          );
+                          alert("Reservation deleted successfully.");
+                        } catch (err) {
+                          console.error(err);
+                          alert(
+                            typeof err.response?.data?.detail === "string"
+                              ? err.response.data.detail
+                              : "Failed to delete reservation."
+                          );
+                        }
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

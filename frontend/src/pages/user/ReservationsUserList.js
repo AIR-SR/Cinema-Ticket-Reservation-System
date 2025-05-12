@@ -111,7 +111,7 @@ const ReservationsUserList = () => {
           ))}
         </div>
       )}
-      <div className="d-flex justify-content-start mt-4">
+      <div className="d-flex justify-content-start mt-4 mb-4">
         <BackButton />
       </div>
     </div>

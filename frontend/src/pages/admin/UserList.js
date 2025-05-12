@@ -74,6 +74,14 @@ const UserList = () => {
                   >
                     View Details
                   </button>
+                  <button
+                    className="btn btn-success mt-2 ms-2"
+                    onClick={() =>
+                      (window.location.href = `/admin/reservations/user/${user.id}/create`)
+                    }
+                  >
+                    Create Reservation
+                  </button>
                 </td>
               </tr>
             ))}
