@@ -3,6 +3,8 @@ import api from "../../utils/api";
 import { Link } from "react-router-dom";
 import RegionSelector from "../../components/RegionSelector";
 import BackButton from "../../components/BackButton";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const ShowListAdmin = () => {
   const [shows, setShows] = useState([]);
@@ -57,8 +59,9 @@ const ShowListAdmin = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <Loading message="Loading show list..." />;
+  if (error)
+    return <Error message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container mt-4">

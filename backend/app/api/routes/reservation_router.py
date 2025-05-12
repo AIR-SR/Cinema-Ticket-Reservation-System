@@ -62,13 +62,11 @@ async def create_reservation(
             isinstance(reservation.created_at, datetime)
             and reservation.created_at.tzinfo is not None
         ):
-            reservation.created_at = reservation.created_at.replace(
-                tzinfo=None)
+            reservation.created_at = reservation.created_at.replace(tzinfo=None)
 
         # Check if any of the seats are already reserved
         existing_reservations = await db.execute(
-            select(Reservation_Seat).where(
-                Reservation_Seat.seat_id.in_(seat_ids))
+            select(Reservation_Seat).where(Reservation_Seat.seat_id.in_(seat_ids))
         )
         if existing_reservations.scalars().first():
             logger.warning(
@@ -90,15 +88,13 @@ async def create_reservation(
 
         # Create reservation_seat entries
         reservation_seats = [
-            Reservation_Seat(
-                seat_id=seat_id, reservation_id=new_reservation.id)
+            Reservation_Seat(seat_id=seat_id, reservation_id=new_reservation.id)
             for seat_id in seat_ids
         ]
         db.add_all(reservation_seats)
         await db.commit()
 
-        logger.info(
-            f"Reservation created successfully with ID: {new_reservation.id}")
+        logger.info(f"Reservation created successfully with ID: {new_reservation.id}")
         return new_reservation
     except ValidationError as e:
         logger.error(f"Validation error while creating reservation: {e}")
@@ -108,8 +104,7 @@ async def create_reservation(
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while creating the reservation.")
+        logger.exception("Unexpected error occurred while creating the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )
@@ -145,13 +140,11 @@ async def create_reservation_for_user(
             isinstance(reservation.created_at, datetime)
             and reservation.created_at.tzinfo is not None
         ):
-            reservation.created_at = reservation.created_at.replace(
-                tzinfo=None)
+            reservation.created_at = reservation.created_at.replace(tzinfo=None)
 
         # Check if any of the seats are already reserved
         existing_reservations = await db.execute(
-            select(Reservation_Seat).where(
-                Reservation_Seat.seat_id.in_(seat_ids))
+            select(Reservation_Seat).where(Reservation_Seat.seat_id.in_(seat_ids))
         )
         if existing_reservations.scalars().first():
             logger.warning(
@@ -173,15 +166,13 @@ async def create_reservation_for_user(
 
         # Create reservation_seat entries
         reservation_seats = [
-            Reservation_Seat(
-                seat_id=seat_id, reservation_id=new_reservation.id)
+            Reservation_Seat(seat_id=seat_id, reservation_id=new_reservation.id)
             for seat_id in seat_ids
         ]
         db.add_all(reservation_seats)
         await db.commit()
 
-        logger.info(
-            f"Reservation created successfully with ID: {new_reservation.id}")
+        logger.info(f"Reservation created successfully with ID: {new_reservation.id}")
         return new_reservation
     except ValidationError as e:
         logger.error(f"Validation error while creating reservation: {e}")
@@ -191,8 +182,7 @@ async def create_reservation_for_user(
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while creating the reservation.")
+        logger.exception("Unexpected error occurred while creating the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )
@@ -314,8 +304,7 @@ async def get_my_reservations(
 async def get_reservation(
     reservation_id: int,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(
-        user_required),  # Default to user_required
+    current_user: UsersGlobal = Depends(user_required),  # Default to user_required
 ):
     """
     Retrieve a reservation by its ID from the database.
@@ -331,8 +320,7 @@ async def get_reservation(
         reservation = reservation_query.scalars().first()
 
         if not reservation:
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         # Check access permissions
         if reservation.user_id != current_user.id:
@@ -429,8 +417,7 @@ async def get_user_reservation_details(
         reservation = reservation_query.scalars().first()
 
         if not reservation:
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         # Fetch user details from global DB
         user_query = await db_global.execute(
@@ -530,7 +517,8 @@ async def delete_reservation(
     - **Raises**: HTTP error if the reservation is not found.
     """
     logger.info(
-        f"Admin {current_user.id} attempting to delete reservation ID: {reservation_id}")
+        f"Admin {current_user.id} attempting to delete reservation ID: {reservation_id}"
+    )
     try:
         # Fetch the reservation
         reservation_query = await db.execute(
@@ -540,27 +528,27 @@ async def delete_reservation(
 
         if not reservation:
             logger.warning(f"Reservation ID {reservation_id} not found.")
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         # Delete the reservation and associated reservation_seat entries
         await db.execute(
             delete(Reservation_Seat).where(
-                Reservation_Seat.reservation_id == reservation_id)
+                Reservation_Seat.reservation_id == reservation_id
+            )
         )
         await db.execute(delete(Reservation).where(Reservation.id == reservation_id))
         await db.commit()
 
         logger.info(
-            f"Reservation ID {reservation_id} deleted successfully by admin {current_user.id}.")
+            f"Reservation ID {reservation_id} deleted successfully by admin {current_user.id}."
+        )
         return {"message": f"Reservation ID {reservation_id} deleted successfully."}
     except HTTPException as e:
         # Re-raise HTTP exceptions
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while deleting the reservation.")
+        logger.exception("Unexpected error occurred while deleting the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )

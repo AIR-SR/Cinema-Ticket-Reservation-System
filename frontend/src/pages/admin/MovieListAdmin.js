@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import RegionSelector from "../../components/RegionSelector";
 import BackButton from "../../components/BackButton";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const MovieListAdmin = () => {
   const [moviesByRegion, setMoviesByRegion] = useState({});
@@ -14,6 +16,7 @@ const MovieListAdmin = () => {
 
   useEffect(() => {
     const fetchMovies = async () => {
+      setLoading(true); // Show loading when region changes
       try {
         // Fetch movies for the selected region
         const response = await api.get(`/movies/get?region=${selectedRegion}`);
@@ -37,7 +40,7 @@ const MovieListAdmin = () => {
         }
         console.error(err);
       } finally {
-        setLoading(false);
+        setLoading(false); // Hide loading after fetching
       }
     };
 
@@ -49,12 +52,22 @@ const MovieListAdmin = () => {
     window.location.href = `/movies/details/${movieId}?region=${region}`;
   };
 
-  const handleGoBack = () => {
-    navigate(-1); // Navigate to the previous page
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (error)
+    return (
+      <div className="container mt-4 mb-4">
+        <h1 className="mb-4">Movie List by Region</h1>
+        <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
+          <RegionSelector
+            selectedRegion={selectedRegion}
+            setSelectedRegion={setSelectedRegion}
+            regions={regions}
+            labelInline={true} // Inline label
+            fullWidth={false} // Not full width
+          />
+        </div>
+        <Error message={error} onRetry={() => window.location.reload()} />
+      </div>
+    );
 
   return (
     <div className="container mt-4 mb-4">
@@ -76,8 +89,10 @@ const MovieListAdmin = () => {
           Add New Movie
         </button>
       </div>
-      {moviesByRegion[selectedRegion] &&
-      moviesByRegion[selectedRegion].length > 0 ? (
+      {loading ? (
+        <Loading message="Loading movie list..." />
+      ) : moviesByRegion[selectedRegion] &&
+        moviesByRegion[selectedRegion].length > 0 ? (
         <div className="mb-5">
           <table
             className="table table-striped"

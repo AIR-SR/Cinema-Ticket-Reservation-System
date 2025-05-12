@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import BackButton from "../../components/BackButton";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true); // Added loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +26,8 @@ const UserList = () => {
       } catch (err) {
         console.error("Error fetching users:", err);
         setError("Failed to fetch users. Please try again later.");
+      } finally {
+        setLoading(false); // Ensure loading is set to false after fetch
       }
     };
 
@@ -40,6 +45,10 @@ const UserList = () => {
     }
     navigate(`/users/details/${userId}`);
   };
+
+  if (loading) return <Loading message="Loading user list..." />;
+  if (error)
+    return <Error message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container mt-5 mb-5">
@@ -68,20 +77,22 @@ const UserList = () => {
                 <td>{user.username}</td>
                 <td>{user.role}</td>
                 <td>
-                  <button
-                    className="btn btn-sm btn-info"
-                    onClick={() => handleViewDetails(user.id)}
-                  >
-                    View Details
-                  </button>
-                  <button
-                    className="btn btn-success mt-2 ms-2"
-                    onClick={() =>
-                      (window.location.href = `/admin/reservations/user/${user.id}/create`)
-                    }
-                  >
-                    Create Reservation
-                  </button>
+                  <div className="d-flex gap-4">
+                    <button
+                      className="btn btn-sm btn-info"
+                      onClick={() => handleViewDetails(user.id)}
+                    >
+                      View Details
+                    </button>
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={() =>
+                        navigate(`/admin/reservations/user/${user.id}/create`)
+                      }
+                    >
+                      Create Reservation
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

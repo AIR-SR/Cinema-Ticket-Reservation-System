@@ -138,7 +138,7 @@ const CreateReservationForUser = () => {
     }
   };
 
-  if (loading) return <Loading message="Loading..." />;
+  if (loading) return <Loading message="Loading details..." />;
   if (error)
     return <Error message={error} onRetry={() => window.location.reload()} />;
 

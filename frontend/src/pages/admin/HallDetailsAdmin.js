@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import api from "../../utils/api";
 import HallView from "../../components/HallView";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 import "../../styles/hall_view.css"; // Adjust the path as necessary
 
 const HallDetailsAdmin = () => {
@@ -42,9 +44,9 @@ const HallDetailsAdmin = () => {
     fetchHallDetails();
   }, [hallId, region]);
 
-  if (loading)
-    return <p className="text-center mt-4">Loading hall details...</p>;
-  if (error) return <p className="text-danger text-center mt-4">{error}</p>;
+  if (loading) return <Loading message="Loading hall details..." />;
+  if (error)
+    return <Error message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container mt-4">

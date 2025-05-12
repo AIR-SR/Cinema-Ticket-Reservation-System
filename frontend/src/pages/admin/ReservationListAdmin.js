@@ -3,6 +3,8 @@ import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import RegionSelector from "../../components/RegionSelector";
 import BackButton from "../../components/BackButton";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const ReservationListAdmin = () => {
   const [reservations, setReservations] = useState([]);
@@ -13,7 +15,10 @@ const ReservationListAdmin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setReservations([]); // Clear previous reservations immediately when the region changes
     const fetchReservations = async () => {
+      setLoading(true); // Show loading when region changes
+      setError(null);
       try {
         const token = localStorage.getItem("token");
         if (!token)
@@ -33,15 +38,29 @@ const ReservationListAdmin = () => {
         );
         console.error(err);
       } finally {
-        setLoading(false);
+        setLoading(false); // Hide loading after fetching
       }
     };
 
     fetchReservations();
   }, [selectedRegion]); // Re-fetch reservations when selectedRegion changes
 
-  if (loading) return <p>Loading reservations...</p>;
-  if (error) return <p className="text-danger">{error}</p>;
+  if (error)
+    return (
+      <div className="container mt-4">
+        <h1 className="mb-4">All Reservations</h1>
+        <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
+          <RegionSelector
+            selectedRegion={selectedRegion}
+            setSelectedRegion={setSelectedRegion}
+            regions={regions}
+            labelInline={true} // Inline label
+            fullWidth={false} // Not full width
+          />
+        </div>
+        <Error message={error} onRetry={() => window.location.reload()} />
+      </div>
+    );
 
   return (
     <div className="container mt-4">
@@ -55,7 +74,9 @@ const ReservationListAdmin = () => {
           fullWidth={false} // Not full width
         />
       </div>
-      {reservations.length > 0 ? (
+      {loading ? (
+        <Loading message="Loading reservations..." />
+      ) : reservations.length > 0 ? (
         <table className="table table-striped">
           <thead>
             <tr>
@@ -132,7 +153,19 @@ const ReservationListAdmin = () => {
           </tbody>
         </table>
       ) : (
-        <p>No reservations found.</p>
+        !loading && (
+          <div className="d-flex flex-column align-items-center justify-content-center text-center py-5">
+            <div className="mb-3">
+              <i
+                className="bi bi-calendar-x"
+                style={{ fontSize: "3rem", color: "#6c757d" }}
+              ></i>
+            </div>
+            <p className="mb-3 fs-5 text-muted">
+              No reservations found for the selected region.
+            </p>
+          </div>
+        )
       )}
       <div className="d-flex justify-content-start mt-4">
         <BackButton />

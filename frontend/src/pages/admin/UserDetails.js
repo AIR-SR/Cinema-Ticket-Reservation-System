@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import UserDetailsTable from "../../components/UserDetailsTable";
+import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 const UserDetails = () => {
   const { userId } = useParams();
@@ -53,16 +55,17 @@ const UserDetails = () => {
     }
   };
 
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center mt-5 text-danger">{error}</div>;
-  }
+  if (loading) return <Loading message="Loading user details..." />;
+  if (error)
+    return <Error message={error} onRetry={() => window.location.reload()} />;
 
   if (!user) {
-    return <div className="text-center mt-5">User not found.</div>;
+    return (
+      <Error
+        message={"User not found"}
+        onRetry={() => window.location.reload()}
+      />
+    );
   }
 
   return (
