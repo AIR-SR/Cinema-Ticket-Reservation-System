@@ -4,7 +4,7 @@ import api from "../../utils/api";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 dayjs.extend(advancedFormat);
 
@@ -86,7 +86,9 @@ const CinemaPage = () => {
   if (loading)
     return <Loading message="Fetching the latest movies for you..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5 mb-5">

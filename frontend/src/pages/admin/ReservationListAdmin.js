@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import RegionSelector from "../../components/RegionSelector";
 import BackButton from "../../components/BackButton";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const ReservationListAdmin = () => {
   const [reservations, setReservations] = useState([]);
@@ -58,7 +58,10 @@ const ReservationListAdmin = () => {
             fullWidth={false} // Not full width
           />
         </div>
-        <Error message={error} onRetry={() => window.location.reload()} />
+        <ErrorMessage
+          message={error}
+          onRetry={() => window.location.reload()}
+        />
       </div>
     );
 

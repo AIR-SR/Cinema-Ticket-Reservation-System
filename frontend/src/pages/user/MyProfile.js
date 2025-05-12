@@ -4,7 +4,7 @@ import api from "../../utils/api";
 import UserDetailsTable from "../../components/UserDetailsTable";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const MyProfile = () => {
   const { user, loading, refreshUser } = useContext(UserContext);
@@ -88,7 +88,7 @@ const MyProfile = () => {
   if (loading) return <Loading message="Fetching your profile details..." />;
   if (!user)
     return (
-      <Error
+      <ErrorMessage
         message={"User not found"}
         onRetry={() => window.location.reload()}
       />

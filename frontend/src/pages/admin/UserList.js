@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import BackButton from "../../components/BackButton";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -48,7 +48,9 @@ const UserList = () => {
 
   if (loading) return <Loading message="Loading user list..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5 mb-5">

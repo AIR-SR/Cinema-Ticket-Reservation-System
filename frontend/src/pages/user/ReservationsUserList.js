@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../utils/api"; // Use the configured API instance
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage"; // Updated import
 import BackButton from "../../components/BackButton"; // Import the BackButton component
 
 const ReservationsUserList = () => {
@@ -68,7 +68,9 @@ const ReservationsUserList = () => {
 
   if (loading) return <Loading message="Fetching your reservations..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5">

@@ -4,7 +4,7 @@ import api from "../../utils/api";
 import HallView from "../../components/HallView";
 import RegionSelector from "../../components/RegionSelector"; // Import your custom RegionSelector
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const CreateReservationForUser = () => {
   const { userId } = useParams();
@@ -140,7 +140,9 @@ const CreateReservationForUser = () => {
 
   if (loading) return <Loading message="Loading details..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5">

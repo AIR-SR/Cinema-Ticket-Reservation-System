@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import UserDetailsTable from "../../components/UserDetailsTable";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const UserDetails = () => {
   const { userId } = useParams();
@@ -57,11 +57,13 @@ const UserDetails = () => {
 
   if (loading) return <Loading message="Loading user details..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   if (!user) {
     return (
-      <Error
+      <ErrorMessage
         message={"User not found"}
         onRetry={() => window.location.reload()}
       />

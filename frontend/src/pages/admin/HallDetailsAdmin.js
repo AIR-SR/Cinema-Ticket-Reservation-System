@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import api from "../../utils/api";
 import HallView from "../../components/HallView";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 import "../../styles/hall_view.css"; // Adjust the path as necessary
 
 const HallDetailsAdmin = () => {
@@ -46,7 +46,9 @@ const HallDetailsAdmin = () => {
 
   if (loading) return <Loading message="Loading hall details..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-4">

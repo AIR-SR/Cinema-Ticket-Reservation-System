@@ -3,7 +3,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import HallView from "../../components/HallView";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const BookTicketPage = () => {
   const { movieId, showId } = useParams();
@@ -124,7 +124,9 @@ const BookTicketPage = () => {
 
   if (loading) return <Loading message="Fetching the reservation for you..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5">

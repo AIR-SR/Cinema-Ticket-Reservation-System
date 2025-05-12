@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import api from "../../utils/api";
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 import BackButton from "../../components/BackButton";
 
 const ReservationUserDetails = () => {
@@ -42,7 +42,9 @@ const ReservationUserDetails = () => {
 
   if (loading) return <Loading message="Loading reservation details..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   const {
     reservation,

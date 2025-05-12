@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import api from "../../utils/api"; // Import the configured Axios instance
 import Loading from "../../components/Loading";
-import Error from "../../components/Error";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const MovieDetails = () => {
   const { movieId } = useParams(); // Get movie ID from the URL
@@ -35,7 +35,9 @@ const MovieDetails = () => {
   if (loading)
     return <Loading message="Fetching the movie details for you..." />;
   if (error)
-    return <Error message={error} onRetry={() => window.location.reload()} />;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5 mb-5">

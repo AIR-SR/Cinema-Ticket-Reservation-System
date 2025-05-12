@@ -1,6 +1,6 @@
 import React from "react";
 
-const Error = ({ message, onRetry }) => {
+const ErrorMessage = ({ message, onRetry }) => {
   return (
     <div
       className="alert alert-danger text-center mt-5 mx-auto"
@@ -22,4 +22,4 @@ const Error = ({ message, onRetry }) => {
   );
 };
 
-export default Error;
+export default ErrorMessage;
