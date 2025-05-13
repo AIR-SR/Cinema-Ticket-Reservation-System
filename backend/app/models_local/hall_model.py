@@ -13,7 +13,8 @@ class Hall(LocalBase):
         shows (list): A list of shows associated with the hall.
         hall_rows (list): A list of rows in the hall.
     """
-    __tablename__ = 'halls'
+
+    __tablename__ = "halls"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)

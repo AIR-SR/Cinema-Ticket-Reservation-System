@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom"; // Import useSearchParams for query parameters
+import { useParams, useSearchParams, useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import api from "../../utils/api"; // Import the configured Axios instance
+import Loading from "../../components/Loading";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const MovieDetails = () => {
   const { movieId } = useParams(); // Get movie ID from the URL
   const [searchParams] = useSearchParams(); // Get query parameters
+  const navigate = useNavigate(); // Initialize navigate function
   const region = searchParams.get("region"); // Extract the 'region' query parameter
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    document.title = "LFKG Cinemas | Movie Details"; // Set the document title
+
     const fetchMovieDetails = async () => {
       try {
         const response = await api.get(`/movies/get/${movieId}`, {
@@ -28,18 +33,20 @@ const MovieDetails = () => {
   }, [movieId, region]);
 
   if (loading)
-    return (
-      <div className="text-center mt-5">
-        <div className="spinner-border" role="output">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
+    return <Loading message="Fetching the movie details for you..." />;
   if (error)
-    return <div className="alert alert-danger text-center mt-5">{error}</div>;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5 mb-5">
+      <button
+        className="btn btn-secondary mb-4"
+        onClick={() => navigate(-1)} // Go back to the previous page
+      >
+        Go Back
+      </button>
       <div className="card shadow">
         <div className="card-body">
           {movie && (

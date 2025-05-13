@@ -1,15 +1,51 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio  # Import asyncio for adding delay
 
 from api import api_router
-from core import (create_default_user, get_db_global, init_db_on_startup,
-                  logger, settings)
+from core import (
+    create_default_user,
+    get_db_global,
+    init_db_on_startup,
+    logger,
+    settings,
+)
 
-app = FastAPI()
 
-@app.on_event("startup")
-async def startup_event():
+class DelayMiddleware:
+    """Middleware to introduce a delay in API responses."""
+
+    def __init__(self, app: FastAPI, delay: float):
+        self.app = app
+        self.delay = delay
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            await asyncio.sleep(self.delay)  # Introduce the delay
+        await self.app(scope, receive, send)
+
+
+async def app_lifespan(app: FastAPI):
+    """Lifespan event handler for application startup and shutdown."""
+    logger.info("Starting up the application...")
     await init_db_on_startup()
+    logger.info(settings.FRONTEND_URL)
+    # Create the default user
+    try:
+        async for db in get_db_global():  # Call the function to get the async iterable
+            await create_default_user(db)
+            logger.info("Default user created successfully.")
+            break  # Exit after using the first database session
+    except Exception as e:
+        logger.error(f"Error creating default user: {e}")
+        raise
+    yield  # Yield control for the application to run
+    logger.info("Shutting down the application...")
+
+
+app = FastAPI(lifespan=app_lifespan)
+
+app.add_middleware(DelayMiddleware, delay=0)
 
 origins = [
     settings.FRONTEND_URL,  # Existing frontend URL
@@ -18,24 +54,15 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE"],  # Restrict to necessary methods
-    allow_headers=["Authorization", "Content-Type"],  # Restrict to necessary headers
+    allow_methods=[
+        "GET",
+        "POST",
+        "PATCH",
+        "PUT",
+        "DELETE",
+    ],  # Restrict to necessary methods
+    # Restrict to necessary headers
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 app.include_router(api_router)
-
-@app.on_event("startup")
-async def on_startup():
-    """Startup event to initialize the database and create default user."""
-    logger.info("Starting up the application...")
-    logger.info(settings.FRONTEND_URL)
-    # Create the default user
-    try:
-        async for db in get_db_global():  # Call the function to get the async iterable
-            await create_default_user(db)
-            logger.info("Default user created successfully.")
-            break  # Exit after using the first database session
-
-    except Exception as e:
-        logger.error(f"Error creating default user: {e}")
-        raise

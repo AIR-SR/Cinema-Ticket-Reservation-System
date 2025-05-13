@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import UserForm from "../../components/UserForm";
 
 const Register = () => {
+  useEffect(() => {
+    document.title = "LFKG Cinemas | Register";
+  }, []);
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",

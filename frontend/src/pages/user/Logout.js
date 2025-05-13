@@ -7,11 +7,11 @@ const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "Warehouse Manager | Logout";
+    document.title = "LFKG Cinemas | Logout";
     logout(); // Call the logout function from UserContext
     const timer = setTimeout(() => {
       navigate("/");
-    }, 3000); // Redirect to homepage after 3 seconds
+    }, 1000); // Redirect to homepage after 1 second
     return () => clearTimeout(timer); // Cleanup timer on component unmount
   }, [logout, navigate]);
 

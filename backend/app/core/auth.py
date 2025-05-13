@@ -65,7 +65,9 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
         str: The encoded JWT token.
     """
     to_encode = data.copy()
-    expire = datetime.now() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now() + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -90,7 +92,9 @@ def decode_access_token(token: str):
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db_global)) -> UserGlobalModel:
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db_global)
+) -> UserGlobalModel:
     """
     Retrieves the current user based on the provided JWT token.
 
@@ -109,7 +113,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
     # Use select with AsyncSession
-    user = await db.execute(select(UsersGlobal).where(UsersGlobal.username == payload.get("sub")))
+    user = await db.execute(
+        select(UsersGlobal).where(UsersGlobal.username == payload.get("sub"))
+    )
     user = user.scalars().first()  # Extract the first result
     if not user:
         raise HTTPException(status_code=401, detail="User not found")
@@ -133,7 +139,8 @@ async def admin_required(current_user: UsersGlobal = Depends(get_current_user)):
     """
     if current_user.role != ROLE_ADMIN:
         raise HTTPException(
-            status_code=403, detail="Not authorized to perform this action")
+            status_code=403, detail="Not authorized to perform this action"
+        )
     return current_user
 
 
@@ -152,7 +159,8 @@ async def user_required(current_user: UsersGlobal = Depends(get_current_user)):
     """
     if current_user.role not in [ROLE_USER, ROLE_ADMIN, ROLE_EMPLOYEE]:
         raise HTTPException(
-            status_code=403, detail="Not authorized to perform this action")
+            status_code=403, detail="Not authorized to perform this action"
+        )
     return current_user
 
 
@@ -171,7 +179,8 @@ async def employee_required(current_user: UsersGlobal = Depends(get_current_user
     """
     if current_user.role not in [ROLE_ADMIN, ROLE_EMPLOYEE]:
         raise HTTPException(
-            status_code=403, detail="Not authorized to perform this action")
+            status_code=403, detail="Not authorized to perform this action"
+        )
     return current_user
 
 
@@ -194,7 +203,7 @@ async def create_default_user(db: AsyncSession):
             last_name="User",
             email="admin@admin.com",
             hashed_password=hash_password(PASSWORD),
-            role="admin"
+            role="admin",
         )
         db.add(admin_user)
         await db.commit()
@@ -216,6 +225,8 @@ async def get_admin_emails(db: AsyncSession):
     Returns:
         list[str]: A list of admin email addresses.
     """
-    result = await db.execute(select(UsersGlobal).where(UsersGlobal.role == "admin"))  # Use select with AsyncSession
+    result = await db.execute(
+        select(UsersGlobal).where(UsersGlobal.role == "admin")
+    )  # Use select with AsyncSession
     admins = result.scalars().all()
     return [admin.email for admin in admins]

@@ -81,7 +81,7 @@ const UserForm = ({ formData, handleInputChange, includeRole = false }) => {
           <select
             id="role"
             name="role"
-            className="form-control"
+            className="form-select"
             value={formData.role}
             onChange={handleInputChange}
           >

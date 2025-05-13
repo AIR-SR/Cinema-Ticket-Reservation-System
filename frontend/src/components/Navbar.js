@@ -19,7 +19,7 @@ const Navbar = () => {
             className="me-2"
             style={{ width: "40px", height: "40px" }}
           />
-          <span className="fw-bold">Cinema Ticket Reservation System</span>
+          <span className="fw-bold">LFKG Cinemas</span>
         </Link>
         <button
           className="navbar-toggler"
@@ -44,7 +44,7 @@ const Navbar = () => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  Welcome, {user.username}
+                  Welcome, {user.first_name}
                 </a>
                 <ul
                   className="dropdown-menu"
@@ -55,43 +55,12 @@ const Navbar = () => {
                       My Profile
                     </Link>
                   </li>
-                  {user.role === "admin" && (
-                    <>
-                      <li>
-                        <Link className="dropdown-item" to="/users-list">
-                          Manage Users
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/movies/list">
-                          Manage Movies
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/halls/list">
-                          Manage Halls
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/shows/list">
-                          Manage Shows
-                        </Link>
-                      </li>
-                    </>
-                  )}
-                  {user.role === "employee" && (
-                    <>
-                      <li>
-                        <Link className="dropdown-item" to="/manage/bookings">
-                          Manage Bookings
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/manage/schedules">
-                          Manage Schedules
-                        </Link>
-                      </li>
-                    </>
+                  {user.role === "user" && (
+                    <li>
+                      <Link className="dropdown-item" to="/users/reservations">
+                        My Reservations
+                      </Link>
+                    </li>
                   )}
                   <li>
                     <Link className="dropdown-item" to="/logout">

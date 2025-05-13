@@ -3,6 +3,8 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import Loading from "../../components/Loading";
+import ErrorMessage from "../../components/ErrorMessage";
 
 dayjs.extend(advancedFormat);
 
@@ -16,6 +18,7 @@ const CinemaPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.title = "LFKG Cinemas | Browse Movies";
     const fetchMovies = async () => {
       setLoading(true);
       setError(null);
@@ -80,9 +83,12 @@ const CinemaPage = () => {
     );
   };
 
-  if (loading) return <div className="text-center">Loading movies...</div>;
+  if (loading)
+    return <Loading message="Fetching the latest movies for you..." />;
   if (error)
-    return <div className="alert alert-danger text-center">{error}</div>;
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-5 mb-5">

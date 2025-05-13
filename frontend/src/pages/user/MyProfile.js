@@ -1,8 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, use } from "react";
 import { UserContext } from "../../context/UserContext";
 import api from "../../utils/api";
 import UserDetailsTable from "../../components/UserDetailsTable";
 import Modal from "../../components/Modal";
+import Loading from "../../components/Loading";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const MyProfile = () => {
   const { user, loading, refreshUser } = useContext(UserContext);
@@ -12,6 +14,10 @@ const MyProfile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [editField, setEditField] = useState(null);
   const [editedUser, setEditedUser] = useState({ ...user });
+
+  useEffect(() => {
+    document.title = "LFKG Cinemas | My Profile";
+  }, []);
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
@@ -79,13 +85,14 @@ const MyProfile = () => {
     setEditField(null);
   };
 
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
-
-  if (!user) {
-    return <div className="text-center mt-5">No user data available.</div>;
-  }
+  if (loading) return <Loading message="Fetching your profile details..." />;
+  if (!user)
+    return (
+      <ErrorMessage
+        message={"User not found"}
+        onRetry={() => window.location.reload()}
+      />
+    );
 
   return (
     <div className="vh-90 d-flex justify-content-center align-items-center">

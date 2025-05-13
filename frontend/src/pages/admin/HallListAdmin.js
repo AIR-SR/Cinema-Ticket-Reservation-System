@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import RegionSelector from "../../components/RegionSelector";
+import BackButton from "../../components/BackButton";
+import Loading from "../../components/Loading";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const HallListAdmin = () => {
   const [halls, setHalls] = useState([]);
@@ -12,43 +15,48 @@ const HallListAdmin = () => {
 
   const navigate = useNavigate();
 
-  const fetchHalls = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await api.get(`/halls/get`, {
-        params: { region: selectedRegion },
-      });
+  useEffect(() => {
+    setHalls([]); // Clear previous halls immediately when the region changes
+    const fetchHalls = async () => {
+      setLoading(true); // Show loading when region changes
+      setError(null);
+      try {
+        const response = await api.get(`/halls/get`, {
+          params: { region: selectedRegion },
+        });
 
-      const hallsWithSeats = await Promise.all(
-        response.data.map(async (hall) => {
-          try {
-            const rowsRes = await api.get(`/hall_rows/rows/${hall.id}`, {
-              params: { region: selectedRegion },
-            });
-            const totalSeats = rowsRes.data.reduce(
-              (sum, row) => sum + row.seat_count,
-              0
-            );
-            return { ...hall, totalSeats };
-          } catch {
-            return { ...hall, totalSeats: 0 };
-          }
-        })
-      );
+        const hallsWithSeats = await Promise.all(
+          response.data.map(async (hall) => {
+            try {
+              const rowsRes = await api.get(`/hall_rows/rows/${hall.id}`, {
+                params: { region: selectedRegion },
+              });
+              const totalSeats = rowsRes.data.reduce(
+                (sum, row) => sum + row.seat_count,
+                0
+              );
+              return { ...hall, totalSeats };
+            } catch {
+              return { ...hall, totalSeats: 0 };
+            }
+          })
+        );
 
-      setHalls(hallsWithSeats);
-    } catch (err) {
-      if (err.response?.status === 404) {
-        setError(`No halls found for the region '${selectedRegion}'.`);
-      } else {
-        setError("Failed to fetch halls.");
+        setHalls(hallsWithSeats);
+      } catch (err) {
+        if (err.response?.status === 404) {
+          setError(`No halls found for the region '${selectedRegion}'.`);
+        } else {
+          setError("Failed to fetch halls.");
+        }
+        console.error(err);
+      } finally {
+        setLoading(false); // Hide loading after fetching
       }
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchHalls();
+  }, [selectedRegion]); // Re-fetch halls when selectedRegion changes
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
@@ -76,12 +84,25 @@ const HallListAdmin = () => {
     }
   };
 
-  useEffect(() => {
-    fetchHalls();
-  }, [selectedRegion]);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-danger">{error}</p>;
+  if (error)
+    return (
+      <div className="container mt-4">
+        <h1 className="mb-4">Hall List by Region</h1>
+        <div className="d-flex align-items-center justify-content-between mb-3 gap-2">
+          <RegionSelector
+            selectedRegion={selectedRegion}
+            setSelectedRegion={setSelectedRegion}
+            regions={regions}
+            labelInline={true} // Inline label
+            fullWidth={false} // Not full width
+          />
+        </div>
+        <ErrorMessage
+          message={error}
+          onRetry={() => window.location.reload()}
+        />
+      </div>
+    );
 
   return (
     <div className="container mt-4">
@@ -103,7 +124,9 @@ const HallListAdmin = () => {
           Add New Hall
         </button>
       </div>
-      {halls.length > 0 ? (
+      {loading ? (
+        <Loading message="Loading hall list..." />
+      ) : halls.length > 0 ? (
         <table
           className="table table-striped"
           style={{ tableLayout: "fixed", width: "100%" }}
@@ -155,6 +178,9 @@ const HallListAdmin = () => {
       ) : (
         <p>No halls available for the selected region.</p>
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };

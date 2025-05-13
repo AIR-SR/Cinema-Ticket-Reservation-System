@@ -26,6 +26,11 @@ const Footer = () => {
               Admin Dashboard
             </Link>
           )}
+          {user?.role === "employee" && (
+            <Link className="text-light" to="/employee/dashboard">
+              Employee Dashboard
+            </Link>
+          )}
         </div>
       </div>
     </footer>

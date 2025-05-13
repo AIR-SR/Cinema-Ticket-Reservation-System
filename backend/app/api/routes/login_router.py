@@ -8,11 +8,16 @@ from sqlalchemy.future import select
 router = APIRouter(prefix="/login", tags=["Login"])
 
 
-@router.post("/",
-             response_description="Access token for authenticated user",
-             summary="Authenticate User",
-             description="Authenticate a user using their credentials and return a JWT access token.")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db_global)):
+@router.post(
+    "/",
+    response_description="Access token for authenticated user",
+    summary="Authenticate User",
+    description="Authenticate a user using their credentials and return a JWT access token.",
+)
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db_global),
+):
     """
     Authenticate a user and return an access token.
 
@@ -22,8 +27,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
     - **Returns**: A JSON object containing a JWT access token and its type if authentication is successful.
     - **Raises**: HTTP 400 error if the credentials are invalid.
     """
-    query = select(UsersGlobal).where(
-        UsersGlobal.username == form_data.username)
+    query = select(UsersGlobal).where(UsersGlobal.username == form_data.username)
     result = await db.execute(query)
     user = result.scalars().first()
     if not user or not verify_password(form_data.password, user.hashed_password):

@@ -15,10 +15,11 @@ class Seat(LocalBase):
         hall_row (Hall_Row): The row this seat is associated with.
         reservation_seat (list): A list of reservations associated with this seat.
     """
-    __tablename__ = 'seats'
+
+    __tablename__ = "seats"
 
     id = Column(Integer, primary_key=True, index=True)
-    row_id = Column(Integer, ForeignKey('hall_rows.id'), index=True)
+    row_id = Column(Integer, ForeignKey("hall_rows.id"), index=True)
     seat_number = Column(Integer, index=True)
     seat_type = Column(String)
 

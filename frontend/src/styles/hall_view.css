@@ -12,12 +12,15 @@
   .hall-layout {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
+    justify-content: center;
+    align-items: center;
   }
   
   .row-layout {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 15px;
   }
@@ -36,22 +39,30 @@
   }
   
   .seat-box {
-    width: 30px;
-    height: 30px;
-    color: #fff;
+    width: 35px;
+    height: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
     cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
   }
   
   .seat-box.reserved {
-    background-color: #f00;
+    background-color: #f44336;
+    color: white;
+    cursor: not-allowed;
   }
   
   .seat-box.available {
     background-color: #4caf50;
+    color: white;
+  }
+  
+  .seat-box.selected {
+    background-color: #2196f3;
+    color: white;
   }

@@ -1,7 +1,7 @@
 from core import admin_required, get_db_local, settings, employee_required
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import Show, Movie, Hall
+from models_local import Show, Movie, Hall, Reservation, Reservation_Seat, Seat
 from schemas import ShowBase, ShowModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, func, cast, TIMESTAMP
@@ -11,12 +11,13 @@ from datetime import datetime, timedelta, date, timezone
 router = APIRouter(prefix="/show", tags=["Shows"])
 
 
-@router.get("/get",
-            response_model=list[ShowModel],
-            response_description="Retrieve list of shows",
-            summary="Fetch Shows",
-            description="Fetch a list of shows stored in the database."
-            )
+@router.get(
+    "/get",
+    response_model=list[ShowModel],
+    response_description="Retrieve list of shows",
+    summary="Fetch Shows",
+    description="Fetch a list of shows stored in the database.",
+)
 async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve a list of shows stored in the database.
@@ -28,7 +29,9 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
 
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(
-            status_code=400, detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.")
+            status_code=400,
+            detail=f"Invalid region: {region}. Supported regions are 'krakow' and 'warsaw'.",
+        )
 
     query = select(Show)
     result = await db.execute(query)
@@ -37,13 +40,19 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
     return shows
 
 
-@router.post("/add",
-             response_model=ShowModel,
-             response_description="Add a new show",
-             summary="Add Show",
-             description="Adds a new show to the database."
-             )
-async def add_show(show: ShowBase, region: str, db: AsyncSession = Depends(get_db_local), current_user: UsersGlobal = Depends(admin_required)):
+@router.post(
+    "/add",
+    response_model=ShowModel,
+    response_description="Add a new show",
+    summary="Add Show",
+    description="Adds a new show to the database.",
+)
+async def add_show(
+    show: ShowBase,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+    current_user: UsersGlobal = Depends(employee_required),
+):
     """
     Add a new show to the database.
 
@@ -61,12 +70,13 @@ async def add_show(show: ShowBase, region: str, db: AsyncSession = Depends(get_d
     return new_show
 
 
-@router.get("/get/{show_id}",
-            response_model=ShowModel,
-            response_description="Retrieve show details",
-            summary="Fetch Show Details",
-            description="Fetch details of a specific show by ID."
-            )
+@router.get(
+    "/get/{show_id}",
+    response_model=ShowModel,
+    response_description="Retrieve show details",
+    summary="Fetch Show Details",
+    description="Fetch details of a specific show by ID.",
+)
 async def get_show(show_id: int, region: str, db: AsyncSession = Depends(get_db_local)):
     """
     Retrieve details of a specific show by ID.
@@ -90,7 +100,7 @@ async def delete_show(
     show_id: int,
     region: str,
     db: AsyncSession = Depends(get_db_local),
-    current_user: UsersGlobal = Depends(admin_required)
+    current_user: UsersGlobal = Depends(employee_required),
 ):
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region.")
@@ -129,7 +139,7 @@ async def get_shows(region: str, db: AsyncSession = Depends(get_db_local)):
             "start_time": show.start_time,
             "hall_name": hall,
             "price": f"{show.price:.2f}",
-            "region": region
+            "region": region,
         }
         for show, title, hall in shows
     ]
@@ -145,7 +155,6 @@ async def check_show_conflict(
     region: str,
     db: AsyncSession = Depends(get_db_local),
 ):
-
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region")
 
@@ -172,26 +181,25 @@ async def check_show_conflict(
 
     for show, title, runtime in rows:
         existing_start = show.start_time
-        existing_end = existing_start + \
-            timedelta(minutes=runtime) + \
-            timedelta(minutes=15)  # add 15 minutes after movie
+        existing_end = (
+            existing_start + timedelta(minutes=runtime) + timedelta(minutes=15)
+        )  # add 15 minutes after movie
 
         if (
-            (new_start >= existing_start and new_start < existing_end) or
-            (new_end > existing_start and new_end <= existing_end) or
-            (new_start <= existing_start and new_end >= existing_end)
+            (new_start >= existing_start and new_start < existing_end)
+            or (new_end > existing_start and new_end <= existing_end)
+            or (new_start <= existing_start and new_end >= existing_end)
         ):
-            conflicts.append({
-                "show_id": show.id,
-                "movie_title": title,
-                "start_time": show.start_time,
-                "end_time": existing_end,
-            })
+            conflicts.append(
+                {
+                    "show_id": show.id,
+                    "movie_title": title,
+                    "start_time": show.start_time,
+                    "end_time": existing_end,
+                }
+            )
 
-    return {
-        "conflict": len(conflicts) > 0,
-        "conflicts": conflicts
-    }
+    return {"conflict": len(conflicts) > 0, "conflicts": conflicts}
 
 
 @router.get("/movies_with_shows")
@@ -218,10 +226,12 @@ async def get_movies_with_shows(region: str, db: AsyncSession = Depends(get_db_l
                 "poster_path": movie.poster_path,
                 "shows": [],
             }
-        movie_map[movie.id]["shows"].append({
-            "id": show.id,
-            "start_time": show.start_time.isoformat(),
-        })
+        movie_map[movie.id]["shows"].append(
+            {
+                "id": show.id,
+                "start_time": show.start_time.isoformat(),
+            }
+        )
 
     return list(movie_map.values())
 
@@ -267,3 +277,85 @@ async def get_shows_by_hall_and_date(
         }
         for show, runtime, title in shows
     ]
+
+
+@router.get("/get-for-reservation/{show_id}")
+async def get_show_for_reservation(
+    show_id: int,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+):
+    """
+    Retrieve show details for reservation, including movie and hall details.
+
+    - **Input**: Show ID (path parameter) and region.
+    - **Returns**: Show object with its details, movie details, and hall details.
+    - **Raises**: HTTP 404 error if the show is not found.
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Invalid region.")
+
+    query = (
+        select(Show, Movie, Hall)
+        .join(Movie, Show.movie_id == Movie.id)
+        .join(Hall, Show.hall_id == Hall.id)
+        .where(Show.id == show_id)
+    )
+    result = await db.execute(query)
+    row = result.first()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="Show not found")
+
+    show, movie, hall = row
+
+    return {
+        "show": {
+            "id": show.id,
+            "start_time": show.start_time,
+            "price": show.price,
+        },
+        "movie": {
+            "id": movie.id,
+            "title": movie.title,
+            "runtime": movie.runtime,
+            "poster_path": movie.poster_path,
+        },
+        "hall": {
+            "id": hall.id,
+            "name": hall.name,
+        },
+    }
+
+
+@router.get("/get_reserved_seats/{show_id}")
+async def get_reserved_seats(
+    show_id: int,
+    region: str,
+    db: AsyncSession = Depends(get_db_local),
+):
+    """
+    Retrieve reserved seats for a specific show.
+
+    - **Input**: Show ID (path parameter) and region.
+    - **Returns**: List of reserved seat IDs.
+    - **Raises**: HTTP 404 error if the show is not found.
+    """
+    if region not in ["krakow", "warsaw"]:
+        raise HTTPException(status_code=400, detail="Invalid region.")
+
+    query = (
+        select(Seat.id)
+        .join(Reservation_Seat, Seat.id == Reservation_Seat.seat_id)
+        .join(Reservation, Reservation.id == Reservation_Seat.reservation_id)
+        .where(Reservation.show_id == show_id)
+    )
+    result = await db.execute(query)
+    reserved_seats = result.scalars().all()
+
+    if not reserved_seats:
+        raise HTTPException(
+            status_code=404, detail="No reserved seats found for the show."
+        )
+
+    return reserved_seats

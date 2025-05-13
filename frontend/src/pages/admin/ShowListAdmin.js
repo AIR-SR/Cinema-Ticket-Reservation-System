@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import api from "../../utils/api";
 import { Link } from "react-router-dom";
 import RegionSelector from "../../components/RegionSelector";
+import BackButton from "../../components/BackButton";
+import Loading from "../../components/Loading";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const ShowListAdmin = () => {
   const [shows, setShows] = useState([]);
@@ -56,8 +59,11 @@ const ShowListAdmin = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <Loading message="Loading show list..." />;
+  if (error)
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-4">
@@ -156,6 +162,9 @@ const ShowListAdmin = () => {
           </div>
         )
       )}
+      <div className="d-flex justify-content-start mt-4">
+        <BackButton />
+      </div>
     </div>
   );
 };

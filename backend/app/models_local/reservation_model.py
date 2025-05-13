@@ -16,15 +16,15 @@ class Reservation(LocalBase):
         payment (Payment): The payment associated with this reservation.
         reservation_seat (list): A list of seats reserved in this reservation.
     """
-    __tablename__ = 'reservations'
+
+    __tablename__ = "reservations"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, index=True)
-    show_id = Column(Integer, ForeignKey('shows.id'), index=True)
+    show_id = Column(Integer, ForeignKey("shows.id"), index=True)
     status = Column(String)
     created_at = Column(DateTime)
 
     payment = relationship("Payment", back_populates="reservation")
-    reservation_seat = relationship(
-        "Reservation_Seat", back_populates="reservation")
+    reservation_seat = relationship("Reservation_Seat", back_populates="reservation")
     show = relationship("Show", back_populates="reservation")
