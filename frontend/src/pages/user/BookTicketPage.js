@@ -129,10 +129,10 @@ const BookTicketPage = () => {
     );
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Book Tickets</h1>
+    <div className="container mt-3">
+      <h1 className="text-center mb-3">Book Tickets</h1>
       {showDetails && (
-        <div className="show-details text-center mb-4">
+        <div className="show-details text-center mb-3">
           <h2>{showDetails.movieTitle}</h2>
           <p>
             <strong>Show Time:</strong>{" "}
@@ -148,7 +148,7 @@ const BookTicketPage = () => {
         onSeatClick={handleSeatSelection}
         selectedSeats={selectedSeats}
       />
-      <div className="d-flex justify-content-end mt-4 mb-5">
+      <div className="d-flex justify-content-end mt-3 mb-3">
         <button
           className="btn btn-primary"
           onClick={handleBooking}

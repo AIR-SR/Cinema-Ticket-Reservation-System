@@ -82,7 +82,7 @@ const ReservationsUserList = () => {
       ) : (
         <div className="row">
           {reservations.map((reservation) => (
-            <div className="col-md-4 mb-4" key={reservation.id}>
+            <div className="col-md-4 mb-3" key={reservation.id}>
               <div className="card shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title">{reservation.movieTitle}</h5>

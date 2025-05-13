@@ -1,68 +1,66 @@
 .screen {
-    width: 100%;
-    height: 40px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    line-height: 40px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-  }
-  
-  .hall-layout {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .row-layout {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .row-number {
-    width: 30px;
-    text-align: center;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .seats-layout {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-  }
-  
+  width: 100%;
+  height: 40px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  line-height: 40px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+}
+
+.hall-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+.row-layout {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.seats-layout {
+  display: flex;
+  gap: 5px;
+}
+
+.seat-box {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 6px; /* Add rounded edges */
+}
+
+.seat-box.reserved {
+  background-color: #ff4d4d;
+}
+
+.seat-box.available {
+  background-color: #4caf50;
+}
+
+.seat-box.selected {
+  background-color: #007bff; /* Blue-ish color for selected seats */
+  color: #fff;
+}
+
+.row-number {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
   .seat-box {
-    width: 35px;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: bold;
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
   }
-  
-  .seat-box.reserved {
-    background-color: #f44336;
-    color: white;
-    cursor: not-allowed;
-  }
-  
-  .seat-box.available {
-    background-color: #4caf50;
-    color: white;
-  }
-  
-  .seat-box.selected {
-    background-color: #2196f3;
-    color: white;
-  }
+}

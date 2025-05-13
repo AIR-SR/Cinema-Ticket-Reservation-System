@@ -26,7 +26,7 @@ const ReservationDetailsCard = ({ reservationDetails, region }) => {
             <strong>Runtime:</strong> {movie_details.runtime} minutes
           </p>
           <button
-            className="btn btn-primary mt-3"
+            className="btn btn-primary"
             onClick={() =>
               navigate(`/movies/details/${movie_details.id}?region=${region}`)
             }
