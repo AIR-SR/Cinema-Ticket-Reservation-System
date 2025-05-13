@@ -123,7 +123,6 @@ async def get_rows_by_hall(
     rows = result.scalars().all()
 
     if not rows:
-        raise HTTPException(
-            status_code=404, detail="No rows found for this hall.")
+        raise HTTPException(status_code=404, detail="No rows found for this hall.")
 
     return rows

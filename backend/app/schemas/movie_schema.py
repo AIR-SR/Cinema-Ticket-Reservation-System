@@ -74,6 +74,7 @@ class MovieTitle(BaseModel):
     """
     Pydantic model representing a movie title.
     """
+
     id: int = Field(
         ...,
         ge=1,

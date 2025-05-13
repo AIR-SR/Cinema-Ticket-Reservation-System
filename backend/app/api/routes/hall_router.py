@@ -5,7 +5,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from models_local import Hall, HallRow, Seat
 from pydantic import ValidationError
-from schemas import HallBase, HallModel, HallRowsModel, HallRowWithSeatsModel, SeatModel, SeatHallModel
+from schemas import (
+    HallBase,
+    HallModel,
+    HallRowsModel,
+    HallRowWithSeatsModel,
+    SeatModel,
+    SeatHallModel,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete, text, select, func
@@ -162,8 +169,10 @@ async def get_hall_rows_seats(
             row_number=row.row_number,
             hall_id=row.hall_id,
             seat_count=len(seats),
-            seats=[SeatHallModel(id=seat.id, seat_number=seat.seat_number)
-                   for seat in seats],
+            seats=[
+                SeatHallModel(id=seat.id, seat_number=seat.seat_number)
+                for seat in seats
+            ],
         )
         rows_with_seats.append(row_with_seats)
 

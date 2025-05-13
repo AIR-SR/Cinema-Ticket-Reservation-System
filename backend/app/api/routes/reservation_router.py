@@ -54,7 +54,10 @@ async def check_reserved_seats(seat_ids: List[int], db: AsyncSession):
 
 
 async def create_reservation_entry(
-    user_id: int, reservation_data: ReservationBase, seat_ids: List[int], db: AsyncSession
+    user_id: int,
+    reservation_data: ReservationBase,
+    seat_ids: List[int],
+    db: AsyncSession,
 ):
     """
     Create a reservation and associated reservation_seat entries in the database.
@@ -92,8 +95,7 @@ async def validate_and_create_reservation(
             isinstance(reservation.created_at, datetime)
             and reservation.created_at.tzinfo is not None
         ):
-            reservation.created_at = reservation.created_at.replace(
-                tzinfo=None)
+            reservation.created_at = reservation.created_at.replace(tzinfo=None)
 
         await check_reserved_seats(seat_ids, db)
         return await create_reservation_entry(user_id, reservation, seat_ids, db)
@@ -175,7 +177,9 @@ async def create_reservation(
     """
     Create a reservation in the database.
     """
-    return await validate_and_create_reservation(current_user.id, reservation, seat_ids, db)
+    return await validate_and_create_reservation(
+        current_user.id, reservation, seat_ids, db
+    )
 
 
 @router.post(
@@ -297,8 +301,7 @@ async def get_reservation(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation:
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         if reservation.user_id != current_user.id:
             await employee_required(current_user)
@@ -364,8 +367,7 @@ async def get_user_reservation_details(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation or reservation.user_id != user_id:
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         # Fetch user details from global DB
         user_query = await db_global.execute(
@@ -450,8 +452,7 @@ async def delete_reservation(
 
         if not reservation:
             logger.warning(f"Reservation ID {reservation_id} not found.")
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         await db.execute(
             delete(ReservationSeat).where(
@@ -469,8 +470,7 @@ async def delete_reservation(
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while deleting the reservation.")
+        logger.exception("Unexpected error occurred while deleting the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )

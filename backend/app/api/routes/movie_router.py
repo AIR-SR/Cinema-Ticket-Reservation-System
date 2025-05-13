@@ -68,8 +68,7 @@ async def add_movie(
             genres=genres_list,
         )
     except ValidationError as e:
-        raise HTTPException(
-            status_code=400, detail=f"Validation error: {e.errors()}")
+        raise HTTPException(status_code=400, detail=f"Validation error: {e.errors()}")
 
     new_movie = Movie(
         tmdbID=validated_movie.tmdbID,

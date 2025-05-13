@@ -37,6 +37,7 @@ class SeatHallModel(BaseModel):
     """
     Pydantic model representing a seat in a hall row.
     """
+
     id: int = Field(
         ...,
         ge=1,
@@ -55,6 +56,7 @@ class HallRowWithSeatsModel(BaseModel):
     """
     Pydantic model representing a hall row with its associated seats.
     """
+
     id: int = Field(
         ...,
         ge=1,
