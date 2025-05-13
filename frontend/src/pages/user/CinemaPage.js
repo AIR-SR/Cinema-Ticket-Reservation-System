@@ -38,8 +38,8 @@ const CinemaPage = () => {
     fetchMovies();
   }, [region]);
 
-  const handleShowBooking = (showId, movieId) => {
-    navigate(`/book-ticket/${movieId}/${showId}?region=${region}`);
+  const handleShowBooking = (showId) => {
+    navigate(`/book-ticket/${showId}?region=${region}`);
   };
 
   const renderShowButtons = (shows, movieId) => {

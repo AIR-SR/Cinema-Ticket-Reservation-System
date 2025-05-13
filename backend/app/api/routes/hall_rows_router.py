@@ -1,9 +1,10 @@
+from typing import List
 from datetime import datetime
 
 from core import admin_required, get_db_local
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import Hall_Row
+from models_local import HallRow
 from pydantic import ValidationError
 from schemas import HallRowsBase, HallRowsModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,9 +12,6 @@ from sqlalchemy.future import select
 from sqlalchemy import delete, text, select, func
 
 router = APIRouter(prefix="/hall_rows", tags=["Hall Rows"])
-
-
-from typing import List
 
 
 @router.post(
@@ -40,8 +38,8 @@ async def add_multiple_hall_rows(
     # Walidacja: sprawdź duplikaty w bazie
     for row in rows:
         existing = await db.execute(
-            select(Hall_Row).where(
-                Hall_Row.hall_id == row.hall_id, Hall_Row.row_number == row.row_number
+            select(HallRow).where(
+                HallRow.hall_id == row.hall_id, HallRow.row_number == row.row_number
             )
         )
         if existing.scalars().first():
@@ -50,11 +48,11 @@ async def add_multiple_hall_rows(
                 detail=f"Row {row.row_number} already exists in hall {row.hall_id}",
             )
 
-    new_rows = [Hall_Row(**row.model_dump()) for row in rows]
+    new_rows = [HallRow(**row.model_dump()) for row in rows]
     db.add_all(new_rows)
     await db.commit()
 
-    result = await db.execute(select(func.count()).select_from(Hall_Row))
+    result = await db.execute(select(func.count()).select_from(HallRow))
     row_count = result.scalar()
 
     if row_count == 0:
@@ -87,9 +85,9 @@ async def get_all_rows(
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region.")
 
-    query = select(Hall_Row)
+    query = select(HallRow)
     if hall_id:
-        query = query.where(Hall_Row.hall_id == hall_id)
+        query = query.where(HallRow.hall_id == hall_id)
 
     result = await db.execute(query)
     rows = result.scalars().all()
@@ -120,11 +118,12 @@ async def get_rows_by_hall(
     if region not in ["krakow", "warsaw"]:
         raise HTTPException(status_code=400, detail="Invalid region.")
 
-    query = select(Hall_Row).where(Hall_Row.hall_id == hall_id)
+    query = select(HallRow).where(HallRow.hall_id == hall_id)
     result = await db.execute(query)
     rows = result.scalars().all()
 
     if not rows:
-        raise HTTPException(status_code=404, detail="No rows found for this hall.")
+        raise HTTPException(
+            status_code=404, detail="No rows found for this hall.")
 
     return rows

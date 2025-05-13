@@ -12,7 +12,6 @@ const MovieListAdmin = () => {
   const [error, setError] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState("krakow"); // Default to the first region
   const [regions] = useState(["krakow", "warsaw"]); // List of regions
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMovies = async () => {

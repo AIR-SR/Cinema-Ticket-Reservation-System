@@ -1,7 +1,7 @@
 from core import admin_required, get_db_local, settings, employee_required
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import Show, Movie, Hall, Reservation, Reservation_Seat, Seat
+from models_local import Show, Movie, Hall, Reservation, ReservationSeat, Seat
 from schemas import ShowBase, ShowModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, func, cast, TIMESTAMP
@@ -347,8 +347,8 @@ async def get_reserved_seats(
 
     query = (
         select(Seat.id)
-        .join(Reservation_Seat, Seat.id == Reservation_Seat.seat_id)
-        .join(Reservation, Reservation.id == Reservation_Seat.reservation_id)
+        .join(ReservationSeat, Seat.id == ReservationSeat.seat_id)
+        .join(Reservation, Reservation.id == ReservationSeat.reservation_id)
         .where(Reservation.show_id == show_id)
     )
     result = await db.execute(query)

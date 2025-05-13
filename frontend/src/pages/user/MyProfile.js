@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, use } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../../context/UserContext";
 import api from "../../utils/api";
 import UserDetailsTable from "../../components/UserDetailsTable";

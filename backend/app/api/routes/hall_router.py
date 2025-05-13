@@ -3,7 +3,7 @@ from datetime import datetime
 from core import admin_required, get_db_local, logger
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import Hall, Hall_Row, Seat
+from models_local import Hall, HallRow, Seat
 from pydantic import ValidationError
 from schemas import HallBase, HallModel, HallRowsModel, HallRowWithSeatsModel, SeatModel, SeatHallModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -117,7 +117,7 @@ async def get_hall_rows(
     - **Returns**: List of rows in the hall.
     - **Raises**: HTTP 404 error if the hall is not found.
     """
-    query = select(Hall_Row).where(Hall_Row.hall_id == hall_id)
+    query = select(HallRow).where(HallRow.hall_id == hall_id)
     result = await db.execute(query)
     rows = result.scalars().all()
 
@@ -144,7 +144,7 @@ async def get_hall_rows_seats(
     - **Returns**: List of rows with their associated seats in the hall.
     - **Raises**: HTTP 404 error if the hall is not found.
     """
-    query = select(Hall_Row).where(Hall_Row.hall_id == hall_id)
+    query = select(HallRow).where(HallRow.hall_id == hall_id)
     result = await db.execute(query)
     rows = result.scalars().all()
 
@@ -185,7 +185,7 @@ async def delete_hall(
         raise HTTPException(status_code=404, detail="Hall not found.")
 
     # Fetch rows associated with the hall
-    rows_query = select(Hall_Row.id).where(Hall_Row.hall_id == hall_id)
+    rows_query = select(HallRow.id).where(HallRow.hall_id == hall_id)
     rows_result = await db.execute(rows_query)
     # No need to access `.id` since these are already integers
     row_ids = rows_result.scalars().all()
@@ -194,7 +194,7 @@ async def delete_hall(
     await db.execute(delete(Seat).where(Seat.row_id.in_(row_ids)))
 
     # Delete rows associated with the hall
-    await db.execute(delete(Hall_Row).where(Hall_Row.hall_id == hall_id))
+    await db.execute(delete(HallRow).where(HallRow.hall_id == hall_id))
 
     # Delete the hall itself
     await db.delete(hall)

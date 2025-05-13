@@ -6,7 +6,7 @@ import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const BookTicketPage = () => {
-  const { movieId, showId } = useParams();
+  const { showId } = useParams();
   const [searchParams] = useSearchParams();
   const region = searchParams.get("region");
   const [seats, setSeats] = useState([]);
@@ -148,7 +148,7 @@ const BookTicketPage = () => {
         onSeatClick={handleSeatSelection}
         selectedSeats={selectedSeats}
       />
-      <div className="d-flex justify-content-end mt-4">
+      <div className="d-flex justify-content-end mt-4 mb-5">
         <button
           className="btn btn-primary"
           onClick={handleBooking}

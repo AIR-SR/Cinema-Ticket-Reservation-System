@@ -2,7 +2,7 @@ from core import admin_required, get_db_local
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from models_global import UsersGlobal
-from models_local import Seat, Hall_Row
+from models_local import Seat, HallRow
 from pydantic import ValidationError
 from schemas import SeatModel, SeatBase
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -68,7 +68,7 @@ async def get_seats_in_hall(hall_id: int, db: AsyncSession = Depends(get_db_loca
     - **Returns**: A list of seats with their IDs, row IDs, seat numbers, and types.
     - **Raises**: HTTP 404 error if no seats are found for the given hall.
     """
-    query = select(Seat).join(Hall_Row).where(Hall_Row.hall_id == hall_id)
+    query = select(Seat).join(HallRow).where(HallRow.hall_id == hall_id)
     result = await db.execute(query)
     seats = result.scalars().all()
 

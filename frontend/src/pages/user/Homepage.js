@@ -1,4 +1,4 @@
-import React, { use, useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
@@ -6,10 +6,8 @@ const Homepage = () => {
     document.title = "LFKG Cinemas | Homepage";
   }, []);
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState();
 
   const handleCinemaSelection = (city) => {
-    setSelectedCity(city);
     navigate(`/cinema/${city}?region=${city}`);
   };
 
