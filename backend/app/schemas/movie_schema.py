@@ -68,3 +68,27 @@ class MovieModel(MovieBase):
         Configuration for the Pydantic model:
         - `from_attributes`: Allows population of the model from ORM objects.
         """
+
+
+class MovieTitle(BaseModel):
+    """
+    Pydantic model representing a movie title.
+    """
+    id: int = Field(
+        ...,
+        ge=1,
+        title="Movie ID",
+        description="A unique identifier for the movie in the database. Must be a positive integer.",
+    )
+    title: str = Field(
+        ...,
+        title="Movie Title",
+        description="The title of the movie. This is a required field.",
+    )
+
+    class Config:
+        from_attributes = True
+        """
+        Configuration for the Pydantic model:
+        - `from_attributes`: Allows population of the model from ORM objects.
+        """

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from models_local import Hall, Hall_Row, Seat
 from pydantic import ValidationError
-from schemas import HallBase, HallModel, HallRowsModel
+from schemas import HallBase, HallModel, HallRowsModel, HallRowWithSeatsModel, SeatModel, SeatHallModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import delete, text, select, func
@@ -129,6 +129,7 @@ async def get_hall_rows(
 
 @router.get(
     "/get/{hall_id}/rows_seats",
+    response_model=list[HallRowWithSeatsModel],
     response_description="Retrieve hall rows and seats",
     summary="Fetch Hall, Hall Rows and Seats",
     description="Fetch rows and seats of a specific hall by ID.",
@@ -156,17 +157,15 @@ async def get_hall_rows_seats(
         seats_result = await db.execute(seats_query)
         seats = seats_result.scalars().all()
 
-        rows_with_seats.append(
-            {
-                "row_number": row.row_number,
-                "hall_id": row.hall_id,
-                "id": row.id,
-                "seat_count": len(seats),
-                "seats": [
-                    {"id": seat.id, "seat_number": seat.seat_number} for seat in seats
-                ],
-            }
+        row_with_seats = HallRowWithSeatsModel(
+            id=row.id,
+            row_number=row.row_number,
+            hall_id=row.hall_id,
+            seat_count=len(seats),
+            seats=[SeatHallModel(id=seat.id, seat_number=seat.seat_number)
+                   for seat in seats],
         )
+        rows_with_seats.append(row_with_seats)
 
     return rows_with_seats
 
