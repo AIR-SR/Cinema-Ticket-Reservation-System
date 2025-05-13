@@ -230,7 +230,7 @@ async def get_movies_with_shows(region: str, db: AsyncSession = Depends(get_db_l
             {
                 "id": show.id,
                 "start_time": show.start_time.isoformat(),
-                "hall_id": show.hall_id,  # Add hall_id here
+                "hall_id": show.hall_id,
             }
         )
 

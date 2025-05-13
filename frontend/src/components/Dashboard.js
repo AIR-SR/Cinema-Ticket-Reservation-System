@@ -49,8 +49,8 @@ const Dashboard = ({ role }) => {
       <div className="row g-4">
         {cards
           .filter((card) => card.roles.includes(role))
-          .map((card, index) => (
-            <div className="col-md-4" key={index}>
+          .map((card) => (
+            <div className="col-md-4" key={card.link}>
               <div className="card shadow-sm">
                 <div className="card-body text-center">
                   <h5 className="card-title">{card.title}</h5>
