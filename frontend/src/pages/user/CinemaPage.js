@@ -38,11 +38,11 @@ const CinemaPage = () => {
     fetchMovies();
   }, [region]);
 
-  const handleShowBooking = (showId, movieId) => {
-    navigate(`/book-ticket/${movieId}/${showId}?region=${region}`);
+  const handleShowBooking = (showId) => {
+    navigate(`/book-ticket/${showId}?region=${region}`);
   };
 
-  const renderShowButtons = (shows, movieId) => {
+  const renderShowButtons = (shows) => {
     return shows
       .sort((a, b) =>
         dayjs(a.start_time).isBefore(dayjs(b.start_time)) ? -1 : 1
@@ -51,7 +51,7 @@ const CinemaPage = () => {
         <button
           key={show.id}
           className="btn btn-outline-primary btn-sm me-2 mb-2"
-          onClick={() => handleShowBooking(show.id, movieId)}
+          onClick={() => handleShowBooking(show.id)}
           style={{
             transition: "all 0.3s ease",
           }}
@@ -75,7 +75,7 @@ const CinemaPage = () => {
       Object.entries(groupedShows).map(([date, shows]) => (
         <div key={date} className="mb-3">
           <strong>{date}</strong>
-          <div className="mt-2">{renderShowButtons(shows, movie.id)}</div>
+          <div className="mt-2">{renderShowButtons(shows)}</div>
         </div>
       ))
     ) : (

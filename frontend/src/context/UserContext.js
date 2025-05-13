@@ -31,7 +31,7 @@ export const UserProvider = ({ children }) => {
           console.warn("Token is expired");
           localStorage.removeItem("token");
           setUser(null);
-          window.location.href = "/login"; // Redirect to login
+          window.location.href = "/login";
           return;
         }
         const response = await api.get("/users/details", {
@@ -44,7 +44,7 @@ export const UserProvider = ({ children }) => {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem("token");
         setUser(null);
-        window.location.href = "/login"; // Redirect to login
+        window.location.href = "/login";
       }
     }
   };
@@ -73,6 +73,7 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
+    window.location.href = "/login";
   };
 
   const refreshUser = async () => {

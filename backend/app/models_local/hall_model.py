@@ -20,4 +20,4 @@ class Hall(LocalBase):
     name = Column(String)
 
     shows = relationship("Show", back_populates="hall")
-    hall_rows = relationship("Hall_Row", back_populates="hall")
+    hall_rows = relationship("HallRow", back_populates="hall")

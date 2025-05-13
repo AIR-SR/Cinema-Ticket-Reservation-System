@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import api from "../../utils/api"; // Use the configured API instance
+import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
 import Loading from "../../components/Loading";
-import ErrorMessage from "../../components/ErrorMessage"; // Updated import
-import BackButton from "../../components/BackButton"; // Import the BackButton component
+import ErrorMessage from "../../components/ErrorMessage";
+import BackButton from "../../components/BackButton";
 
 const ReservationsUserList = () => {
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -82,7 +84,7 @@ const ReservationsUserList = () => {
       ) : (
         <div className="row">
           {reservations.map((reservation) => (
-            <div className="col-md-4 mb-4" key={reservation.id}>
+            <div className="col-md-4 mb-3" key={reservation.id}>
               <div className="card shadow-sm">
                 <div className="card-body">
                   <h5 className="card-title">{reservation.movieTitle}</h5>
@@ -102,8 +104,10 @@ const ReservationsUserList = () => {
                   <button
                     className="btn btn-primary mt-2"
                     onClick={() =>
-                      (window.location.href = `/users/reservations/${reservation.id}?region=${reservation.region}`)
-                    }
+                      navigate(
+                        `/users/reservations/${reservation.id}?region=${reservation.region}`
+                      )
+                    } // Use navigate here
                   >
                     View Details
                   </button>

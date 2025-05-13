@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 
-class Hall_Row(LocalBase):
+class HallRow(LocalBase):
     """
     Represents a row in a cinema hall.
 

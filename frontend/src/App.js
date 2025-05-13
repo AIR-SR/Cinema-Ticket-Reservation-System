@@ -76,7 +76,7 @@ const PrivateRoute = ({ element, requiredRole }) => {
 };
 
 const App = () => {
-  const [_, setToken] = useState(localStorage.getItem("token"));
+  const [, setToken] = useState(localStorage.getItem("token"));
 
   return (
     <UserProvider>
@@ -275,7 +275,7 @@ const App = () => {
 
               {/* Book Ticket */}
               <Route
-                path="/book-ticket/:movieId/:showId"
+                path="/book-ticket/:showId"
                 element={
                   <PrivateRoute
                     element={<BookTicketPage />}

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import UserForm from "../../components/UserForm";
 
 const RegisterAdmin = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
@@ -26,6 +28,7 @@ const RegisterAdmin = () => {
         },
       });
       alert(`Registration of ${formData.username} successful!`);
+      navigate("/users-list");
     } catch (error) {
       console.error("Registration error:", error.response || error.message);
       alert(error.response?.data?.detail || "Failed to register.");
@@ -33,7 +36,7 @@ const RegisterAdmin = () => {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 mb-5">
       <h1 className="text-center mb-4">Register Admin</h1>
       <div className="row justify-content-center">
         <div className="col-md-6">

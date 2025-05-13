@@ -48,8 +48,7 @@ const MovieListAdmin = () => {
   }, [selectedRegion]); // Re-fetch movies when selectedRegion changes
 
   const handleViewDetails = (movieId, region) => {
-    // Navigate to the movie details page with the region as a query parameter
-    window.location.href = `/movies/details/${movieId}?region=${region}`;
+    navigate(`/movies/details/${movieId}?region=${region}`);
   };
 
   if (error)
@@ -85,9 +84,7 @@ const MovieListAdmin = () => {
         />
         <button
           className="btn btn-success"
-          onClick={() =>
-            (window.location.href = `/admin/movies/add?region=${selectedRegion}`)
-          }
+          onClick={() => navigate(`/admin/movies/add?region=${selectedRegion}`)}
         >
           Add New Movie
         </button>
@@ -151,7 +148,7 @@ const MovieListAdmin = () => {
             <button
               className="btn btn-success"
               onClick={() =>
-                (window.location.href = `/admin/movies/add?region=${selectedRegion}`)
+                navigate(`/admin/movies/add?region=${selectedRegion}`)
               }
             >
               Add a New Movie

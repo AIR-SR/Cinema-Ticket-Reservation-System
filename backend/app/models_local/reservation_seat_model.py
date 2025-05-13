@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
 
-class Reservation_Seat(LocalBase):
+class ReservationSeat(LocalBase):
     """
     Represents a reserved seat in the system.
 

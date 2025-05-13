@@ -46,12 +46,12 @@ const CreateReservationForUser = () => {
     }
   };
 
-  const fetchSeats = async (showId) => {
+  const fetchSeats = async (showId, hallId) => {
     setLoading(true);
     setError(null);
     try {
       const { data: rowsSeatsData } = await api.get(
-        `/halls/get/${showId}/rows_seats`,
+        `/halls/get/${hallId}/rows_seats`,
         {
           params: { region: selectedRegion },
         }
@@ -91,7 +91,7 @@ const CreateReservationForUser = () => {
 
   const handleShowSelection = (show) => {
     setSelectedShow(show);
-    fetchSeats(show.id);
+    fetchSeats(show.id, show.hall_id); // Pass hallId from the selected show
   };
 
   const handleSeatSelection = (seatId) => {

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from models_local import Movie
 from pydantic import ValidationError
-from schemas import MovieAdd, MovieBase, MovieModel
+from schemas import MovieAdd, MovieBase, MovieModel, MovieTitle
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -87,6 +87,7 @@ async def add_movie(
 
 @router.get(
     "/get",
+    response_model=list[MovieModel],
     response_description="List of movies by city",
     summary="Fetch Movies by City",
     description="Retrieve movies based on the specified region.",
@@ -114,6 +115,7 @@ async def get_movies(region: str, db: AsyncSession = Depends(get_db_local)):
 
 @router.get(
     "/get_title",
+    response_model=list[MovieTitle],
     response_description="List of movies title by city",
     summary="Fetch Movies by City",
     description="Retrieve movies based on the specified region.",

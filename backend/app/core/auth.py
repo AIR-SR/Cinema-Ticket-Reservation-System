@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
-from .config import settings
+from .config import settings, logger
 from .database import get_db_global
 
 SECRET_KEY = settings.SECRET_KEY
@@ -89,7 +89,9 @@ def decode_access_token(token: str):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError as e:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
+        logger.error(f"JWT Error: {e}")
+        raise HTTPException(
+            status_code=401, detail="Invalid or expired token")
 
 
 async def get_current_user(
