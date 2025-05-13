@@ -75,7 +75,7 @@ const CinemaPage = () => {
       Object.entries(groupedShows).map(([date, shows]) => (
         <div key={date} className="mb-3">
           <strong>{date}</strong>
-          <div className="mt-2">{renderShowButtons(shows, movie.id)}</div>
+          <div className="mt-2">{renderShowButtons(shows)}</div>
         </div>
       ))
     ) : (

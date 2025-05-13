@@ -1,5 +1,4 @@
 import React, { createContext, useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 
 export const UserContext = createContext({
@@ -11,7 +10,6 @@ export const UserContext = createContext({
 });
 
 export const UserProvider = ({ children }) => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +31,7 @@ export const UserProvider = ({ children }) => {
           console.warn("Token is expired");
           localStorage.removeItem("token");
           setUser(null);
-          navigate("/login");
+          window.location.href = "/login";
           return;
         }
         const response = await api.get("/users/details", {
@@ -46,7 +44,7 @@ export const UserProvider = ({ children }) => {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem("token");
         setUser(null);
-        navigate("/login");
+        window.location.href = "/login";
       }
     }
   };
@@ -75,6 +73,7 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
+    window.location.href = "/login";
   };
 
   const refreshUser = async () => {
