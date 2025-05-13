@@ -42,7 +42,7 @@ const CinemaPage = () => {
     navigate(`/book-ticket/${showId}?region=${region}`);
   };
 
-  const renderShowButtons = (shows, movieId) => {
+  const renderShowButtons = (shows) => {
     return shows
       .sort((a, b) =>
         dayjs(a.start_time).isBefore(dayjs(b.start_time)) ? -1 : 1
@@ -51,7 +51,7 @@ const CinemaPage = () => {
         <button
           key={show.id}
           className="btn btn-outline-primary btn-sm me-2 mb-2"
-          onClick={() => handleShowBooking(show.id, movieId)}
+          onClick={() => handleShowBooking(show.id)}
           style={{
             transition: "all 0.3s ease",
           }}
