@@ -1,3 +1,5 @@
+from typing import List, Optional
+from pydantic import BaseModel
 from datetime import datetime
 
 from pydantic import BaseModel, Field
@@ -50,3 +52,117 @@ class ReservationModel(ReservationBase):
         Configuration for the Pydantic model:
         - `from_attributes`: Allows population of the model from ORM objects.
         """
+
+
+class SeatDetails(BaseModel):
+    """
+    Model representing details of a seat in a reservation.
+    """
+
+    seat_number: int = Field(
+        ...,
+        ge=1,
+        title="Seat Number",
+        description="The number of the seat in the hall. Must be a positive integer.",
+    )
+    row_number: int = Field(
+        ...,
+        ge=1,
+        title="Row Number",
+        description="The row number where the seat is located. Must be a positive integer.",
+    )
+
+
+class MovieDetails(BaseModel):
+    """
+    Model representing details of a movie associated with a reservation.
+    """
+
+    title: str = Field(
+        ...,
+        title="Movie Title",
+        description="The title of the movie associated with the reservation.",
+    )
+    runtime: int = Field(
+        ...,
+        ge=1,
+        title="Movie Runtime",
+        description="The runtime of the movie in minutes. Must be a positive integer.",
+    )
+    id: int = Field(
+        ...,
+        ge=1,
+        title="Movie ID",
+        description="The unique identifier of the movie. Must be a positive integer.",
+    )
+
+
+class ReservationDetails(BaseModel):
+    """
+    Model representing detailed information about a reservation.
+    """
+
+    show_start_time: datetime = Field(
+        ...,
+        title="Show Start Time",
+        description="The start time of the show associated with the reservation.",
+    )
+    reservation: ReservationModel = Field(
+        ...,
+        title="Reservation",
+        description="The reservation object containing basic reservation details.",
+    )
+    seat_details: List[SeatDetails] = Field(
+        ...,
+        title="Seat Details",
+        description="A list of seat details associated with the reservation.",
+    )
+    hall_name: str = Field(
+        ...,
+        title="Hall Name",
+        description="The name of the hall where the show is taking place.",
+    )
+    movie_details: MovieDetails = Field(
+        ...,
+        title="Movie Details",
+        description="Details of the movie associated with the reservation.",
+    )
+
+
+class UserDetails(BaseModel):
+    """
+    Model representing details of a user.
+    """
+
+    first_name: str = Field(
+        ...,
+        title="First Name",
+        description="The first name of the user.",
+    )
+    last_name: str = Field(
+        ...,
+        title="Last Name",
+        description="The last name of the user.",
+    )
+    username: str = Field(
+        ...,
+        title="Username",
+        description="The username of the user.",
+    )
+    email: str = Field(
+        ...,
+        title="Email",
+        description="The email address of the user.",
+    )
+
+
+class UserReservationDetails(ReservationDetails):
+    """
+    Model representing detailed information about a reservation, including user details.
+    """
+
+    user_details: UserDetails = Field(
+        ...,
+        title="User Details",
+        description="Details of the user associated with the reservation.",
+    )
