@@ -43,6 +43,7 @@ import ReservationDetails from "./pages/user/ReservationDetails";
 import ReservationUserDetails from "./pages/admin/ReservationUserDetails";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 import CreateReservationForUser from "./pages/admin/CreateReservationforUser";
+import PaymentPage from "./pages/user/PaymentPage";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -279,6 +280,15 @@ const App = () => {
                 element={
                   <PrivateRoute
                     element={<BookTicketPage />}
+                    requiredRole={["admin", "employee", "user"]}
+                  />
+                }
+              />
+                <Route
+                path="/payment/:reservationId"
+                element={
+                  <PrivateRoute
+                    element={<PaymentPage  />}
                     requiredRole={["admin", "employee", "user"]}
                   />
                 }

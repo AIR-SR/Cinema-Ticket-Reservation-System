@@ -6,7 +6,7 @@ import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const BookTicketPage = () => {
-  const { showId } = useParams();
+  const {showId} = useParams();
   const [searchParams] = useSearchParams();
   const region = searchParams.get("region");
   const [seats, setSeats] = useState([]);
@@ -23,10 +23,10 @@ const BookTicketPage = () => {
       setError(null);
       try {
         const showResponse = await api.get(
-          `/show/get-for-reservation/${showId}`,
-          {
-            params: { region },
-          }
+            `/show/get-for-reservation/${showId}`,
+            {
+              params: {region},
+            }
         );
 
         setShowDetails({
@@ -37,17 +37,17 @@ const BookTicketPage = () => {
 
         const hallId = showResponse.data.hall.id;
 
-        const { data: rowsSeatsData } = await api.get(
-          `/halls/get/${hallId}/rows_seats`,
-          {
-            params: { region },
-          }
+        const {data: rowsSeatsData} = await api.get(
+            `/halls/get/${hallId}/rows_seats`,
+            {
+              params: {region},
+            }
         );
 
         let reservedSeats = [];
         try {
-          const { data } = await api.get(`/show/get_reserved_seats/${showId}`, {
-            params: { region },
+          const {data} = await api.get(`/show/get_reserved_seats/${showId}`, {
+            params: {region},
           });
           reservedSeats = data;
         } catch (err) {
@@ -59,8 +59,8 @@ const BookTicketPage = () => {
         }
 
         const reservedSeatIds = Array.isArray(reservedSeats)
-          ? reservedSeats
-          : [];
+            ? reservedSeats
+            : [];
 
         const updatedRowsSeats = rowsSeatsData.map((row) => ({
           ...row,
@@ -84,9 +84,9 @@ const BookTicketPage = () => {
 
   const handleSeatSelection = (seatId) => {
     setSelectedSeats((prev) =>
-      prev.includes(seatId)
-        ? prev.filter((id) => id !== seatId)
-        : [...prev, seatId]
+        prev.includes(seatId)
+            ? prev.filter((id) => id !== seatId)
+            : [...prev, seatId]
     );
   };
 
@@ -103,61 +103,85 @@ const BookTicketPage = () => {
       const reservationData = {
         reservation: {
           show_id: parseInt(showId),
-          status: "reserved",
+          status: "Not paid",
           created_at: new Date().toISOString(),
         },
         seat_ids: selectedSeats,
       };
 
-      await api.post(`/reservation/create`, reservationData, {
-        params: { region },
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await api.post(`/reservation/create`, reservationData, {
+        params: {region},
+        headers: {Authorization: `Bearer ${token}`},
       });
 
-      alert("Booking successful!");
-      navigate(`/users/reservations`);
+      const reservationId = response.data?.id;
+      if (!reservationId) throw new Error("Reservation ID not returned.");
+
+      console.log("Redirecting to payment page:", `/payment/${reservationId}?region=${region}`);
+      navigate(`/payment/${reservationId}?region=${region}`);
     } catch (err) {
       console.error("Failed to book tickets:", err);
       setError("Failed to book tickets.");
     }
   };
 
-  if (loading) return <Loading message="Fetching the reservation for you..." />;
+
+  if (loading) return <Loading message="Fetching the reservation for you..."/>;
   if (error)
     return (
-      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+        <ErrorMessage message={error} onRetry={() => window.location.reload()}/>
     );
 
   return (
-    <div className="container mt-3">
-      <h1 className="text-center mb-3">Book Tickets</h1>
-      {showDetails && (
-        <div className="show-details text-center mb-3">
-          <h2>{showDetails.movieTitle}</h2>
-          <p>
-            <strong>Show Time:</strong>{" "}
-            {new Date(showDetails.showTime).toLocaleString()}
-          </p>
-          <p>
-            <strong>Hall:</strong> {showDetails.hallName}
-          </p>
+      <div className="container mt-3">
+        <h1 className="text-center mb-3">Book Tickets</h1>
+        {showDetails.status && (
+        <div
+          style={{
+            backgroundColor:
+              showDetails.status === "Not paid"
+                ? "#fff3cd" // jasny pomarańcz (warning)
+                : showDetails.status === "Reserved"
+                ? "#f8d7da" // jasny czerwony (danger)
+                : "#d1e7dd", // jasny zielony (success/inne)
+            color:
+              showDetails.status === "Not paid"
+                ? "#856404"
+                : showDetails.status === "Reserved"
+                ? "#721c24"
+                : "#0f5132",
+            padding: "10px",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            border: "1px solid",
+            borderColor:
+              showDetails.status === "Not paid"
+                ? "#ffeeba"
+                : showDetails.status === "Reserved"
+                ? "#f5c6cb"
+                : "#badbcc",
+            display: "inline-block",
+            marginTop: "10px",
+          }}
+        >
+          <strong>Status:</strong> {showDetails.status}
         </div>
       )}
-      <HallView
-        rows={seats}
-        onSeatClick={handleSeatSelection}
-        selectedSeats={selectedSeats}
-      />
-      <div className="d-flex justify-content-end mt-3 mb-3">
-        <button
-          className="btn btn-primary"
-          onClick={handleBooking}
-          disabled={selectedSeats.length === 0}
-        >
-          Confirm Booking
-        </button>
+        <HallView
+            rows={seats}
+            onSeatClick={handleSeatSelection}
+            selectedSeats={selectedSeats}
+        />
+        <div className="d-flex justify-content-end mt-3 mb-3">
+          <button
+              className="btn btn-primary"
+              onClick={handleBooking}
+              disabled={selectedSeats.length === 0}
+          >
+            Confirm Booking
+          </button>
+        </div>
       </div>
-    </div>
   );
 };
 
