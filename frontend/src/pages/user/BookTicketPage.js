@@ -33,7 +33,6 @@ const BookTicketPage = () => {
           movieTitle: showResponse.data.movie.title,
           showTime: showResponse.data.show.start_time,
           hallName: showResponse.data.hall.name,
-          status: showResponse.data.show.status,
         });
 
         const hallId = showResponse.data.hall.id;
