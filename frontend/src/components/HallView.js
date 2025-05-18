@@ -35,4 +35,5 @@ const HallView = ({ rows, onSeatClick, selectedSeats = [] }) => {
   );
 };
 
+
 export default HallView;

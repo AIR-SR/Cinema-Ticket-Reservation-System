@@ -33,6 +33,7 @@ const BookTicketPage = () => {
           movieTitle: showResponse.data.movie.title,
           showTime: showResponse.data.show.start_time,
           hallName: showResponse.data.hall.name,
+          status: showResponse.data.show.status,
         });
 
         const hallId = showResponse.data.hall.id;
@@ -133,55 +134,35 @@ const BookTicketPage = () => {
     );
 
   return (
-      <div className="container mt-3">
-        <h1 className="text-center mb-3">Book Tickets</h1>
-        {showDetails.status && (
-        <div
-          style={{
-            backgroundColor:
-              showDetails.status === "Not paid"
-                ? "#fff3cd" // jasny pomarańcz (warning)
-                : showDetails.status === "Reserved"
-                ? "#f8d7da" // jasny czerwony (danger)
-                : "#d1e7dd", // jasny zielony (success/inne)
-            color:
-              showDetails.status === "Not paid"
-                ? "#856404"
-                : showDetails.status === "Reserved"
-                ? "#721c24"
-                : "#0f5132",
-            padding: "10px",
-            borderRadius: "5px",
-            fontWeight: "bold",
-            border: "1px solid",
-            borderColor:
-              showDetails.status === "Not paid"
-                ? "#ffeeba"
-                : showDetails.status === "Reserved"
-                ? "#f5c6cb"
-                : "#badbcc",
-            display: "inline-block",
-            marginTop: "10px",
-          }}
-        >
-          <strong>Status:</strong> {showDetails.status}
+    <div className="container mt-3">
+      <h1 className="text-center mb-3">Book Tickets</h1>
+      {showDetails && (
+        <div className="show-details text-center mb-3">
+          <h2>{showDetails.movieTitle}</h2>
+          <p>
+            <strong>Show Time:</strong>{" "}
+            {new Date(showDetails.showTime).toLocaleString()}
+          </p>
+          <p>
+            <strong>Hall:</strong> {showDetails.hallName}
+          </p>
         </div>
       )}
-        <HallView
-            rows={seats}
-            onSeatClick={handleSeatSelection}
-            selectedSeats={selectedSeats}
-        />
-        <div className="d-flex justify-content-end mt-3 mb-3">
-          <button
-              className="btn btn-primary"
-              onClick={handleBooking}
-              disabled={selectedSeats.length === 0}
-          >
-            Confirm Booking
-          </button>
-        </div>
+      <HallView
+        rows={seats}
+        onSeatClick={handleSeatSelection}
+        selectedSeats={selectedSeats}
+      />
+      <div className="d-flex justify-content-end mt-3 mb-3">
+        <button
+          className="btn btn-primary"
+          onClick={handleBooking}
+          disabled={selectedSeats.length === 0}
+        >
+          Confirm Booking
+        </button>
       </div>
+    </div>
   );
 };
 
