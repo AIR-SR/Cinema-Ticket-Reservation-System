@@ -6,7 +6,7 @@ import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
 
 const BookTicketPage = () => {
-  const {showId} = useParams();
+  const { showId } = useParams();
   const [searchParams] = useSearchParams();
   const region = searchParams.get("region");
   const [seats, setSeats] = useState([]);
@@ -23,10 +23,10 @@ const BookTicketPage = () => {
       setError(null);
       try {
         const showResponse = await api.get(
-            `/show/get-for-reservation/${showId}`,
-            {
-              params: {region},
-            }
+          `/show/get-for-reservation/${showId}`,
+          {
+            params: { region },
+          }
         );
 
         setShowDetails({
@@ -37,17 +37,17 @@ const BookTicketPage = () => {
 
         const hallId = showResponse.data.hall.id;
 
-        const {data: rowsSeatsData} = await api.get(
-            `/halls/get/${hallId}/rows_seats`,
-            {
-              params: {region},
-            }
+        const { data: rowsSeatsData } = await api.get(
+          `/halls/get/${hallId}/rows_seats`,
+          {
+            params: { region },
+          }
         );
 
         let reservedSeats = [];
         try {
-          const {data} = await api.get(`/show/get_reserved_seats/${showId}`, {
-            params: {region},
+          const { data } = await api.get(`/show/get_reserved_seats/${showId}`, {
+            params: { region },
           });
           reservedSeats = data;
         } catch (err) {
@@ -59,8 +59,8 @@ const BookTicketPage = () => {
         }
 
         const reservedSeatIds = Array.isArray(reservedSeats)
-            ? reservedSeats
-            : [];
+          ? reservedSeats
+          : [];
 
         const updatedRowsSeats = rowsSeatsData.map((row) => ({
           ...row,
@@ -84,9 +84,9 @@ const BookTicketPage = () => {
 
   const handleSeatSelection = (seatId) => {
     setSelectedSeats((prev) =>
-        prev.includes(seatId)
-            ? prev.filter((id) => id !== seatId)
-            : [...prev, seatId]
+      prev.includes(seatId)
+        ? prev.filter((id) => id !== seatId)
+        : [...prev, seatId]
     );
   };
 
@@ -110,14 +110,17 @@ const BookTicketPage = () => {
       };
 
       const response = await api.post(`/reservation/create`, reservationData, {
-        params: {region},
-        headers: {Authorization: `Bearer ${token}`},
+        params: { region },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const reservationId = response.data?.id;
       if (!reservationId) throw new Error("Reservation ID not returned.");
 
-      console.log("Redirecting to payment page:", `/payment/${reservationId}?region=${region}`);
+      console.log(
+        "Redirecting to payment page:",
+        `/payment/${reservationId}?region=${region}`
+      );
       navigate(`/payment/${reservationId}?region=${region}`);
     } catch (err) {
       console.error("Failed to book tickets:", err);
@@ -125,11 +128,10 @@ const BookTicketPage = () => {
     }
   };
 
-
-  if (loading) return <Loading message="Fetching the reservation for you..."/>;
+  if (loading) return <Loading message="Fetching the reservation for you..." />;
   if (error)
     return (
-        <ErrorMessage message={error} onRetry={() => window.location.reload()}/>
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
     );
 
   return (
@@ -154,7 +156,7 @@ const BookTicketPage = () => {
       />
       <div className="d-flex justify-content-end mt-3 mb-3">
         <button
-          className="btn btn-primary"
+          className="btn btn-success"
           onClick={handleBooking}
           disabled={selectedSeats.length === 0}
         >
