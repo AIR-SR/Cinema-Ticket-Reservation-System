@@ -41,9 +41,10 @@ import BookTicketPage from "./pages/user/BookTicketPage";
 import ReservationsUserList from "./pages/user/ReservationsUserList";
 import ReservationDetails from "./pages/user/ReservationDetails";
 import ReservationUserDetails from "./pages/admin/ReservationUserDetails";
-import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
+import EmployeeDashboard from "./pages/admin/EmployeeDashboard";
 import CreateReservationForUser from "./pages/admin/CreateReservationforUser";
 import PaymentPage from "./pages/user/PaymentPage";
+import PaymetListAdmin from "./pages/admin/PaymetListAdmin";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -229,6 +230,15 @@ const App = () => {
                 }
               />
               <Route
+                path="/admin/payments/list"
+                element={
+                  <PrivateRoute
+                    element={<PaymetListAdmin />}
+                    requiredRole={["admin", "employee"]}
+                  />
+                }
+              />
+              <Route
                 path="/admin/dashboard"
                 element={
                   <PrivateRoute
@@ -284,11 +294,11 @@ const App = () => {
                   />
                 }
               />
-                <Route
+              <Route
                 path="/payment/:reservationId"
                 element={
                   <PrivateRoute
-                    element={<PaymentPage  />}
+                    element={<PaymentPage />}
                     requiredRole={["admin", "employee", "user"]}
                   />
                 }

@@ -39,6 +39,12 @@ const Dashboard = ({ role }) => {
       link: "/admin/reservations/list",
       roles: ["admin", "employee"],
     },
+    {
+      title: "Manage Payments",
+      text: "View and manage payments.",
+      link: "/admin/payments/list",
+      roles: ["admin", "employee"],
+    },
   ];
 
   return (

@@ -24,6 +24,19 @@ from sqlalchemy.orm import selectinload
 
 router = APIRouter(prefix="/payment", tags=["Payments"])
 
+@router.get(
+    "/get-all",
+    response_model=list[PaymentModel],
+    response_description="Get all payments",
+    summary="Get all payments",
+    description="Get all payments in the database.",
+)
+async def get_all_payments(
+    db: AsyncSession = Depends(get_db_local),
+    current_user: UsersGlobal = Depends(admin_required),
+):
+    result = await db.execute(select(Payment))
+    return result.scalars().all()
 
 @router.post(
     "/create",
