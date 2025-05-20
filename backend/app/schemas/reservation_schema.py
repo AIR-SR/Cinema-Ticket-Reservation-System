@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
-
+from .payment_schema import PaymentModel
 from pydantic import BaseModel, Field
 
 
@@ -107,10 +107,21 @@ class ReservationDetails(BaseModel):
         title="Show Start Time",
         description="The start time of the show associated with the reservation.",
     )
+    show_price: float = Field(
+        ...,
+        ge=1,
+        title="Show Price",
+        description="The price of the show associated with the reservation. Must be a positive value.",
+    )
     reservation: ReservationModel = Field(
         ...,
         title="Reservation",
         description="The reservation object containing basic reservation details.",
+    )
+    payment: Optional[PaymentModel] = Field(
+        None,
+        title="Payment",
+        description="The payment object associated with the reservation. This field is optional.",
     )
     seat_details: List[SeatDetails] = Field(
         ...,

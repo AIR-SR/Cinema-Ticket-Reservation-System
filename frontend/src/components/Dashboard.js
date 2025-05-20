@@ -39,6 +39,12 @@ const Dashboard = ({ role }) => {
       link: "/admin/reservations/list",
       roles: ["admin", "employee"],
     },
+    {
+      title: "Manage Payments",
+      text: "View and manage payments.",
+      link: "/admin/payments/list",
+      roles: ["admin", "employee"],
+    },
   ];
 
   return (
@@ -62,6 +68,11 @@ const Dashboard = ({ role }) => {
               </div>
             </div>
           ))}
+      </div>
+      <div className="text-center mt-4">
+        <Link to="/" className="btn btn-primary">
+          Go to Homepage
+        </Link>
       </div>
     </div>
   );

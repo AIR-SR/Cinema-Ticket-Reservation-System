@@ -12,19 +12,29 @@
 .hall-layout {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Ensures children (rows) are centered */
   padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .row-layout {
   display: flex;
   align-items: center;
   margin: 5px 0;
+  width: auto; /* Ensure row only as wide as its content */
+  overflow-x: unset; /* Remove horizontal scrolling */
+  justify-content: center; /* Center the entire row (row number + seats) */
+  gap: 10px; /* Add gap between row number and seats */
 }
 
 .seats-layout {
   display: flex;
   gap: 5px;
+  overflow-x: unset; /* Remove horizontal scroll and allow wrapping */
+  max-width: 100vw;
+  flex-wrap: wrap;
+  justify-content: center; /* Center seats in the row */
 }
 
 .seat-box {
@@ -53,8 +63,10 @@
 }
 
 .row-number {
-  margin-right: 10px;
   font-weight: bold;
+  flex-shrink: 0;
+  width: 40px; /* Fixed width for consistent alignment */
+  text-align: center; /* Center the row number within the fixed width */
 }
 
 @media (max-width: 768px) {
@@ -62,5 +74,21 @@
     width: 25px;
     height: 25px;
     font-size: 10px;
+  }
+  .row-layout {
+    overflow-x: unset; /* Remove horizontal scrolling */
+    -webkit-overflow-scrolling: unset;
+    justify-content: center; /* Center the entire row on mobile too */
+    gap: 10px; /* Keep gap on mobile */
+    width: auto; /* Ensure row only as wide as its content on mobile */
+  }
+  .seats-layout {
+    max-width: 100vw; /* Allow seats to wrap to new lines */
+    overflow-x: unset;
+    flex-wrap: wrap;
+    justify-content: center; /* Center seats on mobile too */
+  }
+  .hall-layout {
+    padding: 2px;
   }
 }

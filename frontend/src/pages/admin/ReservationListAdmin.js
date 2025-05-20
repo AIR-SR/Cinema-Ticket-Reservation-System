@@ -76,6 +76,12 @@ const ReservationListAdmin = () => {
           labelInline={true} // Inline label
           fullWidth={false} // Not full width
         />
+        <button
+          className="btn btn-success"
+          onClick={() => navigate("/admin/reservations/create")}
+        >
+          Create Reservation
+        </button>
       </div>
       {loading ? (
         <Loading message="Loading reservations..." />

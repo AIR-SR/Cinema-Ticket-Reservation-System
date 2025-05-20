@@ -114,10 +114,6 @@ erDiagram
         string role
     }
 
-    Cinema {
-
-    }
-
     HALLS {
         int id
         %% int cinema_id
@@ -142,6 +138,10 @@ erDiagram
         int id
         string tmdbID
         string title
+        datetime release_date
+        string poster_path
+        int runtime
+        json genres
         string description
     }
 
@@ -162,8 +162,9 @@ erDiagram
     }
 
     RESERVATION_SEATS {
-        int reservation_id
+        int id
         int seat_id
+        int reservation_id
     }
 
     PAYMENTS {

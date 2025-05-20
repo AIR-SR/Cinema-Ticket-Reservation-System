@@ -10,6 +10,7 @@ const ReservationDetailsCard = ({ reservationDetails, region }) => {
     hall_name,
     movie_details,
     show_start_time,
+    payment, // Added payment details
   } = reservationDetails;
 
   return (
@@ -50,6 +51,49 @@ const ReservationDetailsCard = ({ reservationDetails, region }) => {
           </p>
         </div>
       </div>
+
+      {/* Payment Information */}
+      {payment ? (
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <h5 className="card-title text-secondary">Payment Information</h5>
+            <hr />
+            <p className="card-text">
+              <strong>Amount:</strong> {payment.amount.toFixed(2)} PLN
+            </p>
+            <p className="card-text">
+              <strong>Payment Method:</strong> {payment.payment_method}
+            </p>
+            <p className="card-text">
+              <strong>Status:</strong> {payment.status}
+            </p>
+            <p className="card-text">
+              <strong>Created At:</strong>{" "}
+              {new Date(payment.created_at).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <h5 className="card-title text-secondary">Payment Information</h5>
+            <hr />
+            <p className="card-text text-muted">
+              This reservation has not been paid yet.
+            </p>
+            {reservation.status !== "paid" && (
+              <button
+                className="btn btn-success mt-2 ms-2"
+                onClick={() =>
+                  navigate(`/payment/${reservation.id}?region=${region}`)
+                }
+              >
+                Go to Payment
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Combined Hall, Show, and Seat Details */}
       <div className="card shadow-sm mb-4">

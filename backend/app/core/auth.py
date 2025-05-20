@@ -20,7 +20,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 ROLE_ADMIN = settings.ROLE_ADMIN
 ROLE_USER = settings.ROLE_USER
 ROLE_EMPLOYEE = settings.ROLE_EMPLOYEE
-PASSWORD = settings.ADMIN_PASSWORD
+ADMIN_PASSWORD = settings.ADMIN_PASSWORD
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/")
@@ -90,8 +90,7 @@ def decode_access_token(token: str):
         return payload
     except JWTError as e:
         logger.error(f"JWT Error: {e}")
-        raise HTTPException(
-            status_code=401, detail="Invalid or expired token")
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 async def get_current_user(
@@ -204,7 +203,7 @@ async def create_default_user(db: AsyncSession):
             first_name="Admin",
             last_name="User",
             email="admin@admin.com",
-            hashed_password=hash_password(PASSWORD),
+            hashed_password=hash_password(ADMIN_PASSWORD),
             role="admin",
         )
         db.add(admin_user)

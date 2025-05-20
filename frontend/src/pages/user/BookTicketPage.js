@@ -109,13 +109,20 @@ const BookTicketPage = () => {
         seat_ids: selectedSeats,
       };
 
-      await api.post(`/reservation/create`, reservationData, {
+      const response = await api.post(`/reservation/create`, reservationData, {
         params: { region },
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      alert("Booking successful!");
-      navigate(`/users/reservations`);
+      const reservationId = response.data?.id;
+      if (!reservationId) throw new Error("Reservation ID not returned.");
+
+      console.log(
+        "Redirecting to payment page:",
+        `/payment/${reservationId}?region=${region}`
+      );
+      alert("Booking successful! Redirecting to payment page...");
+      navigate(`/payment/${reservationId}?region=${region}`);
     } catch (err) {
       console.error("Failed to book tickets:", err);
       setError("Failed to book tickets.");
@@ -150,7 +157,7 @@ const BookTicketPage = () => {
       />
       <div className="d-flex justify-content-end mt-3 mb-3">
         <button
-          className="btn btn-primary"
+          className="btn btn-success"
           onClick={handleBooking}
           disabled={selectedSeats.length === 0}
         >

@@ -44,9 +44,8 @@ const Homepage = () => {
     <div className="container mt-5 mb-5 text-center">
       <h1 className="mb-4">Welcome to Cinema Reservation System</h1>
       <p className="mb-4" style={{ fontSize: "1.1rem", color: "#555" }}>
-        Book your favorite movies in the best cinemas across Kraków and
-        Warszawa. Enjoy a seamless and user-friendly ticket reservation
-        experience.
+        Book your favorite movies in the best cinemas across Krakow and Warsaw.
+        Enjoy a seamless and user-friendly ticket reservation experience.
       </p>
       <div className="row mt-4">
         {renderCityButton("krakow", "Krakow", "/assets/krakow_icon.png")}
