@@ -81,6 +81,16 @@ const ReservationDetailsCard = ({ reservationDetails, region }) => {
             <p className="card-text text-muted">
               This reservation has not been paid yet.
             </p>
+            {reservation.status !== "paid" && (
+              <button
+                className="btn btn-success mt-2 ms-2"
+                onClick={() =>
+                  navigate(`/payment/${reservation.id}?region=${region}`)
+                }
+              >
+                Go to Payment
+              </button>
+            )}
           </div>
         </div>
       )}
