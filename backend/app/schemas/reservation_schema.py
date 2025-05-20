@@ -112,10 +112,10 @@ class ReservationDetails(BaseModel):
         title="Reservation",
         description="The reservation object containing basic reservation details.",
     )
-    payment: PaymentModel = Field(
-        ...,
+    payment: Optional[PaymentModel] = Field(
+        None,
         title="Payment",
-        description="The payment object associated with the reservation.",
+        description="The payment object associated with the reservation. This field is optional.",
     )
     seat_details: List[SeatDetails] = Field(
         ...,

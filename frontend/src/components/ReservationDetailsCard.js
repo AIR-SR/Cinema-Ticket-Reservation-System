@@ -53,25 +53,37 @@ const ReservationDetailsCard = ({ reservationDetails, region }) => {
       </div>
 
       {/* Payment Information */}
-      <div className="card shadow-sm mb-4">
-        <div className="card-body">
-          <h5 className="card-title text-secondary">Payment Information</h5>
-          <hr />
-          <p className="card-text">
-            <strong>Amount:</strong> {payment.amount.toFixed(2)} PLN
-          </p>
-          <p className="card-text">
-            <strong>Payment Method:</strong> {payment.payment_method}
-          </p>
-          <p className="card-text">
-            <strong>Status:</strong> {payment.status}
-          </p>
-          <p className="card-text">
-            <strong>Created At:</strong>{" "}
-            {new Date(payment.created_at).toLocaleString()}
-          </p>
+      {payment ? (
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <h5 className="card-title text-secondary">Payment Information</h5>
+            <hr />
+            <p className="card-text">
+              <strong>Amount:</strong> {payment.amount.toFixed(2)} PLN
+            </p>
+            <p className="card-text">
+              <strong>Payment Method:</strong> {payment.payment_method}
+            </p>
+            <p className="card-text">
+              <strong>Status:</strong> {payment.status}
+            </p>
+            <p className="card-text">
+              <strong>Created At:</strong>{" "}
+              {new Date(payment.created_at).toLocaleString()}
+            </p>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <h5 className="card-title text-secondary">Payment Information</h5>
+            <hr />
+            <p className="card-text text-muted">
+              This reservation has not been paid yet.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Combined Hall, Show, and Seat Details */}
       <div className="card shadow-sm mb-4">
