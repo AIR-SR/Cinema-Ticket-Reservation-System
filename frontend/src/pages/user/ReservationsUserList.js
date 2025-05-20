@@ -107,10 +107,23 @@ const ReservationsUserList = () => {
                       navigate(
                         `/users/reservations/${reservation.id}?region=${reservation.region}`
                       )
-                    } // Use navigate here
+                    }
                   >
                     View Details
                   </button>
+                  {/* Add Go to Payment button if not paid */}
+                  {reservation.status !== "paid" && (
+                    <button
+                      className="btn btn-success mt-2 ms-2"
+                      onClick={() =>
+                        navigate(
+                          `/payment/${reservation.id}?region=${reservation.region}`
+                        )
+                      }
+                    >
+                      Go to Payment
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

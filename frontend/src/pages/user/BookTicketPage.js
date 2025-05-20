@@ -103,7 +103,7 @@ const BookTicketPage = () => {
       const reservationData = {
         reservation: {
           show_id: parseInt(showId),
-          status: "Not paid",
+          status: "reserved",
           created_at: new Date().toISOString(),
         },
         seat_ids: selectedSeats,

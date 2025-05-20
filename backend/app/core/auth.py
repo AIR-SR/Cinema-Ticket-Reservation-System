@@ -90,8 +90,7 @@ def decode_access_token(token: str):
         return payload
     except JWTError as e:
         logger.error(f"JWT Error: {e}")
-        raise HTTPException(
-            status_code=401, detail="Invalid or expired token")
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 async def get_current_user(

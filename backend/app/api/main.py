@@ -10,7 +10,7 @@ from .routes import (
     seat_router,
     show_router,
     reservation_router,
-    payments_router
+    payments_router,
 )
 
 api_router = APIRouter()

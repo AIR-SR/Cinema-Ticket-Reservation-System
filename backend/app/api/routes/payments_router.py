@@ -8,13 +8,8 @@ from core import (
 )
 from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
-from models_local import (
-    Reservation,
-    Payment
-)
-from schemas import (
-    PaymentModel
-)
+from models_local import Reservation, Payment
+from schemas import PaymentModel
 from schemas import ReservationDetails
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -23,6 +18,7 @@ from sqlalchemy.orm import selectinload
 
 
 router = APIRouter(prefix="/payment", tags=["Payments"])
+
 
 @router.get(
     "/get-all",
@@ -37,6 +33,7 @@ async def get_all_payments(
 ):
     result = await db.execute(select(Payment))
     return result.scalars().all()
+
 
 @router.post(
     "/create",
@@ -64,13 +61,19 @@ async def create_payment(
     if reservation.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="You do not own this reservation.")
     if not reservation.show or reservation.show.price is None:
-        raise HTTPException(status_code=400, detail="No price available for this reservation's show.")
+        raise HTTPException(
+            status_code=400, detail="No price available for this reservation's show."
+        )
 
     amount = reservation.show.price
 
-    existing = await db.execute(select(Payment).where(Payment.reservation_id == reservation_id))
+    existing = await db.execute(
+        select(Payment).where(Payment.reservation_id == reservation_id)
+    )
     if existing.scalar():
-        raise HTTPException(status_code=400, detail="Payment already exists for this reservation.")
+        raise HTTPException(
+            status_code=400, detail="Payment already exists for this reservation."
+        )
 
     payment = Payment(
         reservation_id=reservation_id,
@@ -81,7 +84,7 @@ async def create_payment(
     )
     db.add(payment)
 
-    reservation.status = "Reserved"
+    reservation.status = "paid"
     db.add(reservation)
 
     await db.commit()

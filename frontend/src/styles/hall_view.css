@@ -14,17 +14,25 @@
   flex-direction: column;
   align-items: center;
   padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .row-layout {
   display: flex;
   align-items: center;
   margin: 5px 0;
+  width: 100%;
+  overflow-x: unset; /* Remove horizontal scrolling */
 }
 
 .seats-layout {
   display: flex;
   gap: 5px;
+  overflow-x: unset; /* Remove horizontal scroll and allow wrapping */
+  max-width: 100vw;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .seat-box {
@@ -55,6 +63,7 @@
 .row-number {
   margin-right: 10px;
   font-weight: bold;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
@@ -62,5 +71,18 @@
     width: 25px;
     height: 25px;
     font-size: 10px;
+  }
+  .row-layout {
+    overflow-x: unset; /* Remove horizontal scrolling */
+    -webkit-overflow-scrolling: unset;
+  }
+  .seats-layout {
+    max-width: 100vw; /* Allow seats to wrap to new lines */
+    overflow-x: unset;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .hall-layout {
+    padding: 2px;
   }
 }
