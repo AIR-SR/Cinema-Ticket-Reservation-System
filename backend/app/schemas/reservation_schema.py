@@ -107,6 +107,12 @@ class ReservationDetails(BaseModel):
         title="Show Start Time",
         description="The start time of the show associated with the reservation.",
     )
+    show_price: float = Field(
+        ...,
+        ge=1,
+        title="Show Price",
+        description="The price of the show associated with the reservation. Must be a positive value.",
+    )
     reservation: ReservationModel = Field(
         ...,
         title="Reservation",

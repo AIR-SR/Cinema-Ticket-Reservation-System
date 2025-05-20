@@ -96,7 +96,8 @@ async def validate_and_create_reservation(
             isinstance(reservation.created_at, datetime)
             and reservation.created_at.tzinfo is not None
         ):
-            reservation.created_at = reservation.created_at.replace(tzinfo=None)
+            reservation.created_at = reservation.created_at.replace(
+                tzinfo=None)
 
         await check_reserved_seats(seat_ids, db)
         return await create_reservation_entry(user_id, reservation, seat_ids, db)
@@ -162,6 +163,7 @@ async def fetch_seat_hall_movie_details(reservation_ids: List[int], db: AsyncSes
             Movie.title.label("movie_title"),
             Movie.runtime.label("movie_runtime"),
             Show.start_time.label("show_start_time"),
+            Show.price.label("show_price"),
         )
         .join(Reservation, Reservation.id == ReservationSeat.reservation_id)
         .join(Seat, ReservationSeat.seat_id == Seat.id)
@@ -281,6 +283,7 @@ async def get_my_reservations(
                         "id": row.movie_id,
                     },
                     "show_start_time": row.show_start_time,
+                    "show_price": row.show_price,
                     "payment": payments.get(row.reservation_id),
                 }
             reservation_details[row.reservation_id]["seat_details"].append(
@@ -325,7 +328,8 @@ async def get_reservation(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation:
-            raise HTTPException(status_code=404, detail="Reservation not found.")
+            raise HTTPException(
+                status_code=404, detail="Reservation not found.")
 
         if reservation.user_id != current_user.id:
             await employee_required(current_user)
@@ -357,6 +361,7 @@ async def get_reservation(
             hall_name=seat_hall_movie_data[0].hall_name,
             movie_details=movie_details,
             show_start_time=seat_hall_movie_data[0].show_start_time,
+            show_price=seat_hall_movie_data[0].show_price,
         )
     except HTTPException as e:
         logger.error(f"HTTP exception: {e.detail}")
@@ -394,7 +399,8 @@ async def get_user_reservation_details(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation or reservation.user_id != user_id:
-            raise HTTPException(status_code=404, detail="Reservation not found.")
+            raise HTTPException(
+                status_code=404, detail="Reservation not found.")
 
         payment = await fetch_payment_by_reservation_id(reservation_id, db)
 
@@ -442,6 +448,7 @@ async def get_user_reservation_details(
             hall_name=seat_hall_movie_data[0].hall_name,
             movie_details=movie_details,
             show_start_time=seat_hall_movie_data[0].show_start_time,
+            show_price=seat_hall_movie_data[0].show_price,
             user_details=user_details,
         )
     except HTTPException as e:
@@ -482,7 +489,8 @@ async def delete_reservation(
 
         if not reservation:
             logger.warning(f"Reservation ID {reservation_id} not found.")
-            raise HTTPException(status_code=404, detail="Reservation not found.")
+            raise HTTPException(
+                status_code=404, detail="Reservation not found.")
 
         await db.execute(
             delete(ReservationSeat).where(
@@ -500,7 +508,8 @@ async def delete_reservation(
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception("Unexpected error occurred while deleting the reservation.")
+        logger.exception(
+            "Unexpected error occurred while deleting the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )

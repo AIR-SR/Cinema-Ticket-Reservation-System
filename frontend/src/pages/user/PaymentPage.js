@@ -46,18 +46,21 @@ const PaymentPage = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      await api.post(
-        `/payment/create`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            reservation_id: reservationId,
-            method: selectedMethod,
-            region,
-          },
-        }
-      );
+      const numberOfSeats = seat_details?.length || 0;
+      const amount = numberOfSeats * show_price;
+
+      const paymentData = {
+        reservation_id: reservationId,
+        amount,
+        payment_method: selectedMethod,
+        status: "completed",
+        created_at: new Date().toISOString(),
+      };
+
+      await api.post(`/payment/create`, paymentData, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { region },
+      });
 
       alert("Booking successful!");
       navigate(`/users/reservations`);
@@ -74,7 +77,15 @@ const PaymentPage = () => {
     seat_details,
     hall_name,
     show_start_time,
+    show_price,
   } = reservationData || {};
+
+  if (loading)
+    return <Loading message="Fetching the payment details for you..." />;
+  if (error)
+    return (
+      <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+    );
 
   return (
     <div className="container mt-4">
@@ -104,6 +115,15 @@ const PaymentPage = () => {
             {seat_details
               ?.map((seat) => `Row ${seat.row_number} Seat ${seat.seat_number}`)
               .join(", ")}
+          </p>
+        </div>
+      )}
+
+      {reservationData && (
+        <div className="mb-4">
+          <h4 className="mb-3">Amount to be Paid</h4>
+          <p>
+            <strong>Total:</strong> {seat_details?.length * show_price} PLN
           </p>
         </div>
       )}
