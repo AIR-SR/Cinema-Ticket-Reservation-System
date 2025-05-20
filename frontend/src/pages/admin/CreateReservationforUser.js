@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import HallView from "../../components/HallView";
-import RegionSelector from "../../components/RegionSelector"; // Import your custom RegionSelector
+import RegionSelector from "../../components/RegionSelector";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
 
@@ -16,11 +16,34 @@ const CreateReservationForUser = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(userId || "");
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "LFKG Cinemas | Create Reservation for User";
   }, []);
+
+  useEffect(() => {
+    // Fetch users for dropdown
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const { data } = await api.get("/users/get", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(data);
+      } catch (err) {
+        setError("Failed to load users.");
+      }
+    };
+    fetchUsers();
+  }, [selectedRegion]);
+
+  // If userId from URL changes, update selectedUserId
+  useEffect(() => {
+    if (userId) setSelectedUserId(userId);
+  }, [userId]);
 
   const fetchShows = async () => {
     if (!selectedRegion) return;
@@ -103,11 +126,10 @@ const CreateReservationForUser = () => {
   };
 
   const handleReservation = async () => {
-    if (!selectedShow || selectedSeats.length === 0) {
-      alert("Please select a show and at least one seat.");
+    if (!selectedShow || selectedSeats.length === 0 || !selectedUserId) {
+      alert("Please select a user, show and at least one seat.");
       return;
     }
-
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication token is missing.");
@@ -122,7 +144,7 @@ const CreateReservationForUser = () => {
       };
 
       await api.post(
-        `/reservation/create-for-user/${userId}`,
+        `/reservation/create-for-user/${selectedUserId}`,
         reservationData,
         {
           params: { region: selectedRegion },
@@ -147,13 +169,33 @@ const CreateReservationForUser = () => {
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Create Reservation for User</h1>
+      {/* User selection dropdown */}
+      <div className="mb-4">
+        <label htmlFor="user" className="form-label">
+          Select User:
+        </label>
+        <select
+          id="user"
+          className="form-select"
+          value={selectedUserId}
+          onChange={(e) => setSelectedUserId(e.target.value)}
+          disabled={!!userId}
+        >
+          <option value="">-- Select User --</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.email || user.username || user.id}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="mb-4">
         <RegionSelector
           selectedRegion={selectedRegion}
           setSelectedRegion={setSelectedRegion}
           regions={regions}
-          labelInline={true} // Inline label
-          fullWidth={false} // Not full width
+          labelInline={true}
+          fullWidth={false}
         />
       </div>
       {selectedRegion && (
@@ -198,9 +240,11 @@ const CreateReservationForUser = () => {
       )}
       <div className="d-flex justify-content-end">
         <button
-          className="btn btn-success"
+          className="btn btn-success mb-4"
           onClick={handleReservation}
-          disabled={!selectedShow || selectedSeats.length === 0}
+          disabled={
+            !selectedShow || selectedSeats.length === 0 || !selectedUserId
+          }
         >
           Confirm Reservation
         </button>

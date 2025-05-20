@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
-
+from .payment_schema import PaymentModel
 from pydantic import BaseModel, Field
 
 
@@ -111,6 +111,11 @@ class ReservationDetails(BaseModel):
         ...,
         title="Reservation",
         description="The reservation object containing basic reservation details.",
+    )
+    payment: PaymentModel = Field(
+        ...,
+        title="Payment",
+        description="The payment object associated with the reservation.",
     )
     seat_details: List[SeatDetails] = Field(
         ...,

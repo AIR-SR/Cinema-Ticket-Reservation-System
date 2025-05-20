@@ -283,6 +283,15 @@ const App = () => {
                   />
                 }
               />
+              <Route
+                path="/admin/reservations/create"
+                element={
+                  <PrivateRoute
+                    element={<CreateReservationForUser />}
+                    requiredRole={["admin", "employee"]}
+                  />
+                }
+              />
 
               {/* Book Ticket */}
               <Route

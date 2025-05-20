@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from models_global import UsersGlobal
 from models_local import (
+    Payment,
     Reservation,
     ReservationSeat,
     Seat,
@@ -95,7 +96,8 @@ async def validate_and_create_reservation(
             isinstance(reservation.created_at, datetime)
             and reservation.created_at.tzinfo is not None
         ):
-            reservation.created_at = reservation.created_at.replace(tzinfo=None)
+            reservation.created_at = reservation.created_at.replace(
+                tzinfo=None)
 
         await check_reserved_seats(seat_ids, db)
         return await create_reservation_entry(user_id, reservation, seat_ids, db)
@@ -119,6 +121,18 @@ async def fetch_reservation_by_id(reservation_id: int, db: AsyncSession):
         select(Reservation).where(Reservation.id == reservation_id)
     )
     return reservation_query.scalars().first()
+
+
+async def fetch_payment_by_reservation_id(reservation_id: int, db: AsyncSession):
+    """
+    Fetch payment details for a specific reservation ID.
+    - **Input**: Reservation ID.
+    - **Returns**: The payment object or None if not found.
+    """
+    payment_query = await db.execute(
+        select(Payment).where(Payment.reservation_id == reservation_id)
+    )
+    return payment_query.scalars().first()
 
 
 async def fetch_reservations_by_user(user_id: int, db: AsyncSession):
@@ -245,7 +259,17 @@ async def get_my_reservations(
         reservation_ids = [reservation.id for reservation in reservations]
         seat_hall_movie_data = await fetch_seat_hall_movie_details(reservation_ids, db)
 
-        # Organize seat details, hall name, movie details, and show start time by reservation ID
+        # Fetch payment details for each reservation
+        payments = {
+            payment.reservation_id: payment
+            for payment in [
+                await fetch_payment_by_reservation_id(reservation_id, db)
+                for reservation_id in reservation_ids
+            ]
+            if payment
+        }
+
+        # Organize seat details, hall name, movie details, show start_time, and payment by reservation ID
         reservation_details = {}
         for row in seat_hall_movie_data:
             if row.reservation_id not in reservation_details:
@@ -258,6 +282,7 @@ async def get_my_reservations(
                         "id": row.movie_id,
                     },
                     "show_start_time": row.show_start_time,
+                    "payment": payments.get(row.reservation_id),
                 }
             reservation_details[row.reservation_id]["seat_details"].append(
                 {"seat_number": row.seat_number, "row_number": row.row_number}
@@ -301,10 +326,13 @@ async def get_reservation(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation:
-            raise HTTPException(status_code=404, detail="Reservation not found.")
+            raise HTTPException(
+                status_code=404, detail="Reservation not found.")
 
         if reservation.user_id != current_user.id:
             await employee_required(current_user)
+
+        payment = await fetch_payment_by_reservation_id(reservation_id, db)
 
         seat_hall_movie_data = await fetch_seat_hall_movie_details([reservation.id], db)
 
@@ -326,6 +354,7 @@ async def get_reservation(
 
         return ReservationDetails(
             reservation=reservation,
+            payment=payment,  # Properly include payment details here
             seat_details=seat_details,
             hall_name=seat_hall_movie_data[0].hall_name,
             movie_details=movie_details,
@@ -367,7 +396,10 @@ async def get_user_reservation_details(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation or reservation.user_id != user_id:
-            raise HTTPException(status_code=404, detail="Reservation not found.")
+            raise HTTPException(
+                status_code=404, detail="Reservation not found.")
+
+        payment = await fetch_payment_by_reservation_id(reservation_id, db)
 
         # Fetch user details from global DB
         user_query = await db_global.execute(
@@ -408,6 +440,7 @@ async def get_user_reservation_details(
 
         return UserReservationDetails(
             reservation=reservation,
+            payment=payment,
             seat_details=seat_details,
             hall_name=seat_hall_movie_data[0].hall_name,
             movie_details=movie_details,
@@ -452,7 +485,8 @@ async def delete_reservation(
 
         if not reservation:
             logger.warning(f"Reservation ID {reservation_id} not found.")
-            raise HTTPException(status_code=404, detail="Reservation not found.")
+            raise HTTPException(
+                status_code=404, detail="Reservation not found.")
 
         await db.execute(
             delete(ReservationSeat).where(
@@ -470,7 +504,8 @@ async def delete_reservation(
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception("Unexpected error occurred while deleting the reservation.")
+        logger.exception(
+            "Unexpected error occurred while deleting the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )
