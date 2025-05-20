@@ -188,18 +188,6 @@ erDiagram
     SHOWS ||--o{ HALLS : "takes place in"
     USERS-Global ||--o{ SHOWS : "Admin creates"
 
-    %% Relationships
-    USERS-Global ||--o{ RESERVATIONS : "User makes"
-    RESERVATIONS ||--o{ RESERVATION_SEATS : "contains"
-    RESERVATION_SEATS }o--|| SEATS : "books"
-    RESERVATIONS ||--o{ PAYMENTS : "has"
-    HALLS ||--o{ HALL_ROWS : "has"
-    HALL_ROWS ||--o{ SEATS : "contains"
-    MOVIES ||--o{ SHOWS : "is played in"
-    SHOWS ||--o{ RESERVATIONS : "is booked for"
-    SHOWS ||--o{ HALLS : "takes place in"
-    USERS-Global ||--o{ SHOWS : "Admin creates"
-
     %% ENUM Descriptions (Mermaid does not support enums natively)
     %% Role: admin, staff, customer
     %% Seat Type: standard, premium, VIP
