@@ -17,34 +17,39 @@ import { UserProvider } from "./context/UserContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
+// User Pages
 import Homepage from "./pages/user/Homepage";
 import Login from "./pages/user/Login";
 import Logout from "./pages/user/Logout";
 import Register from "./pages/user/Register";
-import RegisterAdmin from "./pages/admin/RegisterAdmin";
 import MyProfile from "./pages/user/MyProfile";
-import HealthCheck from "./pages/HealthCheck";
-import UserList from "./pages/admin/UserList";
-import UserDetails from "./pages/admin/UserDetails";
-import MovieListAdmin from "./pages/admin/MovieListAdmin";
-import MovieDetails from "./pages/user/MovieDetails";
-import MovieAddAdmin from "./pages/admin/MovieAddAdmin";
 import CinemaPage from "./pages/user/CinemaPage";
-import HallListAdmin from "./pages/admin/HallListAdmin";
-import HallAddAdmin from "./pages/admin/HallAddAdmin";
-import HallDetailsAdmin from "./pages/admin/HallDetailsAdmin";
-import ShowAddAdmin from "./pages/admin/ShowAddAdmin";
-import ShowListAdmin from "./pages/admin/ShowListAdmin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import ReservationListAdmin from "./pages/admin/ReservationListAdmin";
+import MovieDetails from "./pages/user/MovieDetails";
 import BookTicketPage from "./pages/user/BookTicketPage";
 import ReservationsUserList from "./pages/user/ReservationsUserList";
 import ReservationDetails from "./pages/user/ReservationDetails";
-import ReservationUserDetails from "./pages/admin/ReservationUserDetails";
-import EmployeeDashboard from "./pages/admin/EmployeeDashboard";
-import CreateReservationForUser from "./pages/admin/CreateReservationforUser";
 import PaymentPage from "./pages/user/PaymentPage";
+
+// Admin Pages
+import RegisterAdmin from "./pages/admin/RegisterAdmin";
+import UserList from "./pages/admin/UserList";
+import UserDetails from "./pages/admin/UserDetails";
+import MovieListAdmin from "./pages/admin/MovieListAdmin";
+import MovieAddAdmin from "./pages/admin/MovieAddAdmin";
+import HallListAdmin from "./pages/admin/HallListAdmin";
+import HallAddAdmin from "./pages/admin/HallAddAdmin";
+import HallDetailsAdmin from "./pages/admin/HallDetailsAdmin";
+import ShowListAdmin from "./pages/admin/ShowListAdmin";
+import ShowAddAdmin from "./pages/admin/ShowAddAdmin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import EmployeeDashboard from "./pages/admin/EmployeeDashboard";
+import ReservationListAdmin from "./pages/admin/ReservationListAdmin";
+import ReservationUserDetails from "./pages/admin/ReservationUserDetails";
+import CreateReservationForUser from "./pages/admin/CreateReservationforUser";
 import PaymetListAdmin from "./pages/admin/PaymetListAdmin";
+
+// Misc Pages
+import HealthCheck from "./pages/HealthCheck";
 
 const PrivateRoute = ({ element, requiredRole }) => {
   const token = localStorage.getItem("token");
@@ -90,33 +95,18 @@ const App = () => {
               {/* Health Check */}
               <Route path="/health-check" element={<HealthCheck />} />
 
-              {/* Homepage */}
+              {/* Public Routes */}
               <Route path="/" element={<Homepage />} />
               <Route path="/cinema/:city" element={<CinemaPage />} />
-
-              {/* Login */}
               <Route path="/login" element={<Login setToken={setToken} />} />
               <Route path="/logout" element={<Logout setToken={setToken} />} />
-
-              {/* Register */}
               <Route path="/register" element={<Register />} />
-              <Route
-                path="/register/admin"
-                element={
-                  <PrivateRoute
-                    element={<RegisterAdmin />}
-                    requiredRole={["admin"]}
-                  />
-                }
-              />
-
-              {/* Movie Details */}
               <Route
                 path="/movies/details/:movieId"
                 element={<MovieDetails />}
               />
 
-              {/* Users */}
+              {/* User Routes */}
               <Route
                 path="/users/myprofile"
                 element={
@@ -126,7 +116,6 @@ const App = () => {
                   />
                 }
               />
-
               <Route
                 path="/users/reservations"
                 element={
@@ -136,7 +125,6 @@ const App = () => {
                   />
                 }
               />
-
               <Route
                 path="/users/reservations/:reservationId"
                 element={
@@ -146,8 +134,35 @@ const App = () => {
                   />
                 }
               />
+              <Route
+                path="/book-ticket/:showId"
+                element={
+                  <PrivateRoute
+                    element={<BookTicketPage />}
+                    requiredRole={["admin", "employee", "user"]}
+                  />
+                }
+              />
+              <Route
+                path="/payment/:reservationId"
+                element={
+                  <PrivateRoute
+                    element={<PaymentPage />}
+                    requiredRole={["admin", "employee", "user"]}
+                  />
+                }
+              />
 
-              {/* Admin */}
+              {/* Admin Routes */}
+              <Route
+                path="/register/admin"
+                element={
+                  <PrivateRoute
+                    element={<RegisterAdmin />}
+                    requiredRole={["admin"]}
+                  />
+                }
+              />
               <Route
                 path="/users-list"
                 element={
@@ -176,20 +191,20 @@ const App = () => {
                 }
               />
               <Route
-                path="/admin/halls/list"
-                element={
-                  <PrivateRoute
-                    element={<HallListAdmin />}
-                    requiredRole={["admin"]}
-                  />
-                }
-              />
-              <Route
                 path="/admin/movies/add"
                 element={
                   <PrivateRoute
                     element={<MovieAddAdmin />}
                     requiredRole={["admin", "employee"]}
+                  />
+                }
+              />
+              <Route
+                path="/admin/halls/list"
+                element={
+                  <PrivateRoute
+                    element={<HallListAdmin />}
+                    requiredRole={["admin"]}
                   />
                 }
               />
@@ -289,26 +304,6 @@ const App = () => {
                   <PrivateRoute
                     element={<CreateReservationForUser />}
                     requiredRole={["admin", "employee"]}
-                  />
-                }
-              />
-
-              {/* Book Ticket */}
-              <Route
-                path="/book-ticket/:showId"
-                element={
-                  <PrivateRoute
-                    element={<BookTicketPage />}
-                    requiredRole={["admin", "employee", "user"]}
-                  />
-                }
-              />
-              <Route
-                path="/payment/:reservationId"
-                element={
-                  <PrivateRoute
-                    element={<PaymentPage />}
-                    requiredRole={["admin", "employee", "user"]}
                   />
                 }
               />

@@ -16,8 +16,7 @@ def get_now_playing_movies(page: int = 1):
     if response.status_code == 200:
         return response.json().get("results", [])
     else:
-        raise ValueError(
-            f"Błąd pobierania danych z API: {response.status_code}")
+        raise ValueError(f"Błąd pobierania danych z API: {response.status_code}")
 
 
 def get_movie_details(movie_id: int):
@@ -70,8 +69,7 @@ def populate_db():
         if response.status_code == 200:
             print(f"Added movie {movie['tmdbID']} to Krakow")
         else:
-            print(
-                f"Failed to add movie {movie['tmdbID']} to Krakow: {response.text}")
+            print(f"Failed to add movie {movie['tmdbID']} to Krakow: {response.text}")
     # Add movies for Warszawa
     for movie in movies_warsaw:
         response = requests.post(
@@ -80,8 +78,7 @@ def populate_db():
         if response.status_code == 200:
             print(f"Added movie {movie['tmdbID']} to Warszawa")
         else:
-            print(
-                f"Failed to add movie {movie['tmdbID']} to Warszawa: {response.text}")
+            print(f"Failed to add movie {movie['tmdbID']} to Warszawa: {response.text}")
 
     print("Database populated successfully.")
 
@@ -93,32 +90,44 @@ def add_halls_and_rows():
     # Define halls and rows for Krakow and Warsaw
     halls_data = {
         "krakow": [
-            {"name": "Sala 1", "rows": [
-                {"row_number": 1, "seat_count": 10},
-                {"row_number": 2, "seat_count": 12},
-                {"row_number": 3, "seat_count": 14},
-                {"row_number": 4, "seat_count": 16},
-            ]},
-            {"name": "Sala 2", "rows": [
-                {"row_number": 1, "seat_count": 8},
-                {"row_number": 2, "seat_count": 10},
-                {"row_number": 3, "seat_count": 12},
-                {"row_number": 4, "seat_count": 14},
-            ]},
+            {
+                "name": "Sala 1",
+                "rows": [
+                    {"row_number": 1, "seat_count": 10},
+                    {"row_number": 2, "seat_count": 12},
+                    {"row_number": 3, "seat_count": 14},
+                    {"row_number": 4, "seat_count": 16},
+                ],
+            },
+            {
+                "name": "Sala 2",
+                "rows": [
+                    {"row_number": 1, "seat_count": 8},
+                    {"row_number": 2, "seat_count": 10},
+                    {"row_number": 3, "seat_count": 12},
+                    {"row_number": 4, "seat_count": 14},
+                ],
+            },
         ],
         "warsaw": [
-            {"name": "Sala 1", "rows": [
-                {"row_number": 1, "seat_count": 15},
-                {"row_number": 2, "seat_count": 20},
-                {"row_number": 3, "seat_count": 18},
-                {"row_number": 4, "seat_count": 22},
-            ]},
-            {"name": "Sala 2", "rows": [
-                {"row_number": 1, "seat_count": 10},
-                {"row_number": 2, "seat_count": 12},
-                {"row_number": 3, "seat_count": 14},
-                {"row_number": 4, "seat_count": 16},
-            ]},
+            {
+                "name": "Sala 1",
+                "rows": [
+                    {"row_number": 1, "seat_count": 15},
+                    {"row_number": 2, "seat_count": 20},
+                    {"row_number": 3, "seat_count": 18},
+                    {"row_number": 4, "seat_count": 22},
+                ],
+            },
+            {
+                "name": "Sala 2",
+                "rows": [
+                    {"row_number": 1, "seat_count": 10},
+                    {"row_number": 2, "seat_count": 12},
+                    {"row_number": 3, "seat_count": 14},
+                    {"row_number": 4, "seat_count": 16},
+                ],
+            },
         ],
     }
 
@@ -132,13 +141,15 @@ def add_halls_and_rows():
             )
             if hall_response.status_code == 200:
                 hall_id = hall_response.json()["id"]
-                print(
-                    f"Added hall '{hall['name']}' in {region} with ID {hall_id}")
+                print(f"Added hall '{hall['name']}' in {region} with ID {hall_id}")
 
                 # Add rows for the hall
                 rows_payload = [
-                    {"hall_id": hall_id,
-                        "row_number": row["row_number"], "seat_count": row["seat_count"]}
+                    {
+                        "hall_id": hall_id,
+                        "row_number": row["row_number"],
+                        "seat_count": row["seat_count"],
+                    }
                     for row in hall["rows"]
                 ]
                 rows_response = requests.post(
@@ -150,10 +161,12 @@ def add_halls_and_rows():
                     print(f"Added rows for hall '{hall['name']}' in {region}")
                 else:
                     print(
-                        f"Failed to add rows for hall '{hall['name']}' in {region}: {rows_response.text}")
+                        f"Failed to add rows for hall '{hall['name']}' in {region}: {rows_response.text}"
+                    )
             else:
                 print(
-                    f"Failed to add hall '{hall['name']}' in {region}: {hall_response.text}")
+                    f"Failed to add hall '{hall['name']}' in {region}: {hall_response.text}"
+                )
 
 
 def add_seats_to_rows():
@@ -163,32 +176,67 @@ def add_seats_to_rows():
     # Define seats for each row
     seats_data = {
         "krakow": [
-            {"row_id": 1, "seats": [
-                {"seat_number": i, "seat_type": "standard"} for i in range(1, 11)]},
-            {"row_id": 2, "seats": [
-                {"seat_number": i, "seat_type": "standard"} for i in range(1, 13)]},
-            {"row_id": 3, "seats": [
-                {"seat_number": i, "seat_type": "premium"} for i in range(1, 15)]},
-            {"row_id": 4, "seats": [
-                {"seat_number": i, "seat_type": "premium"} for i in range(1, 17)]},
+            {
+                "row_id": 1,
+                "seats": [
+                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 11)
+                ],
+            },
+            {
+                "row_id": 2,
+                "seats": [
+                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 13)
+                ],
+            },
+            {
+                "row_id": 3,
+                "seats": [
+                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 15)
+                ],
+            },
+            {
+                "row_id": 4,
+                "seats": [
+                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 17)
+                ],
+            },
         ],
         "warsaw": [
-            {"row_id": 5, "seats": [
-                {"seat_number": i, "seat_type": "standard"} for i in range(1, 16)]},
-            {"row_id": 6, "seats": [
-                {"seat_number": i, "seat_type": "standard"} for i in range(1, 21)]},
-            {"row_id": 7, "seats": [
-                {"seat_number": i, "seat_type": "premium"} for i in range(1, 19)]},
-            {"row_id": 8, "seats": [
-                {"seat_number": i, "seat_type": "premium"} for i in range(1, 23)]},
+            {
+                "row_id": 5,
+                "seats": [
+                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 16)
+                ],
+            },
+            {
+                "row_id": 6,
+                "seats": [
+                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 21)
+                ],
+            },
+            {
+                "row_id": 7,
+                "seats": [
+                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 19)
+                ],
+            },
+            {
+                "row_id": 8,
+                "seats": [
+                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 23)
+                ],
+            },
         ],
     }
 
     for region, rows in seats_data.items():
         for row in rows:
             seats_payload = [
-                {"row_id": row["row_id"], "seat_number": seat["seat_number"],
-                    "seat_type": seat["seat_type"]}
+                {
+                    "row_id": row["row_id"],
+                    "seat_number": seat["seat_number"],
+                    "seat_type": seat["seat_type"],
+                }
                 for seat in row["seats"]
             ]
             response = requests.post(
@@ -200,7 +248,8 @@ def add_seats_to_rows():
                 print(f"Added seats to row {row['row_id']} in {region}")
             else:
                 print(
-                    f"Failed to add seats to row {row['row_id']} in {region}: {response.text}")
+                    f"Failed to add seats to row {row['row_id']} in {region}: {response.text}"
+                )
 
 
 def main():

@@ -12,7 +12,18 @@ const Navbar = () => {
       style={{ paddingRight: "15px" }}
     >
       <div className="container-fluid">
-        <Link className="navbar-brand d-flex align-items-center" to="/">
+        <Link
+          className="navbar-brand d-flex align-items-center"
+          to={
+            user
+              ? user.role === "admin"
+                ? "/admin/dashboard"
+                : user.role === "employee"
+                ? "/employee/dashboard"
+                : "/"
+              : "/"
+          }
+        >
           <img
             src={logo}
             alt="Cinema Logo"

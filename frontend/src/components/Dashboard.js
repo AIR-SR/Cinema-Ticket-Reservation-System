@@ -69,6 +69,11 @@ const Dashboard = ({ role }) => {
             </div>
           ))}
       </div>
+      <div className="text-center mt-4">
+        <Link to="/" className="btn btn-primary">
+          Go to Homepage
+        </Link>
+      </div>
     </div>
   );
 };
