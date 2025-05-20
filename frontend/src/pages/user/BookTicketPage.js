@@ -121,6 +121,7 @@ const BookTicketPage = () => {
         "Redirecting to payment page:",
         `/payment/${reservationId}?region=${region}`
       );
+      alert("Booking successful! Redirecting to payment page...");
       navigate(`/payment/${reservationId}?region=${region}`);
     } catch (err) {
       console.error("Failed to book tickets:", err);

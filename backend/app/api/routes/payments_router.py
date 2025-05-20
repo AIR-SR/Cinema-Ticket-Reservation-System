@@ -65,8 +65,6 @@ async def create_payment(
             status_code=400, detail="No price available for this reservation's show."
         )
 
-    amount = reservation.show.price
-
     existing = await db.execute(
         select(Payment).where(Payment.reservation_id == payment.reservation_id)
     )

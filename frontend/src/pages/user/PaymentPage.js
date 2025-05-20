@@ -62,7 +62,7 @@ const PaymentPage = () => {
         params: { region },
       });
 
-      alert("Booking successful!");
+      alert("Payment successful!");
       navigate(`/users/reservations`);
     } catch (err) {
       console.error("Payment creation failed:", err);
