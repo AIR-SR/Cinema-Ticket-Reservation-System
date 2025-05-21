@@ -36,6 +36,7 @@ const CreateReservationForUser = () => {
         });
         setUsers(data);
       } catch (err) {
+        console.error("Failed to load users:", err);
         setError("Failed to load users.");
       }
     };
