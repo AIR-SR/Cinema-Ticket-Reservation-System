@@ -130,7 +130,8 @@ const PaymentPage = () => {
         <div className="mb-4">
           <h4 className="mb-3">Amount to be Paid</h4>
           <p>
-            <strong>Total:</strong> {seat_details?.length * show_price} PLN
+            <strong>Total:</strong>{" "}
+            {(seat_details?.length * show_price).toFixed(2)} PLN
           </p>
         </div>
       )}

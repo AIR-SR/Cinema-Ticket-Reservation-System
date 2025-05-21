@@ -36,6 +36,7 @@ const BookTicketPage = () => {
           movieTitle: showResponse.data.movie.title,
           showTime: showResponse.data.show.start_time,
           hallName: showResponse.data.hall.name,
+          showPrice: showResponse.data.show.price,
         });
 
         const hallId = showResponse.data.hall.id;
@@ -163,6 +164,9 @@ const BookTicketPage = () => {
           </p>
           <p>
             <strong>Hall:</strong> {showDetails.hallName}
+          </p>
+          <p>
+            <strong>Price:</strong> {showDetails.showPrice} PLN
           </p>
         </div>
       )}

@@ -9,7 +9,7 @@ from .config import logger
 
 async def delete_unpaid_reservations(db: AsyncSession):
     try:
-        timeout = datetime.utcnow() - timedelta(seconds=15)
+        timeout = datetime.utcnow() - timedelta(minutes=15)
         stmt = select(Reservation).where(
             Reservation.status != "paid", Reservation.created_at < timeout
         )

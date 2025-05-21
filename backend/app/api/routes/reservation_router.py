@@ -493,6 +493,11 @@ async def delete_reservation(
                 ReservationSeat.reservation_id == reservation_id
             )
         )
+
+        await db.execute(
+            delete(Payment).where(Payment.reservation_id == reservation_id)
+        )
+
         await db.execute(delete(Reservation).where(Reservation.id == reservation_id))
         await db.commit()
 

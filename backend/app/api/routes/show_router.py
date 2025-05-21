@@ -3,6 +3,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from models_global import UsersGlobal
 from models_local import Show, Movie, Hall, Reservation, ReservationSeat, Seat
 from schemas import ShowBase, ShowModel
+from schemas.show_schema import (
+    ShowDetailsReservation,
+    ShowDetailsShow,
+    ShowDetailsMovie,
+    ShowDetailsHall,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, func, cast, TIMESTAMP
 from datetime import datetime, timedelta, date, timezone
@@ -280,7 +286,7 @@ async def get_shows_by_hall_and_date(
     ]
 
 
-@router.get("/get-for-reservation/{show_id}")
+@router.get("/get-for-reservation/{show_id}", response_model=ShowDetailsReservation)
 async def get_show_for_reservation(
     show_id: int,
     region: str,
@@ -310,23 +316,23 @@ async def get_show_for_reservation(
 
     show, movie, hall = row
 
-    return {
-        "show": {
-            "id": show.id,
-            "start_time": show.start_time,
-            "price": show.price,
-        },
-        "movie": {
-            "id": movie.id,
-            "title": movie.title,
-            "runtime": movie.runtime,
-            "poster_path": movie.poster_path,
-        },
-        "hall": {
-            "id": hall.id,
-            "name": hall.name,
-        },
-    }
+    return ShowDetailsReservation(
+        show=ShowDetailsShow(
+            id=show.id,
+            start_time=show.start_time,
+            price=show.price,
+        ),
+        movie=ShowDetailsMovie(
+            id=movie.id,
+            title=movie.title,
+            runtime=movie.runtime,
+            poster_path=movie.poster_path,
+        ),
+        hall=ShowDetailsHall(
+            id=hall.id,
+            name=hall.name,
+        ),
+    )
 
 
 @router.get("/get_reserved_seats/{show_id}")

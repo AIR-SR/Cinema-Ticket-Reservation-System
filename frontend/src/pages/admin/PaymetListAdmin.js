@@ -115,7 +115,18 @@ const PaymetListAdmin = () => {
           </tbody>
         </table>
       ) : (
-        <p>No payments found.</p>
+        // Enhanced empty state
+        <div className="d-flex flex-column align-items-center justify-content-center text-center py-5">
+          <div className="mb-3">
+            <i
+              className="bi bi-credit-card-x"
+              style={{ fontSize: "3rem", color: "#6c757d" }}
+            ></i>
+          </div>
+          <p className="mb-3 fs-5 text-muted">
+            No payments found for the selected region.
+          </p>
+        </div>
       )}
       <div className="d-flex justify-content-start mt-4">
         <BackButton />

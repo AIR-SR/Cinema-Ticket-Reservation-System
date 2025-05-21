@@ -198,8 +198,8 @@ const CreateReservationForUser = () => {
           selectedRegion={selectedRegion}
           setSelectedRegion={setSelectedRegion}
           regions={regions}
-          labelInline={true}
-          fullWidth={false}
+          labelInline={false}
+          fullWidth={true}
         />
       </div>
       {selectedRegion && (

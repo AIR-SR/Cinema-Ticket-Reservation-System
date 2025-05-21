@@ -5,6 +5,8 @@ import RegionSelector from "../../components/RegionSelector";
 import BackButton from "../../components/BackButton";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
+import Modal from "../../components/Modal";
+import { toast } from "react-toastify"; // <-- add this import
 
 const ReservationListAdmin = () => {
   const [reservations, setReservations] = useState([]);
@@ -12,6 +14,8 @@ const ReservationListAdmin = () => {
   const [error, setError] = useState(null);
   const [selectedRegion, setSelectedRegion] = useState("krakow"); // Default region
   const [regions] = useState(["krakow", "warsaw"]); // List of regions
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [reservationToDelete, setReservationToDelete] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +48,35 @@ const ReservationListAdmin = () => {
 
     fetchReservations();
   }, [selectedRegion]); // Re-fetch reservations when selectedRegion changes
+
+  const handleDelete = async () => {
+    if (!reservationToDelete) return;
+    try {
+      const token = localStorage.getItem("token");
+      if (!token)
+        throw new Error("Authentication token is missing. Please log in.");
+
+      await api.delete(`/reservation/delete/${reservationToDelete.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { region: selectedRegion },
+      });
+
+      setReservations((prev) =>
+        prev.filter((res) => res.id !== reservationToDelete.id)
+      );
+      toast.success("Reservation deleted successfully."); // <-- changed from alert to toast
+    } catch (err) {
+      console.error(err);
+      alert(
+        typeof err.response?.data?.detail === "string"
+          ? err.response.data.detail
+          : "Failed to delete reservation."
+      );
+    } finally {
+      setShowDeleteModal(false);
+      setReservationToDelete(null);
+    }
+  };
 
   if (error)
     return (
@@ -118,40 +151,9 @@ const ReservationListAdmin = () => {
                   </button>
                   <button
                     className="btn btn-danger btn-sm"
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          "Are you sure you want to delete this reservation?"
-                        )
-                      ) {
-                        try {
-                          const token = localStorage.getItem("token");
-                          if (!token)
-                            throw new Error(
-                              "Authentication token is missing. Please log in."
-                            );
-
-                          await api.delete(
-                            `/reservation/delete/${reservation.id}`,
-                            {
-                              headers: { Authorization: `Bearer ${token}` },
-                              params: { region: selectedRegion }, // Pass region as query parameter
-                            }
-                          );
-
-                          setReservations((prev) =>
-                            prev.filter((res) => res.id !== reservation.id)
-                          );
-                          alert("Reservation deleted successfully.");
-                        } catch (err) {
-                          console.error(err);
-                          alert(
-                            typeof err.response?.data?.detail === "string"
-                              ? err.response.data.detail
-                              : "Failed to delete reservation."
-                          );
-                        }
-                      }
+                    onClick={() => {
+                      setReservationToDelete(reservation);
+                      setShowDeleteModal(true);
                     }}
                   >
                     Delete
@@ -179,6 +181,21 @@ const ReservationListAdmin = () => {
       <div className="d-flex justify-content-start mt-4">
         <BackButton />
       </div>
+      {showDeleteModal && (
+        <Modal
+          title="Confirm Delete"
+          onClose={() => {
+            setShowDeleteModal(false);
+            setReservationToDelete(null);
+          }}
+          onSave={handleDelete}
+          saveText="Delete"
+          cancelText="Cancel"
+          saveButtonType="danger"
+        >
+          Are you sure you want to delete this reservation?
+        </Modal>
+      )}
     </div>
   );
 };

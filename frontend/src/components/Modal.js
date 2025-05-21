@@ -1,6 +1,19 @@
 import React from "react";
 
-const Modal = ({ title, children, onClose, onSave }) => {
+const Modal = ({
+  title,
+  children,
+  onClose,
+  onSave,
+  saveText = "Save Changes",
+  cancelText = "Cancel",
+  saveButtonType = "primary",
+  cancelButtonType = "secondary",
+  showSave = true,
+  showCancel = true,
+  saveDisabled = false,
+  footer = null,
+}) => {
   return (
     <div className="modal-overlay">
       <div className="modal d-block modal-centered">
@@ -16,21 +29,30 @@ const Modal = ({ title, children, onClose, onSave }) => {
             </div>
             <div className="modal-body">{children}</div>
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={onClose}
-              >
-                Cancel
-              </button>
-              {onSave && (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={onSave}
-                >
-                  Save Changes
-                </button>
+              {footer ? (
+                footer
+              ) : (
+                <>
+                  {showCancel && (
+                    <button
+                      type="button"
+                      className={`btn btn-${cancelButtonType}`}
+                      onClick={onClose}
+                    >
+                      {cancelText}
+                    </button>
+                  )}
+                  {showSave && onSave && (
+                    <button
+                      type="button"
+                      className={`btn btn-${saveButtonType}`}
+                      onClick={onSave}
+                      disabled={saveDisabled}
+                    >
+                      {saveText}
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>

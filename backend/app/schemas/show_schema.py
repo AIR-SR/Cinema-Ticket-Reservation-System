@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -50,3 +51,27 @@ class ShowModel(ShowBase):
         Configuration for the Pydantic model:
         - `from_attributes`: Allows population of the model from ORM objects.
         """
+
+
+class ShowDetailsShow(BaseModel):
+    id: int = Field(..., ge=1)
+    start_time: datetime
+    price: float
+
+
+class ShowDetailsMovie(BaseModel):
+    id: int = Field(..., ge=1)
+    title: str
+    runtime: Optional[int] = None
+    poster_path: Optional[str] = None
+
+
+class ShowDetailsHall(BaseModel):
+    id: int = Field(..., ge=1)
+    name: str
+
+
+class ShowDetailsReservation(BaseModel):
+    show: ShowDetailsShow
+    movie: ShowDetailsMovie
+    hall: ShowDetailsHall
