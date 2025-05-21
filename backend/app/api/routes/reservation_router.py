@@ -5,6 +5,7 @@ from core import (
     get_db_global,
     user_required,
     logger,
+    cancel_unpaid_reservation
 )
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
@@ -84,7 +85,7 @@ async def create_reservation_entry(
 
 
 async def validate_and_create_reservation(
-    user_id: int, reservation: ReservationBase, seat_ids: List[int], db: AsyncSession
+    user_id: int, reservation: ReservationBase, seat_ids: List[int], db: AsyncSession, region: str
 ):
     """
     Validate seat availability and create a reservation.
@@ -100,7 +101,14 @@ async def validate_and_create_reservation(
                 tzinfo=None)
 
         await check_reserved_seats(seat_ids, db)
-        return await create_reservation_entry(user_id, reservation, seat_ids, db)
+        new_reservation = await create_reservation_entry(user_id, reservation, seat_ids, db)
+
+        cancel_unpaid_reservation.apply_async(
+            args=[new_reservation.id, region],
+            countdown=5 * 60
+        )
+
+        return new_reservation
     except HTTPException as e:
         logger.error(f"HTTP exception: {e.detail}")
         raise e
@@ -186,6 +194,7 @@ async def fetch_seat_hall_movie_details(reservation_ids: List[int], db: AsyncSes
 async def create_reservation(
     reservation: ReservationBase,
     seat_ids: List[int],
+    region:str,
     db: AsyncSession = Depends(get_db_local),
     current_user: UsersGlobal = Depends(user_required),
 ):
@@ -193,7 +202,7 @@ async def create_reservation(
     Create a reservation in the database.
     """
     return await validate_and_create_reservation(
-        current_user.id, reservation, seat_ids, db
+        current_user.id, reservation, seat_ids, db, region
     )
 
 

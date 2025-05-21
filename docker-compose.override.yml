@@ -12,6 +12,8 @@ services:
         condition: service_started
       postgres-warsaw:
         condition: service_started
+      redis:
+        condition: service_started
     container_name: cinema-backend-dev
     ports:
       - "8000:8000"
@@ -29,12 +31,44 @@ services:
       - ALGORITHM=${ALGORITHM}
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
       - TMDB_API_KEY=${TMDB_API_KEY}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - TMDB_API_URL=${TMDB_API_URL}
       - ROLE_ADMIN=${ROLE_ADMIN}
       - ROLE_USER=${ROLE_USER}
       - ROLE_EMPLOYEE=${ROLE_EMPLOYEE}
-      # - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  cinema-celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - cinema-backend
+      - redis
+    container_name: cinema-celery-dev
+    volumes:
+      - ./backend/app:/app/app
+    working_dir: /app
+    command: poetry run celery -A app.celery.celery_app.celery worker --loglevel=info
+    networks:
+      - cinema-ticket-reservation-network
+    environment:
+      - FRONTEND_URL=${FRONTEND_URL}
+      - DATABASE_URL_GLOBAL=${DATABASE_URL_GLOBAL}
+      - DATABASE_URL_KRAKOW=${DATABASE_URL_KRAKOW}
+      - DATABASE_URL_WARSAW=${DATABASE_URL_WARSAW}
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - TMDB_API_KEY=${TMDB_API_KEY}
+      - TMDB_API_URL=${TMDB_API_URL}
+      - ROLE_ADMIN=${ROLE_ADMIN}
+      - ROLE_USER=${ROLE_USER}
+      - ROLE_EMPLOYEE=${ROLE_EMPLOYEE}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
 
   cinema-frontend:
     build:
@@ -55,6 +89,14 @@ services:
       - REACT_APP_API_URL=${REACT_APP_API_URL}
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+
+  redis:
+    image: redis:7
+    container_name: redis_cinema
+    ports:
+      - "6379:6379"
+    networks:
+      - cinema-ticket-reservation-network
 
   postgres-global:
     image: postgres:16
