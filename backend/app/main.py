@@ -1,11 +1,15 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio  # Import asyncio for adding delay
+import asyncio
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.events import EVENT_JOB_ERROR
 
 from api import api_router
 from core import (
     create_default_user,
+    delete_unpaid_reservations,
     get_db_global,
+    get_db_local,
     init_db_on_startup,
     logger,
     settings,
@@ -25,8 +29,29 @@ class DelayMiddleware:
         await self.app(scope, receive, send)
 
 
-async def app_lifespan(app: FastAPI):
-    """Lifespan event handler for application startup and shutdown."""
+task_lock = asyncio.Lock()
+scheduler = AsyncIOScheduler()  # Single scheduler instance
+
+
+async def check_reservations_paid():
+    """Check if reservations have been paid and delete unpaid ones."""
+    async with task_lock:
+        try:
+            for db_getter in [get_db_local("krakow"), get_db_local("warsaw")]:
+                async for db in db_getter:
+                    logger.info("Checking for unpaid reservations...")
+                    await delete_unpaid_reservations(db)
+                    break
+        except Exception as e:
+            logger.error(f"Error while checking reservations: {e}")
+
+
+def job_error_listener(event):
+    if event.exception:
+        logger.error(f"Job failed: {event.exception}")
+
+
+async def on_startup():
     logger.info("Starting up the application...")
     await init_db_on_startup()
     logger.info(settings.FRONTEND_URL)
@@ -39,11 +64,28 @@ async def app_lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Error creating default user: {e}")
         raise
-    yield  # Yield control for the application to run
+
+    # Schedule the job only if it doesn't exist
+    if not scheduler.get_job("check_reservations_paid"):
+        loop = asyncio.get_running_loop()
+        scheduler.add_job(
+            lambda: asyncio.run_coroutine_threadsafe(
+                check_reservations_paid(), loop),
+            "interval",
+            minutes=1,
+            id="check_reservations_paid",
+            replace_existing=True,
+        )
+        scheduler.add_listener(job_error_listener, EVENT_JOB_ERROR)
+        scheduler.start()
+
+
+async def on_shutdown():
     logger.info("Shutting down the application...")
+    scheduler.shutdown(wait=False)
 
 
-app = FastAPI(lifespan=app_lifespan)
+app = FastAPI(on_startup=[on_startup], on_shutdown=[on_shutdown])
 
 app.add_middleware(DelayMiddleware, delay=0)
 
