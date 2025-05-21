@@ -69,8 +69,7 @@ async def on_startup():
     if not scheduler.get_job("check_reservations_paid"):
         loop = asyncio.get_running_loop()
         scheduler.add_job(
-            lambda: asyncio.run_coroutine_threadsafe(
-                check_reservations_paid(), loop),
+            lambda: asyncio.run_coroutine_threadsafe(check_reservations_paid(), loop),
             "interval",
             minutes=1,
             id="check_reservations_paid",

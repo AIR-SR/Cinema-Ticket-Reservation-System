@@ -11,8 +11,7 @@ async def delete_unpaid_reservations(db: AsyncSession):
     try:
         timeout = datetime.utcnow() - timedelta(seconds=15)
         stmt = select(Reservation).where(
-            Reservation.status != "paid",
-            Reservation.created_at < timeout
+            Reservation.status != "paid", Reservation.created_at < timeout
         )
         result = await db.execute(stmt)
         unpaid_reservations = result.scalars().all()
@@ -28,8 +27,7 @@ async def delete_unpaid_reservations(db: AsyncSession):
             await db.delete(reservation)
 
         await db.commit()
-        logger.info(
-            f"[{datetime.utcnow()}] Deleted {count} unpaid reservations.")
+        logger.info(f"[{datetime.utcnow()}] Deleted {count} unpaid reservations.")
     except Exception as e:
         logger.error(f"Error deleting unpaid reservations: {e}")
     finally:
