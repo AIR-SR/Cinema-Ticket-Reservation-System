@@ -5,6 +5,8 @@ import UserDetailsTable from "../../components/UserDetailsTable";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MyProfile = () => {
   const { user, loading, refreshUser } = useContext(UserContext);
@@ -21,13 +23,13 @@ const MyProfile = () => {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.warn("Passwords do not match!");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("User is not authenticated. Please log in again.");
+      toast.error("User is not authenticated. Please log in again.");
       return;
     }
 
@@ -43,10 +45,10 @@ const MyProfile = () => {
         }
       );
 
-      alert("Password updated successfully!");
+      toast.success("Password updated successfully!");
       setShowModal(false);
     } catch (error) {
-      alert(error.response?.data?.detail || "Failed to update password.");
+      toast.error(error.response?.data?.detail || "Failed to update password.");
     }
   };
 
@@ -58,7 +60,7 @@ const MyProfile = () => {
   const handleSaveChanges = async (field) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("User is not authenticated. Please log in again.");
+      toast.error("User is not authenticated. Please log in again.");
       return;
     }
 
@@ -70,9 +72,9 @@ const MyProfile = () => {
       });
 
       await refreshUser();
-      alert(`${field.replace("_", " ")} updated successfully!`);
+      toast.success(`${field.replace("_", " ")} updated successfully!`);
     } catch (error) {
-      alert(error.response?.data?.detail || `Failed to update ${field}.`);
+      toast.error(error.response?.data?.detail || `Failed to update ${field}.`);
     }
   };
 
@@ -96,6 +98,7 @@ const MyProfile = () => {
 
   return (
     <div className="vh-90 d-flex justify-content-center align-items-center">
+      {/* <ToastContainer /> */}
       {showModal || editField ? <div className="modal-overlay"></div> : null}
       <div className="container mt-5 mb-5">
         <div className="row justify-content-center">

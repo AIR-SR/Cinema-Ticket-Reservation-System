@@ -5,6 +5,8 @@ import HallView from "../../components/HallView";
 import RegionSelector from "../../components/RegionSelector";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateReservationForUser = () => {
   const { userId } = useParams();
@@ -127,7 +129,7 @@ const CreateReservationForUser = () => {
 
   const handleReservation = async () => {
     if (!selectedShow || selectedSeats.length === 0 || !selectedUserId) {
-      alert("Please select a user, show and at least one seat.");
+      toast.warn("Please select a user, show and at least one seat.");
       return;
     }
     try {
@@ -152,7 +154,7 @@ const CreateReservationForUser = () => {
         }
       );
 
-      alert("Reservation created successfully!");
+      toast.success("Reservation created successfully!");
       navigate(`/admin/reservations/list`);
     } catch (err) {
       console.error("Failed to create reservation:", err);
@@ -168,6 +170,7 @@ const CreateReservationForUser = () => {
 
   return (
     <div className="container mt-5">
+      {/* <ToastContainer /> */}
       <h1 className="text-center mb-4">Create Reservation for User</h1>
       {/* User selection dropdown */}
       <div className="mb-4">

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const HallRowsForm = ({ newHallId, region }) => {
   const [rowData, setRowData] = useState([]);
@@ -71,7 +73,7 @@ const HallRowsForm = ({ newHallId, region }) => {
         });
       }
 
-      alert("Rows and seats added successfully!");
+      toast.success("Rows and seats added successfully!");
       navigate("/admin/halls/list");
     } catch (err) {
       console.error("Error adding rows or seats:", err);
@@ -81,6 +83,7 @@ const HallRowsForm = ({ newHallId, region }) => {
 
   return (
     <div className="mt-5">
+      {/* <ToastContainer /> */}
       <h3>Add Rows for Hall</h3>
       {error && <div className="alert alert-danger">{error}</div>}
 

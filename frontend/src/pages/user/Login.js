@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
 import api from "../../utils/api";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -40,7 +42,8 @@ const Login = () => {
       // Update user in context
       setUser(userResponse.data);
 
-      // Redirect based on role
+      // Show success toast and redirect based on role
+      toast.success("Login successful!");
       if (userResponse.data.role === "admin") {
         navigate("/admin/dashboard");
       } else {
@@ -48,7 +51,8 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error.response || error.message);
-      alert("Invalid credentials");
+      toast.error("Invalid credentials");
+      setLoading(false); // Set loading to false on error
     } finally {
       setLoading(false); // Set loading to false when login finishes
     }
@@ -56,6 +60,7 @@ const Login = () => {
 
   return (
     <div className="container mt-5">
+      {/* <ToastContainer /> */}
       <h1 className="text-center mb-4">Login</h1>
       <div className="row justify-content-center">
         <div className="col-md-6">

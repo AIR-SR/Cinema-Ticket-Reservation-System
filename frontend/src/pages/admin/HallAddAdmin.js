@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import HallRowsForm from "../../components/HallRowsFormAdmin";
 import RegionSelector from "../../components/RegionSelector";
 import api from "../../utils/api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const HallAddAdmin = () => {
   const location = useLocation();
@@ -40,7 +42,7 @@ const HallAddAdmin = () => {
         }
       );
 
-      setSuccessMessage(`Hall "${response.data.name}" added successfully!`);
+      toast.success(`Hall "${response.data.name}" added successfully!`);
       setNewHallId(response.data.id);
       setName("");
     } catch (err) {
@@ -54,6 +56,7 @@ const HallAddAdmin = () => {
 
   return (
     <div className="container mt-5">
+      {/* <ToastContainer /> */}
       <h1 className="text-center mb-4">Add New Hall</h1>
       <div className="card">
         <div className="card-body">
