@@ -3,6 +3,8 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PaymentPage = () => {
   const { reservationId } = useParams();
@@ -12,6 +14,7 @@ const PaymentPage = () => {
   const [reservationData, setReservationData] = useState(null);
   const [selectedMethod, setSelectedMethod] = useState("blik");
   const [loading, setLoading] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false); // separate loading for payment
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -43,7 +46,7 @@ const PaymentPage = () => {
 
   const handlePayment = async () => {
     try {
-      setLoading(true);
+      setPaymentLoading(true); // start payment loading
       const token = localStorage.getItem("token");
 
       const numberOfSeats = seat_details?.length || 0;
@@ -62,13 +65,15 @@ const PaymentPage = () => {
         params: { region },
       });
 
-      alert("Payment successful!");
+      toast.success("Payment successful!");
       navigate(`/users/reservations`);
+      setPaymentLoading(false); // stop payment loading
     } catch (err) {
       console.error("Payment creation failed:", err);
       setError("Payment failed. Please try again.");
+      setPaymentLoading(false);
     } finally {
-      setLoading(false);
+      setPaymentLoading(false); // stop payment loading in finally block
     }
   };
   const {
@@ -82,6 +87,7 @@ const PaymentPage = () => {
 
   if (loading)
     return <Loading message="Fetching the payment details for you..." />;
+  if (paymentLoading) return <Loading message="Processing your payment..." />;
   if (error)
     return (
       <ErrorMessage message={error} onRetry={() => window.location.reload()} />
@@ -123,7 +129,8 @@ const PaymentPage = () => {
         <div className="mb-4">
           <h4 className="mb-3">Amount to be Paid</h4>
           <p>
-            <strong>Total:</strong> {seat_details?.length * show_price} PLN
+            <strong>Total:</strong>{" "}
+            {(seat_details?.length * show_price).toFixed(2)} PLN
           </p>
         </div>
       )}

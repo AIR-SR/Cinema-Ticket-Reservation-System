@@ -5,6 +5,8 @@ import HallView from "../../components/HallView";
 import RegionSelector from "../../components/RegionSelector";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateReservationForUser = () => {
   const { userId } = useParams();
@@ -34,6 +36,7 @@ const CreateReservationForUser = () => {
         });
         setUsers(data);
       } catch (err) {
+        console.error("Failed to load users:", err);
         setError("Failed to load users.");
       }
     };
@@ -127,7 +130,7 @@ const CreateReservationForUser = () => {
 
   const handleReservation = async () => {
     if (!selectedShow || selectedSeats.length === 0 || !selectedUserId) {
-      alert("Please select a user, show and at least one seat.");
+      toast.warn("Please select a user, show and at least one seat.");
       return;
     }
     try {
@@ -152,7 +155,7 @@ const CreateReservationForUser = () => {
         }
       );
 
-      alert("Reservation created successfully!");
+      toast.success("Reservation created successfully!");
       navigate(`/admin/reservations/list`);
     } catch (err) {
       console.error("Failed to create reservation:", err);
@@ -194,8 +197,8 @@ const CreateReservationForUser = () => {
           selectedRegion={selectedRegion}
           setSelectedRegion={setSelectedRegion}
           regions={regions}
-          labelInline={true}
-          fullWidth={false}
+          labelInline={false}
+          fullWidth={true}
         />
       </div>
       {selectedRegion && (

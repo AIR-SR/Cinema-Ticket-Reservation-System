@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import api from "../../utils/api";
+import BackButton from "../../components/BackButton";
 import HallView from "../../components/HallView";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
@@ -54,6 +55,7 @@ const HallDetailsAdmin = () => {
     <div className="container mt-4">
       <h1 className="text-center mb-4">{hall.name}</h1>
       <HallView rows={hall.rows} />
+      <BackButton />
     </div>
   );
 };

@@ -4,6 +4,8 @@ import api from "../../utils/api";
 import HallView from "../../components/HallView";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BookTicketPage = () => {
   const { showId } = useParams();
@@ -12,6 +14,7 @@ const BookTicketPage = () => {
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showDetails, setShowDetails] = useState(null);
   const navigate = useNavigate();
@@ -33,6 +36,7 @@ const BookTicketPage = () => {
           movieTitle: showResponse.data.movie.title,
           showTime: showResponse.data.show.start_time,
           hallName: showResponse.data.hall.name,
+          showPrice: showResponse.data.show.price,
         });
 
         const hallId = showResponse.data.hall.id;
@@ -92,10 +96,11 @@ const BookTicketPage = () => {
 
   const handleBooking = async () => {
     if (selectedSeats.length === 0) {
-      alert("Please select at least one seat.");
+      toast.warn("Please select at least one seat.");
       return;
     }
 
+    setBookingLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Authentication token is missing.");
@@ -121,15 +126,26 @@ const BookTicketPage = () => {
         "Redirecting to payment page:",
         `/payment/${reservationId}?region=${region}`
       );
-      alert("Booking successful! Redirecting to payment page...");
+      toast.success("Booking successful! Redirecting to payment page...");
       navigate(`/payment/${reservationId}?region=${region}`);
+      setBookingLoading(false);
     } catch (err) {
+      setBookingLoading(false);
       console.error("Failed to book tickets:", err);
       setError("Failed to book tickets.");
     }
   };
 
-  if (loading) return <Loading message="Fetching the reservation for you..." />;
+  if (loading || bookingLoading)
+    return (
+      <Loading
+        message={
+          bookingLoading
+            ? "Booking your tickets..."
+            : "Fetching the reservation for you..."
+        }
+      />
+    );
   if (error)
     return (
       <ErrorMessage message={error} onRetry={() => window.location.reload()} />
@@ -148,6 +164,9 @@ const BookTicketPage = () => {
           <p>
             <strong>Hall:</strong> {showDetails.hallName}
           </p>
+          <p>
+            <strong>Price:</strong> {showDetails.showPrice} PLN
+          </p>
         </div>
       )}
       <HallView
@@ -157,11 +176,12 @@ const BookTicketPage = () => {
       />
       <div className="d-flex justify-content-end mt-3 mb-3">
         <button
+          type="button"
           className="btn btn-success"
           onClick={handleBooking}
-          disabled={selectedSeats.length === 0}
+          disabled={selectedSeats.length === 0 || loading || bookingLoading}
         >
-          Confirm Booking
+          {bookingLoading ? "Booking..." : "Confirm Booking"}
         </button>
       </div>
     </div>

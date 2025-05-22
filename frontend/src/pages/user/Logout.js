@@ -1,32 +1,23 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
+import { toast } from "react-toastify";
 
 const Logout = () => {
-  const { logout } = useContext(UserContext); // Use logout from UserContext
+  const { logout } = useContext(UserContext);
   const navigate = useNavigate();
+  const hasLoggedOut = useRef(false);
 
   useEffect(() => {
+    if (hasLoggedOut.current) return;
+    hasLoggedOut.current = true;
     document.title = "LFKG Cinemas | Logout";
-    logout(); // Call the logout function from UserContext
-    const timer = setTimeout(() => {
-      navigate("/");
-    }, 1000); // Redirect to homepage after 1 second
-    return () => clearTimeout(timer); // Cleanup timer on component unmount
+    logout();
+    toast.info("You have been logged out.");
+    navigate("/");
   }, [logout, navigate]);
 
-  return (
-    <div className="container mt-5">
-      <div className="card shadow-lg">
-        <div className="card-header bg-primary text-white text-center">
-          <h3 className="mb-0">Logging Out</h3>
-        </div>
-        <div className="card-body text-center">
-          <p>You have been logged out. Redirecting to the homepage...</p>
-        </div>
-      </div>
-    </div>
-  );
+  return null;
 };
 
 export default Logout;

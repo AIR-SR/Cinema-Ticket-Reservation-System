@@ -131,6 +131,8 @@ def add_halls_and_rows():
         ],
     }
 
+    row_id_map = {}  # {(region, hall_name, row_number): row_id}
+
     for region, halls in halls_data.items():
         for hall in halls:
             # Add hall
@@ -159,6 +161,13 @@ def add_halls_and_rows():
                 )
                 if rows_response.status_code == 200:
                     print(f"Added rows for hall '{hall['name']}' in {region}")
+                    # Save row IDs
+                    rows_created = rows_response.json()
+                    for idx, row in enumerate(hall["rows"]):
+                        # rows_created is expected to be a list of row objects with 'id' and 'row_number'
+                        row_id_map[(region, hall["name"], row["row_number"])] = (
+                            rows_created[idx]["id"]
+                        )
                 else:
                     print(
                         f"Failed to add rows for hall '{hall['name']}' in {region}: {rows_response.text}"
@@ -167,95 +176,81 @@ def add_halls_and_rows():
                 print(
                     f"Failed to add hall '{hall['name']}' in {region}: {hall_response.text}"
                 )
+    return row_id_map
 
 
-def add_seats_to_rows():
+def add_seats_to_rows(row_id_map):
     token = login()
     headers = {"Authorization": f"Bearer {token}"}
 
-    # Define seats for each row
+    # Define seats for each row for all halls
     seats_data = {
-        "krakow": [
-            {
-                "row_id": 1,
-                "seats": [
-                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 11)
-                ],
-            },
-            {
-                "row_id": 2,
-                "seats": [
-                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 13)
-                ],
-            },
-            {
-                "row_id": 3,
-                "seats": [
-                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 15)
-                ],
-            },
-            {
-                "row_id": 4,
-                "seats": [
-                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 17)
-                ],
-            },
-        ],
-        "warsaw": [
-            {
-                "row_id": 5,
-                "seats": [
-                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 16)
-                ],
-            },
-            {
-                "row_id": 6,
-                "seats": [
-                    {"seat_number": i, "seat_type": "standard"} for i in range(1, 21)
-                ],
-            },
-            {
-                "row_id": 7,
-                "seats": [
-                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 19)
-                ],
-            },
-            {
-                "row_id": 8,
-                "seats": [
-                    {"seat_number": i, "seat_type": "premium"} for i in range(1, 23)
-                ],
-            },
-        ],
+        "krakow": {
+            "Sala 1": [
+                {"row_number": 1, "seat_type": "standard", "seat_count": 10},
+                {"row_number": 2, "seat_type": "standard", "seat_count": 12},
+                {"row_number": 3, "seat_type": "standard", "seat_count": 14},
+                {"row_number": 4, "seat_type": "standard", "seat_count": 16},
+            ],
+            "Sala 2": [
+                {"row_number": 1, "seat_type": "standard", "seat_count": 8},
+                {"row_number": 2, "seat_type": "standard", "seat_count": 10},
+                {"row_number": 3, "seat_type": "standard", "seat_count": 12},
+                {"row_number": 4, "seat_type": "standard", "seat_count": 14},
+            ],
+        },
+        "warsaw": {
+            "Sala 1": [
+                {"row_number": 1, "seat_type": "standard", "seat_count": 15},
+                {"row_number": 2, "seat_type": "standard", "seat_count": 20},
+                {"row_number": 3, "seat_type": "standard", "seat_count": 18},
+                {"row_number": 4, "seat_type": "standard", "seat_count": 22},
+            ],
+            "Sala 2": [
+                {"row_number": 1, "seat_type": "standard", "seat_count": 10},
+                {"row_number": 2, "seat_type": "standard", "seat_count": 12},
+                {"row_number": 3, "seat_type": "standard", "seat_count": 14},
+                {"row_number": 4, "seat_type": "standard", "seat_count": 16},
+            ],
+        },
     }
 
-    for region, rows in seats_data.items():
-        for row in rows:
-            seats_payload = [
-                {
-                    "row_id": row["row_id"],
-                    "seat_number": seat["seat_number"],
-                    "seat_type": seat["seat_type"],
-                }
-                for seat in row["seats"]
-            ]
-            response = requests.post(
-                f"{BASE_URL}/seat/add-seats?region={region}",
-                json=seats_payload,
-                headers=headers,
-            )
-            if response.status_code == 200:
-                print(f"Added seats to row {row['row_id']} in {region}")
-            else:
-                print(
-                    f"Failed to add seats to row {row['row_id']} in {region}: {response.text}"
+    for region, halls in seats_data.items():
+        for hall_name, rows in halls.items():
+            for row in rows:
+                row_id = row_id_map.get((region, hall_name, row["row_number"]))
+                if not row_id:
+                    print(
+                        f"Row ID not found for {region} {hall_name} row {row['row_number']}"
+                    )
+                    continue
+                seats_payload = [
+                    {
+                        "row_id": row_id,
+                        "seat_number": i,
+                        "seat_type": row["seat_type"],
+                    }
+                    for i in range(1, row["seat_count"] + 1)
+                ]
+                response = requests.post(
+                    f"{BASE_URL}/seat/add-seats?region={region}",
+                    json=seats_payload,
+                    headers=headers,
                 )
+                if response.status_code == 200:
+                    print(
+                        f"Added seats to {hall_name} row {row['row_number']} in {region}"
+                    )
+                else:
+                    print(
+                        f"Failed to add seats to {hall_name} row {row['row_number']} in {region}: {response.text}"
+                    )
 
 
 def main():
     populate_db()
-    add_halls_and_rows()
-    add_seats_to_rows()
+    row_id_map = add_halls_and_rows()
+    add_seats_to_rows(row_id_map)
 
 
 if __name__ == "__main__":

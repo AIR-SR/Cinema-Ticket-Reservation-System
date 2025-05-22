@@ -6,6 +6,8 @@ import {
   Navigate,
 } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Styles
 import "./styles/modal.css";
@@ -88,6 +90,19 @@ const App = () => {
   return (
     <UserProvider>
       <Router>
+        {/* ToastContainer must be here, before your layout */}
+        <ToastContainer
+          position="top-center"
+          autoClose={1500}
+          hideProgressBar={true}
+          newestOnTop={true}
+          pauseOnFocusLoss={false}
+          draggable={false}
+          closeOnClick={false}
+          pauseOnHover={false}
+          theme="dark"
+          limit={3}
+        />
         <div className="d-flex flex-column min-vh-100">
           <Navbar />
           <main className="flex-grow-1">

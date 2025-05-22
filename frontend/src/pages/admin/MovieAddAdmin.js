@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import RegionSelector from "../../components/RegionSelector";
+import { toast } from "react-toastify";
 
 const MovieAddAdmin = () => {
   const location = useLocation(); // Access location object
+  const navigate = useNavigate();
   const [tmdbID, setTmdbID] = useState("");
   const [region, setRegion] = useState("krakow");
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -22,7 +23,6 @@ const MovieAddAdmin = () => {
   const handleAddMovie = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setSuccessMessage("");
     setErrorMessage("");
 
     try {
@@ -39,7 +39,8 @@ const MovieAddAdmin = () => {
           headers: { Authorization: `Bearer ${token}` }, // Pass token in headers
         }
       );
-      setSuccessMessage(`Movie "${response.data.title}" added successfully!`);
+      toast.success(`Movie "${response.data.title}" added successfully!`);
+      navigate("/admin/movies/list");
     } catch (error) {
       setErrorMessage(
         error.response?.data?.detail ||
@@ -82,9 +83,6 @@ const MovieAddAdmin = () => {
           {loading ? "Adding..." : "Add Movie"}
         </button>
       </form>
-      {successMessage && (
-        <p className="text-success text-center mt-3">{successMessage}</p>
-      )}
       {errorMessage && (
         <p className="text-danger text-center mt-3">{errorMessage}</p>
       )}

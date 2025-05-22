@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import UserForm from "../../components/UserForm";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   useEffect(() => {
@@ -24,11 +26,11 @@ const Register = () => {
   const handleRegister = async () => {
     try {
       await api.post("/users/register", formData);
-      alert("Registration successful! Please log in.");
+      toast.success("Registration successful! Please log in.");
       navigate("/login");
     } catch (error) {
       console.error("Registration error:", error.response || error.message);
-      alert(error.response?.data?.detail || "Failed to register.");
+      toast.error(error.response?.data?.detail || "Failed to register.");
     }
   };
 

@@ -96,8 +96,7 @@ async def validate_and_create_reservation(
             isinstance(reservation.created_at, datetime)
             and reservation.created_at.tzinfo is not None
         ):
-            reservation.created_at = reservation.created_at.replace(
-                tzinfo=None)
+            reservation.created_at = reservation.created_at.replace(tzinfo=None)
 
         await check_reserved_seats(seat_ids, db)
         return await create_reservation_entry(user_id, reservation, seat_ids, db)
@@ -328,8 +327,7 @@ async def get_reservation(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation:
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         if reservation.user_id != current_user.id:
             await employee_required(current_user)
@@ -399,8 +397,7 @@ async def get_user_reservation_details(
         reservation = await fetch_reservation_by_id(reservation_id, db)
 
         if not reservation or reservation.user_id != user_id:
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         payment = await fetch_payment_by_reservation_id(reservation_id, db)
 
@@ -489,14 +486,18 @@ async def delete_reservation(
 
         if not reservation:
             logger.warning(f"Reservation ID {reservation_id} not found.")
-            raise HTTPException(
-                status_code=404, detail="Reservation not found.")
+            raise HTTPException(status_code=404, detail="Reservation not found.")
 
         await db.execute(
             delete(ReservationSeat).where(
                 ReservationSeat.reservation_id == reservation_id
             )
         )
+
+        await db.execute(
+            delete(Payment).where(Payment.reservation_id == reservation_id)
+        )
+
         await db.execute(delete(Reservation).where(Reservation.id == reservation_id))
         await db.commit()
 
@@ -508,8 +509,7 @@ async def delete_reservation(
         logger.error(f"HTTP exception: {e.detail}")
         raise e
     except Exception as e:
-        logger.exception(
-            "Unexpected error occurred while deleting the reservation.")
+        logger.exception("Unexpected error occurred while deleting the reservation.")
         raise HTTPException(
             status_code=500, detail=f"An unexpected error occurred: {str(e)}"
         )

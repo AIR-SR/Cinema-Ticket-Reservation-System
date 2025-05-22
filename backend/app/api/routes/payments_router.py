@@ -57,9 +57,7 @@ async def create_payment(
         raise HTTPException(status_code=404, detail="Reservation not found.")
 
     if reservation.user_id != current_user.id:
-        raise HTTPException(
-            status_code=403, detail="You do not own this reservation."
-        )
+        raise HTTPException(status_code=403, detail="You do not own this reservation.")
     if not reservation.show or reservation.show.price is None:
         raise HTTPException(
             status_code=400, detail="No price available for this reservation's show."

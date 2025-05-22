@@ -109,8 +109,8 @@ const ReservationDetailsCard = ({ reservationDetails, region }) => {
           </p>
           <h6 className="mt-3">Seat Details:</h6>
           <ul className="list-group">
-            {seat_details.map((seat, index) => (
-              <li key={index} className="list-group-item">
+            {seat_details.map((seat) => (
+              <li key={seat.id} className="list-group-item">
                 <strong>Row:</strong> {seat.row_number}, <strong>Seat:</strong>{" "}
                 {seat.seat_number}
               </li>
