@@ -91,7 +91,18 @@ const App = () => {
     <UserProvider>
       <Router>
         {/* ToastContainer must be here, before your layout */}
-        <ToastContainer />
+        <ToastContainer
+          position="top-center"
+          autoClose={1500}
+          hideProgressBar={true}
+          newestOnTop={true}
+          pauseOnFocusLoss={false}
+          draggable={false}
+          closeOnClick={false}
+          pauseOnHover={false}
+          theme="dark"
+          limit={3}
+        />
         <div className="d-flex flex-column min-vh-100">
           <Navbar />
           <main className="flex-grow-1">

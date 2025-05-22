@@ -96,7 +96,7 @@ const ShowListAdmin = () => {
             <thead>
               <tr>
                 <th scope="col" style={{ width: "5%" }}>
-                  #
+                  ID
                 </th>
                 <th scope="col" style={{ width: "30%" }}>
                   Movie Title

@@ -6,31 +6,39 @@ import BackButton from "../../components/BackButton";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
 import Modal from "../../components/Modal";
-import { toast } from "react-toastify"; // <-- add this import
+import { toast } from "react-toastify";
 
 const ReservationListAdmin = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedRegion, setSelectedRegion] = useState("krakow"); // Default region
-  const [regions] = useState(["krakow", "warsaw"]); // List of regions
+  const [selectedRegion, setSelectedRegion] = useState("krakow");
+  const [regions] = useState(["krakow", "warsaw"]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [reservationToDelete, setReservationToDelete] = useState(null);
+  const [users, setUsers] = useState([]); // <-- add users state
   const navigate = useNavigate();
 
   useEffect(() => {
-    setReservations([]); // Clear previous reservations immediately when the region changes
+    setReservations([]);
     const fetchReservations = async () => {
-      setLoading(true); // Show loading when region changes
+      setLoading(true);
       setError(null);
       try {
         const token = localStorage.getItem("token");
         if (!token)
           throw new Error("Authentication token is missing. Please log in.");
 
+        // Fetch users
+        const usersResponse = await api.get("/users/get", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(usersResponse.data);
+
+        // Fetch reservations
         const response = await api.get("/reservation/get-all", {
           headers: { Authorization: `Bearer ${token}` },
-          params: { region: selectedRegion }, // Pass selected region as a parameter
+          params: { region: selectedRegion },
         });
 
         setReservations(response.data);
@@ -42,12 +50,18 @@ const ReservationListAdmin = () => {
         );
         console.error(err);
       } finally {
-        setLoading(false); // Hide loading after fetching
+        setLoading(false);
       }
     };
 
     fetchReservations();
-  }, [selectedRegion]); // Re-fetch reservations when selectedRegion changes
+  }, [selectedRegion]);
+
+  // Helper to get user email by user_id
+  const getUserEmail = (userId) => {
+    const user = users.find((u) => u.id === userId);
+    return user ? user.email : userId;
+  };
 
   const handleDelete = async () => {
     if (!reservationToDelete) return;
@@ -64,10 +78,10 @@ const ReservationListAdmin = () => {
       setReservations((prev) =>
         prev.filter((res) => res.id !== reservationToDelete.id)
       );
-      toast.success("Reservation deleted successfully."); // <-- changed from alert to toast
+      toast.success("Reservation deleted successfully.");
     } catch (err) {
       console.error(err);
-      alert(
+      toast.error(
         typeof err.response?.data?.detail === "string"
           ? err.response.data.detail
           : "Failed to delete reservation."
@@ -123,7 +137,7 @@ const ReservationListAdmin = () => {
           <thead>
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">User ID</th>
+              <th scope="col">User Email</th>
               <th scope="col">Show ID</th>
               <th scope="col">Status</th>
               <th scope="col">Created At</th>
@@ -134,7 +148,7 @@ const ReservationListAdmin = () => {
             {reservations.map((reservation) => (
               <tr key={reservation.id}>
                 <td>{reservation.id}</td>
-                <td>{reservation.user_id}</td>
+                <td>{getUserEmail(reservation.user_id)}</td>
                 <td>{reservation.show_id}</td>
                 <td>{reservation.status}</td>
                 <td>{new Date(reservation.created_at).toLocaleString()}</td>

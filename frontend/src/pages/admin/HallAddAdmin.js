@@ -23,6 +23,12 @@ const HallAddAdmin = () => {
     }
   }, [location.search, regions]);
 
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
+  }, [errorMessage]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage(null);
@@ -63,11 +69,6 @@ const HallAddAdmin = () => {
           {successMessage && (
             <div className="alert alert-success" role="alert">
               {successMessage}
-            </div>
-          )}
-          {errorMessage && (
-            <div className="alert alert-danger" role="alert">
-              {errorMessage}
             </div>
           )}
 
