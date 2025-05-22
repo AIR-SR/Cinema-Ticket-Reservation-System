@@ -4,7 +4,7 @@ import api from "../../utils/api";
 import HallView from "../../components/HallView";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const BookTicketPage = () => {
@@ -153,7 +153,6 @@ const BookTicketPage = () => {
 
   return (
     <div className="container mt-3">
-      {/* <ToastContainer /> */}
       <h1 className="text-center mb-3">Book Tickets</h1>
       {showDetails && (
         <div className="show-details text-center mb-3">

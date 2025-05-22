@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
 import api from "../../utils/api";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
@@ -60,7 +60,6 @@ const Login = () => {
 
   return (
     <div className="container mt-5">
-      {/* <ToastContainer /> */}
       <h1 className="text-center mb-4">Login</h1>
       <div className="row justify-content-center">
         <div className="col-md-6">

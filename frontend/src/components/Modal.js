@@ -12,7 +12,6 @@ const Modal = ({
   showSave = true,
   showCancel = true,
   saveDisabled = false,
-  footer = null,
 }) => {
   return (
     <div className="modal-overlay">
@@ -29,31 +28,27 @@ const Modal = ({
             </div>
             <div className="modal-body">{children}</div>
             <div className="modal-footer">
-              {footer ? (
-                footer
-              ) : (
-                <>
-                  {showCancel && (
-                    <button
-                      type="button"
-                      className={`btn btn-${cancelButtonType}`}
-                      onClick={onClose}
-                    >
-                      {cancelText}
-                    </button>
-                  )}
-                  {showSave && onSave && (
-                    <button
-                      type="button"
-                      className={`btn btn-${saveButtonType}`}
-                      onClick={onSave}
-                      disabled={saveDisabled}
-                    >
-                      {saveText}
-                    </button>
-                  )}
-                </>
-              )}
+              <>
+                {showCancel && (
+                  <button
+                    type="button"
+                    className={`btn btn-${cancelButtonType}`}
+                    onClick={onClose}
+                  >
+                    {cancelText}
+                  </button>
+                )}
+                {showSave && onSave && (
+                  <button
+                    type="button"
+                    className={`btn btn-${saveButtonType}`}
+                    onClick={onSave}
+                    disabled={saveDisabled}
+                  >
+                    {saveText}
+                  </button>
+                )}
+              </>
             </div>
           </div>
         </div>

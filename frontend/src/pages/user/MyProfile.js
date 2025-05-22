@@ -5,7 +5,7 @@ import UserDetailsTable from "../../components/UserDetailsTable";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const MyProfile = () => {
@@ -98,7 +98,6 @@ const MyProfile = () => {
 
   return (
     <div className="vh-90 d-flex justify-content-center align-items-center">
-      {/* <ToastContainer /> */}
       {showModal || editField ? <div className="modal-overlay"></div> : null}
       <div className="container mt-5 mb-5">
         <div className="row justify-content-center">

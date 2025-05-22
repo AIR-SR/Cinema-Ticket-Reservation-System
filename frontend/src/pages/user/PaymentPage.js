@@ -3,7 +3,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const PaymentPage = () => {
@@ -95,7 +95,6 @@ const PaymentPage = () => {
 
   return (
     <div className="container mt-4">
-      {/* <ToastContainer /> */}
       <h2 className="text-center mb-4">Payment for Reservation</h2>
 
       {reservationData && (

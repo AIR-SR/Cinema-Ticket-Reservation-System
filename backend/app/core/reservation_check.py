@@ -9,7 +9,7 @@ from .config import logger
 
 async def delete_unpaid_reservations(db: AsyncSession):
     try:
-        timeout = datetime.utcnow() - timedelta(minutes=15)
+        timeout = datetime.now(tz=None) - timedelta(minutes=15)
         stmt = select(Reservation).where(
             Reservation.status != "paid", Reservation.created_at < timeout
         )
@@ -27,7 +27,8 @@ async def delete_unpaid_reservations(db: AsyncSession):
             await db.delete(reservation)
 
         await db.commit()
-        logger.info(f"[{datetime.utcnow()}] Deleted {count} unpaid reservations.")
+        logger.info(
+            f"[{datetime.now(tz=None)}] Deleted {count} unpaid reservations.")
     except Exception as e:
         logger.error(f"Error deleting unpaid reservations: {e}")
     finally:

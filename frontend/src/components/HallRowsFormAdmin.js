@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const HallRowsForm = ({ newHallId, region }) => {
@@ -83,7 +83,6 @@ const HallRowsForm = ({ newHallId, region }) => {
 
   return (
     <div className="mt-5">
-      {/* <ToastContainer /> */}
       <h3>Add Rows for Hall</h3>
       {error && <div className="alert alert-danger">{error}</div>}
 

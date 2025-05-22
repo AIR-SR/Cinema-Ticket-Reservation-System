@@ -5,7 +5,7 @@ import HallView from "../../components/HallView";
 import RegionSelector from "../../components/RegionSelector";
 import Loading from "../../components/Loading";
 import ErrorMessage from "../../components/ErrorMessage";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const CreateReservationForUser = () => {
@@ -171,7 +171,6 @@ const CreateReservationForUser = () => {
 
   return (
     <div className="container mt-5">
-      {/* <ToastContainer /> */}
       <h1 className="text-center mb-4">Create Reservation for User</h1>
       {/* User selection dropdown */}
       <div className="mb-4">
