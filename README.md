@@ -104,53 +104,17 @@ Contributions are welcome! Please follow these steps:
 
 ```mermaid
 erDiagram
+    direction LR
+
+    %% === USER GROUP ===
     USERS-Global {
         int id
-        strin username
+        string username
         string first_name
         string last_name
         string email
         string hashed_password
         string role
-    }
-
-    HALLS {
-        int id
-        %% int cinema_id
-        string name
-    }
-
-    HALL_ROWS {
-        int id
-        int hall_id
-        int row_number
-        int seat_count
-    }
-
-    SEATS {
-        int id
-        int row_id
-        int seat_number
-        string seat_type
-    }
-
-    MOVIES {
-        int id
-        string tmdbID
-        string title
-        datetime release_date
-        string poster_path
-        int runtime
-        json genres
-        string description
-    }
-
-    SHOWS {
-        int id
-        int movie_id
-        int hall_id
-        datetime start_time
-        float price
     }
 
     RESERVATIONS {
@@ -176,17 +140,60 @@ erDiagram
         string created_at
     }
 
-    %% Relationships
-    USERS-Global ||--o{ RESERVATIONS : "User makes"
+    %% === CINEMA STRUCTURE ===
+    HALLS {
+        int id
+        string name
+    }
+
+    HALL_ROWS {
+        int id
+        int hall_id
+        int row_number
+        int seat_count
+    }
+
+    SEATS {
+        int id
+        int row_id
+        int seat_number
+        string seat_type
+    }
+
+    %% === MOVIES & SHOWS ===
+    MOVIES {
+        int id
+        string tmdbID
+        string title
+        datetime release_date
+        string poster_path
+        int runtime
+        json genres
+        string description
+    }
+
+    SHOWS {
+        int id
+        int movie_id
+        int hall_id
+        datetime start_time
+        float price
+    }
+
+    %% === RELATIONSHIPS ===
+    USERS-Global ||--o{ RESERVATIONS : "makes"
     RESERVATIONS ||--o{ RESERVATION_SEATS : "contains"
     RESERVATION_SEATS }o--|| SEATS : "books"
     RESERVATIONS ||--o{ PAYMENTS : "has"
+
     HALLS ||--o{ HALL_ROWS : "has"
     HALL_ROWS ||--o{ SEATS : "contains"
+
     MOVIES ||--o{ SHOWS : "is played in"
     SHOWS ||--o{ RESERVATIONS : "is booked for"
-    SHOWS ||--o{ HALLS : "takes place in"
-    USERS-Global ||--o{ SHOWS : "Admin creates"
+    SHOWS ||--|| HALLS : "takes place in"
+    USERS-Global ||--o{ SHOWS : "creates"
+
 
     %% ENUM Descriptions (Mermaid does not support enums natively)
     %% Role: admin, staff, customer
